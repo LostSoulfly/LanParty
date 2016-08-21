@@ -4,6 +4,19 @@
 # Custom for Visual Studio
 *.cs     diff=csharp
 
+*.vbp text eol=crlf
+*.cls text eol=crlf
+*.bas text eol=crlf
+*.frm text eol=crlf
+
+*.dat binary
+*.vbw binary
+*.pcsi binary
+*.scc binary
+*.tlb binary
+*.dll binary
+*.frx binary
+
 # Standard to msysgit
 *.doc	 diff=astextplain
 *.DOC	 diff=astextplain
