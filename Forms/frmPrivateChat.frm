@@ -121,6 +121,7 @@ End Function
 
 Public Sub SyncPChatUsers(UniqueID As String)
 SendChat "", 7
+'todo: fix
 End Sub
 
 Private Sub Form_Load()
@@ -149,22 +150,18 @@ Dim UserIndex As Integer
 For i = 1 To UBound(Users)
     If LenB(Users(i)) > 0 Then
         UserIndex = UserIndexByUID(Users(i))
-            If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatPacket(State, , User(UserIndex).UniqueKey, Me.Tag, Text)
+            If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatPacket(State, GetNumUsers, User(UserIndex).UniqueKey, Me.Tag, Text)
     End If
 Next i
 
 End Sub
 
-Private Sub SendChatUserList(Text As String, Optional State As Integer = 2)
-Dim i As Integer
+Private Sub SendChatUserList(UID As String)
 Dim UserIndex As Integer
+UserIndex = UserIndexByUID(UID)
 
-For i = 1 To UBound(Users)
-    If LenB(Users(i)) > 0 Then
-        UserIndex = UserIndexByUID(Users(i))
-            If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatPacket(State, , User(UserIndex).UniqueKey, Me.Tag, Text)
-    End If
-Next i
+If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatPacket(State, GetNumUsers, User(UserIndex).UniqueKey, Me.Tag, Text)
+'todo: fix
 
 End Sub
 

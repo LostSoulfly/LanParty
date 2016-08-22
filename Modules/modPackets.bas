@@ -80,7 +80,7 @@ Dim Temp As String
 Buffer.WriteLong LanPacket.LPrivateChat
 Buffer.WriteBytes PacketHeader
 Buffer.WriteInteger State
-Buffer.WriteString DS2.EncryptString(PChatID, RemoteKey)
+Buffer.WriteString PChatID
 Buffer.WriteLong NumChatUsers
 
 'not tested
@@ -91,7 +91,37 @@ Buffer.WriteLong NumChatUsers
 Select Case State
 
 Case Is = 2
-    Buffer.WriteString DS2.EncryptString(Text, PChatID & RemoteKey)
+    'Buffer.WriteString DS2.EncryptString(Text, PChatID & RemoteKey)    'useless encryption..
+    Buffer.WriteString Text
+End Select
+
+PrivateChatPacket = Buffer.ToArray
+
+Set Buffer = Nothing
+
+End Function
+
+Public Function PrivateChatUserListPacket(State As Integer, NumChatUsers As Long, RemoteKey As String, PChatID As String, Users() As String) As Byte()
+Dim Buffer As New clsBuffer
+Set Buffer = New clsBuffer
+Dim Temp As String
+Buffer.WriteLong LanPacket.LPrivateChat
+Buffer.WriteBytes PacketHeader
+Buffer.WriteInteger State
+Buffer.WriteString PChatID
+Buffer.WriteLong NumChatUsers
+
+Select Case State
+
+Case Is = 6 'requesting a list
+    '
+
+Case Is = 7 'sending a list of users
+
+    For i = 0 To UBound(Users)
+        Buffer.WriteString
+    Next i
+
 End Select
 
 PrivateChatPacket = Buffer.ToArray

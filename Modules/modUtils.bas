@@ -228,11 +228,16 @@ For i = 0 To UBound(RootPath)
 Next i
 
 If LenB(VolumeSerialNumber) < 16 Then
-    VolumeSerialNumber = CalculateAdler(VolumeSerialNumber & Environ$("USERNAME"))
+    VolumeSerialNumber = CalculateAdler(VolumeSerialNumber & Environ$("COMPUTERNAME"))
 End If
 
 If LenB(VolumeSerialNumber) < 16 Then
-    VolumeSerialNumber = CalculateAdler(VolumeSerialNumber & Environ$("COMPUTERNAME"))
+    VolumeSerialNumber = CalculateAdler(VolumeSerialNumber & Environ$("USERNAME"))
+End If
+
+
+If LenB(VolumeSerialNumber) < 16 Then
+    VolumeSerialNumber = VolumeSerialNumber & CalculateAdler(VolumeSerialNumber & App.Path)
 End If
 
 If LenB(VolumeSerialNumber) < 8 Then

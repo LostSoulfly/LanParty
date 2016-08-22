@@ -75,23 +75,26 @@ Public Sub InitMessages()
     
 End Sub
 
-Function ReadHandleDataType(ByRef Data() As Byte, ByRef UID As String) As Long
+Function ReadHandleDataType(ByRef Data() As Byte, ByRef UID As String) As Long  'read the packet as it comes in
     Dim Length As Long
-    Length = UBound(Data) - LBound(Data) - 4
-    If Length = -1 Then
-        Call CopyMemory(ReadHandleDataType, Data(0), 4)
-    ElseIf Length >= 0 Then
-        Call CopyMemory(ReadHandleDataType, Data(0), 4)
-        'Debug.Print "2:" & Data(0) & "_" & Data(4) & "_" & Data(8) & "_" & Data(12) & "_" & Data(16)
+    Length = UBound(Data) - LBound(Data) - 4                'Determine the packet's length
+    
+    If Length = -1 Then                                     'No length to the packet, so it's just a DataType?
+        Call CopyMemory(ReadHandleDataType, Data(0), 4)     'Read the DataType into ReadHAndleDataType
         
-        If ReadHandleDataType = LanPacket.LCrypted Then
-        UID = Space(8)
-        Call CopyMemoryString(UID, Data(4), 8)
+    ElseIf Length >= 0 Then
+        Call CopyMemory(ReadHandleDataType, Data(0), 4)     'Read the DataType
+        
+        If ReadHandleDataType = LanPacket.LCrypted Then     'If the DataType = LCrypted, then we must decrypt the packet for more info
+        
+        UID = Space(8)                                      'Allocate the UID (byref)
+        
+        Call CopyMemoryString(UID, Data(4), 8)              'Copy the UID from the packet into the UID variable
             'AddChat "Crypt UID: " & UID
-            Length = UBound(Data) - LBound(Data) - 12 - 1
-            Call CopyMemory(Data(0), Data(12), Length + 2)
+            Length = UBound(Data) - LBound(Data) - 12 - 1   'determine the length of the remaining data
+            Call CopyMemory(Data(0), Data(12), Length + 2)  'Move the remaining data to the beginning of the packet
         Else
-            Call CopyMemory(Data(0), Data(4), Length + 1)
+            Call CopyMemory(Data(0), Data(4), Length + 1)   'No encryption, so just copy the data portion after the DataType
         End If
         
         ReDim Preserve Data(0 To Length) 'TODO: maybe make this not -1? Is that a buffer stopper bit? Yep that worked.
@@ -103,16 +106,16 @@ Dim MsgType As Long
 Dim UID As String
 Dim intSecure As Integer
 
-    If Crypted = True Then DS2.DecryptByte Data, CryptKey
+    'If Crypted = True Then DS2.DecryptByte Data, CryptKey
 
-    MsgType = ReadHandleDataType(Data, UID)
+    MsgType = ReadHandleDataType(Data, UID)         'We retrieve the actual data as well as the UID from the packet
     
     If Settings.blDebug Then WriteLog "Packet MsgType: " & CStr(MsgType) & "(" & GetMsgTypeName(MsgType) & ")", App.Path & "\debug.txt"
     
-    If LenB(UID) > 0 Then
-        intSecure = UserIndexByUID(UID)
-        DS2.DecryptByte Data, GetMyUniqueKeyAsByte(UID) 'GetMyUniqueKeyAsByte(UID)
-        MsgType = ReadHandleDataType(Data, UID)
+    If LenB(UID) > 0 Then                               'if the UID is *something*,
+        intSecure = UserIndexByUID(UID)                 'Determine the UserIndex by the packet's UID
+        DS2.DecryptByte Data, GetMyUniqueKeyAsByte(UID) 'Decrypt the data using myuniquekey for their UID
+        MsgType = ReadHandleDataType(Data, UID)         'Process the "new" packet
         If Settings.blDebug Then WriteLog "Encrypted Packet. New MsgType: " & CStr(MsgType) & "(" & GetMsgTypeName(MsgType) & ") " & " from UID: " & UID, App.Path & "\debug.txt"
     
     End If
@@ -120,14 +123,14 @@ Dim intSecure As Integer
     If Settings.blDebug Then WriteLog "Packet: [" & StrConv(Data, vbUnicode) & "]", App.Path & "\debug.txt"
     
     If MsgType < 0 Then
-        Exit Sub
+        Exit Sub            'if DataType is not known, bail out
     End If
     
     If MsgType >= LMSG_COUNT Then
         Exit Sub
     End If
 
-    CallWindowProc HandleDataSub(MsgType), intSecure, Data, 0, 0
+    CallWindowProc HandleDataSub(MsgType), intSecure, Data, 0, 0        'Pass the data to the correct sub below!
 End Sub
 
 Private Function ExtractInfo(ByRef Data() As Byte, ByRef IP As String, ByRef HostName As String, ByRef UID As String, ByRef Buffer As clsBuffer) As Boolean
@@ -238,7 +241,7 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                 SendDataToUDP IP, AuthPacket(2, GetAppVersion)
                 
             Case Is = 2 'they recv, I skip
-                'data is flowing back and forth. Let's
+                'data is flowing back and forth.
                 Ver = Buffer.ReadString
                 UserIndex = NewUser(UserName, UID, IP, HostName)
                 If UserIndex = -1 Then AddChat "New User's name contained illegal characters: " & UserName: Set Buffer = Nothing: Exit Sub
@@ -282,12 +285,6 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                     'AddDebug "Verification complete!"
                     AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has authenticated!"
                     
-                    'AddDebug "Waiting a few seconds to send ReqAdminSync"
-                    'frmMain.tmrAdminSync.Enabled = False
-                    'frmMain.tmrAdminSync.Enabled = True
-                    'wait a few seconds for connections
-                    'and then try to sync admin lists.
-                    
                     SendCryptTo UserIndex, ReqListPacket(False): AddDebug " Sending ReqListPacket(F) to " & GetUserNameByIndex(UserIndex)
                     If HasSyncedAdmins Then SyncAllVotes UserIndex: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
                     
@@ -310,12 +307,6 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                     
                     AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has authenticated!"
                     SendCryptTo UserIndex, ReqListPacket(False): AddDebug " Sending ReqListPacket(F) to " & GetUserNameByIndex(UserIndex)
-                    
-                    'AddDebug "Waiting a few seconds to send ReqAdminSync"
-                    'frmMain.tmrAdminSync.Enabled = False
-                    'frmMain.tmrAdminSync.Enabled = True
-                    'wait a few seconds for connections
-                    'and then try to sync admin lists.
                     
                     If HasSyncedAdmins Then SyncAllVotes UserIndex: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
                     'todo:
@@ -752,7 +743,7 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
         
         SetUserIndexStatus UserIndex, True
         State = Buffer.ReadInteger
-        PChatID = DS2.DecryptString(Buffer.ReadString, User(UserIndex).MyUniqueKey)
+        PChatID = Buffer.ReadString
         NumUsers = Buffer.ReadLong
         'Text = Buffer.ReadString
         
@@ -770,7 +761,8 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
                 'should the be able to decline it?
                 
             Case Is = 2 'Pchat Message
-                Text = DS2.DecryptString(Buffer.ReadString, PChatID & User(UserIndex).MyUniqueKey)
+                'Text = DS2.DecryptString(Buffer.ReadString, PChatID & User(UserIndex).MyUniqueKey)
+                Text = Buffer.ReadString
                 AddUserPrivateChat Text, GetUserNameByIndex(UserIndex), PChatID
                 If Not NumUsers = PChatNumUsers(PChatID) Then PChatReqSyncUsers (PChatID)
                 
@@ -792,9 +784,8 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
             Case Is = 7 'we're receiving a chat userlist that we've requested
             
                 Dim i As Long, UserList() As String
-                ReDim UserList(Buffer.ReadLong)
-                
-                For i = 0 To UBound(UserList)
+                                
+                For i = 0 To UBound(NumUsers)
                     UserList(i) = Buffer.ReadString
                 Next i
                 

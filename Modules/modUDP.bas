@@ -204,18 +204,18 @@ Public Sub SendDataToUDP(ByVal IP As String, ByRef Data() As Byte)
 Dim Buffer As clsBuffer
 'Dim TempData() As Byte
 
-'On Error GoTo wut
+On Error GoTo wut
 
 If LenB(IP) = 0 Then Exit Sub
 
         Set Buffer = New clsBuffer
         'TempData = Data
         
-        DS2.EncryptByte Data, CryptKey
+        DS2.EncryptByte Data, CryptKey  'Encrypt the data with the generic key, note it's byref
         
-        Buffer.PreAllocate 4 + (UBound(Data) - LBound(Data)) + 1
-        Buffer.WriteLong (UBound(Data) - LBound(Data)) + 1
-        Buffer.WriteBytes Data()
+        Buffer.PreAllocate 4 + (UBound(Data) - LBound(Data)) + 1    'allocate the new buffer
+        Buffer.WriteLong (UBound(Data) - LBound(Data)) + 1          'write data length to buffer
+        Buffer.WriteBytes Data()                                    'write encrypted data
 
         'max UDP size:  65,507bytes
         'frmMain.sckBroadcast.Close
