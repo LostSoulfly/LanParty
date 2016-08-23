@@ -53,12 +53,23 @@ PChatNumUsers = GetPChatWindow(PChatID).GetNumUsers
 
 End Function
 
-Public Sub PChatSyncUsers(PChatID As String, UniqueID As String)
+Public Sub PChatSyncUsers(PChatID As String, UserList() As String)
+Dim i As Long
 
-If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!"
+    If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!"
+        
+    For i = 0 To UBound(UserList)
+        GetPChatWindow(PChatID).AddChatUser UserList(i)
+    Next i
+    
+    
+End Sub
 
-GetPChatWindow(PChatID).SyncPChatUsers UniqueID
+Public Sub PChatReqSyncUsers(PChatID As String, UniqueID As String)
 
+    If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!"
+    GetPChatWindow(PChatID).SyncPChatUsers UniqueID
+    
 End Sub
 
 Public Function CreatePChatWindow(PChatID As String)

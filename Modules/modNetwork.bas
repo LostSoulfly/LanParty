@@ -38,7 +38,7 @@ End Enum
 
 Public CryptKey() As Byte
 
-Private BeaconCount As Integer
+Private BeaconCount As Long
 
 Public HandleDataSub(LMSG_COUNT) As Long
 
@@ -363,7 +363,6 @@ Private Sub HandleBeacon(ByVal Index As Long, ByRef Data() As Byte, ByVal StartA
     Dim UID As String
     Dim UserIndex As Integer
     Dim UserName As String
-    Dim UserCount As Integer
     Dim VoteCount As Long
     'Dim AuthCode As String
 
@@ -415,7 +414,6 @@ Private Sub HandleChangeName(ByVal Index As Long, ByRef Data() As Byte, ByVal St
     Dim UID As String
     Dim UserIndex As Integer
     Dim UserName As String
-    'Dim UserCount As Integer
     'Dim AuthCode As String
 
     If ExtractInfo(Data(), IP, HostName, UID, Buffer) Then Set Buffer = Nothing: Exit Sub
@@ -513,7 +511,6 @@ On Error GoTo Escape
     Dim Option4 As String
     Dim TempUID As String
     Dim i As Long
-    Dim ii As Integer
     
     If ExtractInfo(Data(), IP, HostName, UID, Buffer) Then Set Buffer = Nothing: Exit Sub
     'AuthCode = Buffer.ReadString
@@ -755,7 +752,7 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
                 GetPChatWindow(PChatID).AddChatUser User(UserIndex).UniqueID
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has joined the chat.", "System", PChatID
                 GetPChatWindow(PChatID).RequestChat (UserIndex)
-                If Not NumUsers = PChatNumUsers(PChatID) Then PChatReqSyncUsers (PChatID)
+                If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
                 'need to do something with the userindex
                 'how does the chatter know who requested it?
                 'should the be able to decline it?
@@ -764,7 +761,7 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
                 'Text = DS2.DecryptString(Buffer.ReadString, PChatID & User(UserIndex).MyUniqueKey)
                 Text = Buffer.ReadString
                 AddUserPrivateChat Text, GetUserNameByIndex(UserIndex), PChatID
-                If Not NumUsers = PChatNumUsers(PChatID) Then PChatReqSyncUsers (PChatID)
+                If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
                 
             Case Is = 3 'PChat Leaving
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has left the chat.", "System", PChatID
@@ -773,23 +770,23 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
             Case Is = 4
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has joined the chat.", "System", PChatID
                 If PChatWindowExists(PChatID) Then GetPChatWindow(PChatID).AddChatUser User(UserIndex).UniqueID
-                If Not NumUsers = PChatNumUsers(PChatID) Then PChatReqSyncUsers (PChatID)
+                If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
                 
             Case Is = 5
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has declined the offer.", "System", PChatID
 
             Case Is = 6 'We have a request to sync the chat's userlist
-                PChatSyncUsers PChatID
+                PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
                 
             Case Is = 7 'we're receiving a chat userlist that we've requested
             
                 Dim i As Long, UserList() As String
                                 
-                For i = 0 To UBound(NumUsers)
+                For i = 0 To NumUsers
                     UserList(i) = Buffer.ReadString
                 Next i
                 
-                PChatReqSyncUsers PChatID, UserList
+                PChatSyncUsers PChatID, UserList
                 
         End Select
 
@@ -805,9 +802,7 @@ Private Sub HandleReqList(ByVal Index As Long, ByRef Data() As Byte, ByVal Start
     Dim UID As String
     Dim UserIndex As Integer
     Dim State As Integer
-    Dim Users As Integer
     Dim TempUser As LanUser
-    Dim TempIndex As Integer
     
     If ExtractInfo(Data(), IP, HostName, UID, Buffer) Then Set Buffer = Nothing: Exit Sub
     'AuthCode = Buffer.ReadString
@@ -876,9 +871,7 @@ Private Sub HandleSyncAdmin(ByVal Index As Long, ByRef Data() As Byte, ByVal Sta
     Dim UID As String
     Dim UserIndex As Integer
     Dim State As Integer
-    Dim Users As Integer
     Dim TempUser As LanUser
-    Dim TempIndex As Integer
     
     If ExtractInfo(Data(), IP, HostName, UID, Buffer) Then Set Buffer = Nothing: Exit Sub
     'AuthCode = Buffer.ReadString
@@ -1064,7 +1057,6 @@ Private Sub HandlePong(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
     Dim UID As String
     Dim UserIndex As Integer
     Dim UserName As String
-    Dim UserCount As Integer
     Dim VoteCount As Long
     'Dim AuthCode As String
 
@@ -1110,7 +1102,6 @@ Private Sub HandlePing(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
     Dim UID As String
     Dim UserIndex As Integer
     Dim UserName As String
-    Dim UserCount As Integer
     Dim VoteCount As Long
     'Dim AuthCode As String
 

@@ -4,3 +4,5 @@
 *.db
 *.obj
 Other/
+debug.txt
+Settings.txt

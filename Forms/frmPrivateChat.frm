@@ -4,12 +4,19 @@ Begin VB.Form frmPrivateChat
    ClientHeight    =   3135
    ClientLeft      =   165
    ClientTop       =   810
-   ClientWidth     =   6855
+   ClientWidth     =   8745
    Icon            =   "frmPrivateChat.frx":0000
    LinkTopic       =   "Form1"
    ScaleHeight     =   3135
-   ScaleWidth      =   6855
+   ScaleWidth      =   8745
    StartUpPosition =   3  'Windows Default
+   Begin VB.ListBox lstUsers 
+      Height          =   2595
+      Left            =   6840
+      TabIndex        =   6
+      Top             =   120
+      Width           =   1815
+   End
    Begin VB.Frame frameInvite 
       BorderStyle     =   0  'None
       Height          =   3255
@@ -74,13 +81,11 @@ Begin VB.Form frmPrivateChat
       Begin VB.Menu mnuLog 
          Caption         =   "Save Private Chat Log"
       End
+      Begin VB.Menu mnuShowUserList 
+         Caption         =   "Show User List"
+      End
       Begin VB.Menu mnuInvite 
          Caption         =   "Invite Users"
-         Enabled         =   0   'False
-         Begin VB.Menu mnuUser 
-            Caption         =   "UserName"
-            Index           =   0
-         End
       End
       Begin VB.Menu mnuLeave 
          Caption         =   "Leave Chat"
@@ -120,12 +125,13 @@ Public Function GetNumUsers() As Long
 End Function
 
 Public Sub SyncPChatUsers(UniqueID As String)
-SendChat "", 7
+SendChatUserList UniqueID
 'todo: fix
 End Sub
 
 Private Sub Form_Load()
 ReDim Users(0)
+ReDim MenuIndex(0)
 txtChat.ForeColor = Settings.ChatTextColor
 txtChat.BackColor = Settings.ChatBGColor
 txtChat.FontSize = Settings.ChatTextSize
@@ -144,7 +150,6 @@ lblInvite.Caption = GetUserNameByIndex(UserIndex) & " wants to initiate a privat
 End Sub
 
 Private Sub SendChat(Text As String, Optional State As Integer = 2)
-Dim i As Integer
 Dim UserIndex As Integer
 
 For i = 1 To UBound(Users)
@@ -213,34 +218,42 @@ If ChatLen > 65000 Then
         txtChat.Text = ""
     End If
 Else
-    txtChat.SelStart = Len(txtChat.Text) - 1
+    txtChat.SelStart = ChatLen - 1
 End If
     
 End Sub
 
 Public Sub AddChatUser(UniqueID As String)
-Dim i As Integer
 Dim UserIndex As Integer
 
-UserIndex = -1
+If Not Len(UniqueID) = 8 Then Exit Sub
+
+ChatIndex = -1
 For i = 1 To UBound(Users)
 
     If Users(i) = vbNullString Then
-        UserIndex = i
+        ChatIndex = i
         Exit For
     End If
 Next i
 
-If UserIndex = -1 Then
-    ReDim Users(UBound(Users) + 1)
-    UserIndex = UBound(Users)
+If ChatIndex = -1 Then
+    ReDim Preserve Users(UBound(Users) + 1)
+    ChatIndex = UBound(Users)
 End If
 
-Users(UserIndex) = UniqueID
+Users(ChatIndex) = UniqueID
+
+If GetChatIndex = -1 Then
+    lstUsers.AddItem GetUserName(UniqueID)
+    lstUsers.ItemData(lstUsers.ListCount) = UserIndex
+Else
+    AddChat UniqueID & " already exists in the chat list?", "ERROR"
+End If
+
 End Sub
 
 Public Sub RemoveChatUser(UniqueID As String)
-Dim i As Integer
 Dim UserIndex As Integer
 
 UserIndex = -1
@@ -252,10 +265,33 @@ For i = 1 To UBound(Users)
     End If
 Next i
 
+Users(ChatIndex) = UniqueID
+
+If GetChatIndex = -1 Then
+    lstUsers.RemoveItem getchatindex( GetUserName(UniqueID)
+    lstUsers.ItemData(lstUsers.ListCount) = UserIndex
+Else
+    AddChat UniqueID & " already exists in the chat list?", "ERROR"
+End If
+
 If UBound(Users) <= 1 And frameInvite.Visible = True Then DoEvents: Unload Me
 
 End Sub
 
+Private Function GetChatIndex(UserIndex As Integer) As Long
+
+Dim i As Long
+
+For i = 0 To lstUsers.ListCount - 1
+    If lstUsers.ItemData(i) = UserIndex Then
+        GetChatIndex = i
+        Exit Function
+    End If
+Next i
+
+GetChatIndex = -1
+
+End Function
 Private Sub txtEnter_KeyDown(KeyCode As Integer, Shift As Integer)
 
     If KeyCode = 13 Then

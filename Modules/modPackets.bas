@@ -101,7 +101,7 @@ Set Buffer = Nothing
 
 End Function
 
-Public Function PrivateChatUserListPacket(State As Integer, NumChatUsers As Long, RemoteKey As String, PChatID As String, Users() As String) As Byte()
+Public Function PrivateChatUserListPacket(State As Integer, NumChatUsers As Long, RemoteKey As String, PChatID As String, UserList() As String) As Byte()
 Dim Buffer As New clsBuffer
 Set Buffer = New clsBuffer
 Dim Temp As String
@@ -118,13 +118,13 @@ Case Is = 6 'requesting a list
 
 Case Is = 7 'sending a list of users
 
-    For i = 0 To UBound(Users)
-        Buffer.WriteString
+    For i = 0 To UBound(UserList)
+        Buffer.WriteString UserList(i)
     Next i
 
 End Select
 
-PrivateChatPacket = Buffer.ToArray
+PrivateChatUserListPacket = Buffer.ToArray
 
 Set Buffer = Nothing
 
@@ -208,7 +208,7 @@ If SendList Then
     'we're generating a list packet to send to the remote client
     Buffer.WriteInteger 2
     Buffer.WriteInteger GetUserCount
-    Dim i As Integer
+    Dim i As Long
     For i = 1 To UBound(User)
         If Not LenB(User(i).UniqueID$) = 0 Then
             Buffer.WriteString User(i).UniqueID
@@ -268,7 +268,7 @@ Set Buffer = Nothing
 
 End Function
 
-Public Function VotePacket(VoteID As String, Vote As Integer) As Byte()
+Public Function VotePacket(VoteID As String, Vote As Long) As Byte()
 Dim Buffer As New clsBuffer
 Set Buffer = New clsBuffer
 
@@ -347,7 +347,7 @@ Public Function VoteSyncPacket(VoteID As String) As Byte()
 Dim Buffer As New clsBuffer
 Set Buffer = New clsBuffer
 Dim VoteIndex As Long
-Dim i As Integer
+Dim i As Long
 
 Buffer.WriteLong LanPacket.LVote
 Buffer.WriteBytes PacketHeader
@@ -405,8 +405,8 @@ End Function
 
 Public Function AdminSyncPacket() As Byte()
 Dim Buffer As New clsBuffer
-Dim i As Integer
-Dim AdminCount As Integer
+Dim i As Long
+Dim AdminCount As Long
 Set Buffer = New clsBuffer
 
 Buffer.WriteLong LanPacket.LSyncAdmin
