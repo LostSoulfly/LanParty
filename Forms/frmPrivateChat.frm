@@ -165,8 +165,7 @@ Private Sub SendChatUserList(UID As String)
 Dim UserIndex As Integer
 UserIndex = UserIndexByUID(UID)
 
-If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatPacket(State, GetNumUsers, User(UserIndex).UniqueKey, Me.Tag, Text)
-'todo: fix
+If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatUserListPacket(7, GetNumUsers, User(UserIndex).UniqueKey, Me.Tag, Users)
 
 End Sub
 

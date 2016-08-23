@@ -364,6 +364,7 @@ Private Sub HandleBeacon(ByVal Index As Long, ByRef Data() As Byte, ByVal StartA
     Dim UserIndex As Integer
     Dim UserName As String
     Dim VoteCount As Long
+    Dim UserCount As Integer
     'Dim AuthCode As String
 
     If ExtractInfo(Data(), IP, HostName, UID, Buffer) Then Set Buffer = Nothing: Exit Sub
@@ -510,7 +511,8 @@ On Error GoTo Escape
     Dim Option3 As String
     Dim Option4 As String
     Dim TempUID As String
-    Dim i As Long
+    Dim i As Integer
+    Dim ii As Integer
     
     If ExtractInfo(Data(), IP, HostName, UID, Buffer) Then Set Buffer = Nothing: Exit Sub
     'AuthCode = Buffer.ReadString
@@ -803,6 +805,8 @@ Private Sub HandleReqList(ByVal Index As Long, ByRef Data() As Byte, ByVal Start
     Dim UserIndex As Integer
     Dim State As Integer
     Dim TempUser As LanUser
+    Dim intUsers As Integer
+    Dim TempIndex As Integer
     
     If ExtractInfo(Data(), IP, HostName, UID, Buffer) Then Set Buffer = Nothing: Exit Sub
     'AuthCode = Buffer.ReadString
@@ -844,8 +848,8 @@ Private Sub HandleReqList(ByVal Index As Long, ByRef Data() As Byte, ByVal Start
             
             Dim i As Long
             AddDebug "Receiving ReqList response from " & GetUserNameByIndex(UserIndex)
-            Users = Buffer.ReadInteger
-            For i = 1 To Users 'todo: FIX ME IF BROKE
+            intUsers = Buffer.ReadInteger
+            For i = 1 To intUsers
                 TempUser.UniqueID = Buffer.ReadString
                 TempUser.IP = Buffer.ReadString
                 'TempUser.LanAdmin = Buffer.ReadByte
@@ -872,6 +876,7 @@ Private Sub HandleSyncAdmin(ByVal Index As Long, ByRef Data() As Byte, ByVal Sta
     Dim UserIndex As Integer
     Dim State As Integer
     Dim TempUser As LanUser
+    Dim intUsers As Integer
     
     If ExtractInfo(Data(), IP, HostName, UID, Buffer) Then Set Buffer = Nothing: Exit Sub
     'AuthCode = Buffer.ReadString
@@ -909,9 +914,9 @@ Private Sub HandleSyncAdmin(ByVal Index As Long, ByRef Data() As Byte, ByVal Sta
                 frmMain.tmrAdmins.Enabled = False
                 Dim i As Long
                 AddDebug "Now Receiving AdminSyncPacket from " & GetUserNameByIndex(UserIndex) & ".."
-                Users = Buffer.ReadInteger
+                intUsers = Buffer.ReadInteger
                 
-                For i = 1 To Users
+                For i = 1 To intUsers
                     modAdmin.AddToAdminList UserIndex, Buffer.ReadString
                 Next
                 
@@ -1058,6 +1063,7 @@ Private Sub HandlePong(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
     Dim UserIndex As Integer
     Dim UserName As String
     Dim VoteCount As Long
+    Dim UserCount As Integer
     'Dim AuthCode As String
 
     If ExtractInfo(Data(), IP, HostName, UID, Buffer) Then Set Buffer = Nothing: Exit Sub
@@ -1103,6 +1109,7 @@ Private Sub HandlePing(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
     Dim UserIndex As Integer
     Dim UserName As String
     Dim VoteCount As Long
+    Dim UserCount As Integer
     'Dim AuthCode As String
 
     If ExtractInfo(Data(), IP, HostName, UID, Buffer) Then Set Buffer = Nothing: Exit Sub
