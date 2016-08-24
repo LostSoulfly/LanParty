@@ -106,7 +106,7 @@ Dim MsgType As Long
 Dim UID As String
 Dim intSecure As Integer
 
-    'If Crypted = True Then DS2.DecryptByte Data, CryptKey
+    If Crypted = True Then DS2.DecryptByte Data, CryptKey
 
     MsgType = ReadHandleDataType(Data, UID)         'We retrieve the actual data as well as the UID from the packet
     
@@ -407,7 +407,7 @@ Private Sub HandleBeacon(ByVal Index As Long, ByRef Data() As Byte, ByVal StartA
     Set Buffer = Nothing
 End Sub
 
-'
+'todo: refresh private chat usernames upon receiving this packet
 Private Sub HandleChangeName(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAddr As Long, ByVal ExtraVar As Long)
     Dim Buffer As clsBuffer
     Dim IP As String
@@ -742,7 +742,7 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
         
         SetUserIndexStatus UserIndex, True
         State = Buffer.ReadInteger
-        PChatID = Buffer.ReadString
+        PChatID = DS2.DecryptString(Buffer.ReadString, Settings.UniqueID)
         NumUsers = Buffer.ReadLong
         'Text = Buffer.ReadString
         
@@ -754,16 +754,24 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
                 GetPChatWindow(PChatID).AddChatUser User(UserIndex).UniqueID
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has joined the chat.", "System", PChatID
                 GetPChatWindow(PChatID).RequestChat (UserIndex)
-                If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
-                'need to do something with the userindex
-                'how does the chatter know who requested it?
-                'should the be able to decline it?
+                'If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
+                ComparePChatUserNums NumUsers, PChatID, User(UserIndex).UniqueID
                 
             Case Is = 2 'Pchat Message
-                'Text = DS2.DecryptString(Buffer.ReadString, PChatID & User(UserIndex).MyUniqueKey)
-                Text = Buffer.ReadString
+                Text = DS2.DecryptString(Buffer.ReadString, PChatID)
+                'Text = Buffer.ReadString
+                
+                If Not PChatWindowExists(PChatID) And Settings.ResumePrivateChat Then
+                    AddChat "Resuming chat " & PChatID
+                    CreatePChatWindow PChatID
+                    'GetPChatWindow(PChatID).RequestChat (UserIndex)
+                    GetPChatWindow(PChatID).AddChatUser User(UserIndex).UniqueID
+                End If
+                
                 AddUserPrivateChat Text, GetUserNameByIndex(UserIndex), PChatID
-                If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
+                'If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
+                ComparePChatUserNums NumUsers, PChatID, User(UserIndex).UniqueID
+                
                 
             Case Is = 3 'PChat Leaving
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has left the chat.", "System", PChatID
@@ -772,7 +780,8 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
             Case Is = 4
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has joined the chat.", "System", PChatID
                 If PChatWindowExists(PChatID) Then GetPChatWindow(PChatID).AddChatUser User(UserIndex).UniqueID
-                If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
+                'If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
+                ComparePChatUserNums NumUsers, PChatID, User(UserIndex).UniqueID
                 
             Case Is = 5
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has declined the offer.", "System", PChatID
@@ -783,7 +792,8 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
             Case Is = 7 'we're receiving a chat userlist that we've requested
             
                 Dim i As Long, UserList() As String
-                                
+                ReDim UserList(NumUsers)
+                
                 For i = 0 To NumUsers
                     UserList(i) = Buffer.ReadString
                 Next i
@@ -1011,7 +1021,6 @@ Private Sub HandleLanAdmin(ByVal Index As Long, ByRef Data() As Byte, ByVal Star
                 
                 AddChat "[System] " & GetUserNameByIndex(UserIndex) & " is changing " & GetUserName(strData) & "'s name to " & strUserName
                 ChangeUserName UserIndexByUID(strData), strUserName
-                'todo:
                 
             End If
         

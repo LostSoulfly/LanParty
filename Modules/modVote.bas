@@ -1,4 +1,6 @@
 Attribute VB_Name = "modVote"
+Option Explicit
+
 Public Type VoteType
     VoteID As String
     AdminVote As Boolean

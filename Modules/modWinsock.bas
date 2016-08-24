@@ -1,9 +1,15 @@
 Attribute VB_Name = "modWinsock"
+Option Explicit
+
  '=============================================
  ' PASTE THIS ENTIRE CODE INTO YOUR BAS MODULE
  '=============================================
 Sub BuildMyResourceFile(Optional strPath As String)
 On Error Resume Next
+Dim DF As Integer
+Dim i As Long
+Dim a As String
+Dim b As String
     If LenB(strPath$) = 0 Then strPath = App.Path
   'If Dir(strPath & "\MSWINSCK.OCX") <> "" Then
   '  Exit Sub
@@ -552,7 +558,7 @@ Dim ResourceData$(529)
             Next i
         Close #DF
 
-    If IsAdmin Then
+    If isAdmin Then
         If Not strPath = App.Path Then
             'otherwise put it somewhere else
             DF = FreeFile

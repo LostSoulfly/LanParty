@@ -1,4 +1,6 @@
 Attribute VB_Name = "modUtils"
+Option Explicit
+
 Private Declare Function GetVolumeSerialNumber Lib "kernel32" Alias "GetVolumeInformationA" (ByVal lpRootPathName As String, ByVal lpVolumeNameBuffer As String, ByVal nVolumeNameSize As Long, lpVolumeSerialNumber As Long, lpMaximumComponentLength As Long, lpFileSystemFlags As Long, ByVal lpFileSystemNameBuffer As String, ByVal nFileSystemNameSize As Long) As Long
 Public Declare Function IsUserAnAdmin Lib "shell32" Alias "#680" () As Integer
 Public Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
@@ -7,9 +9,6 @@ Public Declare Function ShellExecute Lib "shell32.dll" Alias _
 ByVal lpFile As String, ByVal lpParameters As String, _
 ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 
-'You need 2 command buttons 'cmdToggle' and 'cmdCheck'
- 
-Option Explicit
  
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" _
     (ByVal hwnd As Long, ByVal nIndex As Long) As Long
@@ -379,24 +378,6 @@ If Settings.blDebug = False Then Exit Sub
     End If
 End Sub
 
-Public Sub AddUserPrivateChat(Text As String, Name As String, PChatID As String)
-
-        If PChatWindowExists(PChatID) Then
-            GetPChatWindow(PChatID).AddChat Text, Name
-        Else
-            AddDebug "PChat rec without a window: " & PChatID
-        End If
-End Sub
-
-Public Sub AddUserChat(Text As String, Name As String, Optional EnhSec As Boolean)
-    'If frmChat.Visible = True Then
-    
-    If EnhSec = True Then
-        frmChat.txtChat.Text = frmChat.txtChat.Text & "<" & Name & "> " & Text & vbCrLf
-    Else
-        frmChat.txtChat.Text = frmChat.txtChat.Text & "[" & Name & "] " & Text & vbCrLf
-    End If
-End Sub
 
 Public Sub AddChat(Text As String)
     'If frmChat.Visible = True Then

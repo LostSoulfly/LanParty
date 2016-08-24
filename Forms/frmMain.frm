@@ -303,10 +303,6 @@ Private arrResources() As String
 
 Private Sub Form_Load()
 
-'also look into adding in icons next to user names showing the game they're currently playing.
-'Maybe someday I will implement this.
-'Maybe RichTextBox, too, with clickable links.
-
 'load and apply settings from the udt
 RefreshSettings
 Me.Height = Settings.MainWindowHeight
@@ -324,10 +320,8 @@ CheckInstalled
 DoEvents
 mnuUser.Visible = False
 'todo: enable for builds
-'If Settings.blDebug = Fals Then WheelHook Me.hwnd
-WheelHook Me.hwnd
-'mnuNormal_Click
-'Call Form_Resize
+'CRASHES on breakpoints often
+'WheelHook Me.hwnd
 
 InitializeUsers
 Me.Caption = "LanParty Launcher v" & App.Major & "." & App.Minor & "." & App.Revision
@@ -908,7 +902,7 @@ BroadcastUDP BeaconPacket
 '    Next i
 'End If
 
-tmrBeacon.Interval = DS2.PRNG(10, 30) * 1000
+tmrBeacon.Interval = DS2.PRNG(1, 10) * 1000
 End Sub
 
 'Private Sub Timer1_Timer()

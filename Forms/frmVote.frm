@@ -79,7 +79,7 @@ Attribute VB_Exposed = False
 Private Sub cmdAccept_Click()
 'send vote packet to all
 'no verification :(
-Dim Vote As Long
+Dim Vote As Integer
 Dim VoteIndex As Long
 
 If Option1.Value = True Then Vote = 1

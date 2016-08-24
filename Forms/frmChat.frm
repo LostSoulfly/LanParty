@@ -59,6 +59,13 @@ Option Explicit
 'lstvUsers.ListItems(1).Icon = 1
 'End Sub
 
+'possible todos:
+'Allow creation of custom PChatIDs to simplify chats and invites
+'Make a right-click menu on frmChat for users that lists their own open chat windows (based on window's PChatIDs)
+'Allow chatrooms to change their PChatID (me.tag), but must update each user? Nah, don't do this.
+'
+
+
 Private Sub Form_GotFocus()
     txtEnter.SetFocus
 End Sub
@@ -114,7 +121,7 @@ If UserIndex = -1 Then Exit Sub
     CreatePChatWindow strKey  'Create the new chat window with the ID, then invite the remote user.
     GetPChatWindow(strKey).AddChatUser User(UserIndex).UniqueID
     AddUserPrivateChat "Sending invite to " & GetUserNameByIndex(UserIndex) & ", please wait..", "System", strKey
-    SendCryptTo UserIndex, PrivateChatPacket(1, 0, User(UserIndex).UniqueKey, strKey, "")
+    SendCryptTo UserIndex, PrivateChatPacket(1, 0, User(UserIndex).UniqueID, strKey, "")
 End Sub
 
 Private Sub lstUsers_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
@@ -228,6 +235,9 @@ If KeyAscii = 13 Then
     Case "pm", "whisper"
         AddChat "[System] Meh. Just double click on their name to open a window."
     
+    Case "killchat", "killchats", "closechats", "closeallchats"
+        RemoveAllPChatWindows
+        
     Case "exit", "quit"
         frmMain.DoExit
     

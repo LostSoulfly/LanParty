@@ -1,4 +1,6 @@
 Attribute VB_Name = "modUDP"
+Option Explicit
+
 Global Const UDPClientPort = 21968
 
 Public bCryptHeader() As Byte

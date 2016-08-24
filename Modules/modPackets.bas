@@ -1,4 +1,7 @@
 Attribute VB_Name = "modPackets"
+Option Explicit
+
+
 Public Function BuildGeneric(PacketNum As Long, Data As String) As Byte()
 Dim Buffer As New clsBuffer
 Set Buffer = New clsBuffer
@@ -80,7 +83,7 @@ Dim Temp As String
 Buffer.WriteLong LanPacket.LPrivateChat
 Buffer.WriteBytes PacketHeader
 Buffer.WriteInteger State
-Buffer.WriteString PChatID
+Buffer.WriteString DS2.EncryptString(PChatID, RemoteKey)
 Buffer.WriteLong NumChatUsers
 
 'not tested
@@ -91,8 +94,8 @@ Buffer.WriteLong NumChatUsers
 Select Case State
 
 Case Is = 2
-    'Buffer.WriteString DS2.EncryptString(Text, PChatID & RemoteKey)    'useless encryption..
-    Buffer.WriteString Text
+    Buffer.WriteString DS2.EncryptString(Text, PChatID)
+    'Buffer.WriteString Text
 End Select
 
 PrivateChatPacket = Buffer.ToArray
@@ -105,10 +108,11 @@ Public Function PrivateChatUserListPacket(State As Integer, NumChatUsers As Long
 Dim Buffer As New clsBuffer
 Set Buffer = New clsBuffer
 Dim Temp As String
+Dim i As Integer
 Buffer.WriteLong LanPacket.LPrivateChat
 Buffer.WriteBytes PacketHeader
 Buffer.WriteInteger State
-Buffer.WriteString PChatID
+Buffer.WriteString DS2.EncryptString(PChatID, RemoteKey)
 Buffer.WriteLong NumChatUsers
 
 Select Case State
@@ -268,7 +272,7 @@ Set Buffer = Nothing
 
 End Function
 
-Public Function VotePacket(VoteID As String, Vote As Long) As Byte()
+Public Function VotePacket(VoteID As String, Vote As Integer) As Byte()
 Dim Buffer As New clsBuffer
 Set Buffer = New clsBuffer
 

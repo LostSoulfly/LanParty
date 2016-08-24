@@ -97,7 +97,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-Private Users() As String
+Private ChatUsers() As String
 
 Private Sub cmdAccept_Click()
 frameInvite.Visible = False
@@ -114,24 +114,23 @@ Unload Me
     
 End Sub
 
-Public Function GetNumUsers() As Long
+Public Function GetNumChatUsers() As Long
 
     Dim i As Long
     
-    For i = 0 To UBound(Users)
-        If Len(Users(i)) = 8 Then GetNumUsers = GetNumUsers + 1
+    For i = 0 To UBound(ChatUsers)
+        If Len(ChatUsers(i)) = 8 Then GetNumChatUsers = GetNumChatUsers + 1
     Next i
+'If GetNumChatUsers = 0 Then GetNumChatUsers = 1
 
 End Function
 
 Public Sub SyncPChatUsers(UniqueID As String)
-SendChatUserList UniqueID
-'todo: fix
+    SendChatUserList UniqueID
 End Sub
 
 Private Sub Form_Load()
-ReDim Users(0)
-ReDim MenuIndex(0)
+ReDim ChatUsers(0)
 txtChat.ForeColor = Settings.ChatTextColor
 txtChat.BackColor = Settings.ChatBGColor
 txtChat.FontSize = Settings.ChatTextSize
@@ -151,21 +150,24 @@ End Sub
 
 Private Sub SendChat(Text As String, Optional State As Integer = 2)
 Dim UserIndex As Integer
+Dim blDidSend As Boolean
 
-For i = 1 To UBound(Users)
-    If LenB(Users(i)) > 0 Then
-        UserIndex = UserIndexByUID(Users(i))
-            If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatPacket(State, GetNumUsers, User(UserIndex).UniqueKey, Me.Tag, Text)
+For i = 1 To UBound(ChatUsers)
+    If LenB(ChatUsers(i)) > 0 Then
+        UserIndex = UserIndexByUID(ChatUsers(i))
+            If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatPacket(State, GetNumChatUsers, User(UserIndex).UniqueID, Me.Tag, Text): blDidSend = True
     End If
 Next i
+
+If Not blDidSend Then AddChat "Your message echoes endlessly into the void..", "Nobody"
 
 End Sub
 
 Private Sub SendChatUserList(UID As String)
 Dim UserIndex As Integer
 UserIndex = UserIndexByUID(UID)
-
-If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatUserListPacket(7, GetNumUsers, User(UserIndex).UniqueKey, Me.Tag, Users)
+AddDebug "Sending PrivateChatUserListPacket 7 of PChat" & Me.Tag & " to: " & UID
+If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatUserListPacket(7, GetNumChatUsers, User(UserIndex).UniqueID, Me.Tag, ChatUsers)
 
 End Sub
 
@@ -196,11 +198,11 @@ End Sub
 Private Sub mnuLog_Click()
 Dim strUsers As String
 
-For i = 1 To UBound(Users)
-    If Len(Users(i)) = 8 Then
-    'UserIndex = UserIndexByUID(Users(i))
-    If Len(strUsers) = 0 Then strUsers = GetUserName(Users(i))
-        strUsers = strUsers & " - " & GetUserName(Users(i))
+For i = 1 To UBound(ChatUsers)
+    If Len(ChatUsers(i)) = 8 Then
+    'UserIndex = UserIndexByUID(ChatUsers(i))
+    If Len(strUsers) = 0 Then strUsers = GetUserName(ChatUsers(i))
+        strUsers = strUsers & " - " & GetUserName(ChatUsers(i))
     End If
 Next i
 
@@ -223,29 +225,31 @@ End If
 End Sub
 
 Public Sub AddChatUser(UniqueID As String)
-Dim UserIndex As Integer
+Dim ChatIndex As Integer
+Dim i As Integer
 
 If Not Len(UniqueID) = 8 Then Exit Sub
 
-ChatIndex = -1
-For i = 1 To UBound(Users)
-
-    If Users(i) = vbNullString Then
-        ChatIndex = i
-        Exit For
-    End If
-Next i
+ChatIndex = GetChatIndexFromUID(UniqueID)
 
 If ChatIndex = -1 Then
-    ReDim Preserve Users(UBound(Users) + 1)
-    ChatIndex = UBound(Users)
-End If
-
-Users(ChatIndex) = UniqueID
-
-If GetChatIndex = -1 Then
+    For i = 1 To UBound(ChatUsers)
+    
+        If ChatUsers(i) = vbNullString Then
+            ChatIndex = i
+            Exit For
+        End If
+    Next i
+    
+    If ChatIndex = -1 Then
+        ReDim Preserve ChatUsers(UBound(ChatUsers) + 1)
+        ChatIndex = UBound(ChatUsers)
+    End If
+    
     lstUsers.AddItem GetUserName(UniqueID)
-    lstUsers.ItemData(lstUsers.ListCount) = UserIndex
+    lstUsers.ItemData(lstUsers.ListCount - 1) = ChatIndex
+    
+    ChatUsers(ChatIndex) = UniqueID
 Else
     AddChat UniqueID & " already exists in the chat list?", "ERROR"
 End If
@@ -253,42 +257,39 @@ End If
 End Sub
 
 Public Sub RemoveChatUser(UniqueID As String)
-Dim UserIndex As Integer
 
-UserIndex = -1
-For i = 1 To UBound(Users)
+For i = 1 To UBound(ChatUsers)
 
-    If Users(i) = UniqueID Then
-        Users(i) = vbNullString
+    If ChatUsers(i) = UniqueID Then
+        ChatUsers(i) = vbNullString
         Exit For
     End If
 Next i
 
-Users(ChatIndex) = UniqueID
-
-If GetChatIndex = -1 Then
-    lstUsers.RemoveItem getchatindex( GetUserName(UniqueID)
-    lstUsers.ItemData(lstUsers.ListCount) = UserIndex
+If GetChatIndexFromUID(UniqueID) > -1 Then
+    lstUsers.RemoveItem GetChatIndexFromUID(UniqueID)
+    'lstUsers.ItemData(lstUsers.ListCount) = UserIndex
 Else
-    AddChat UniqueID & " already exists in the chat list?", "ERROR"
+    AddChat UniqueID & " doesn't exist in the chat?", "ERROR"
 End If
 
-If UBound(Users) <= 1 And frameInvite.Visible = True Then DoEvents: Unload Me
+If UBound(ChatUsers) <= 1 And frameInvite.Visible = True Then DoEvents: Unload Me
 
 End Sub
 
-Private Function GetChatIndex(UserIndex As Integer) As Long
+Private Function GetChatIndexFromUID(UID As String) As Long
 
 Dim i As Long
 
 For i = 0 To lstUsers.ListCount - 1
-    If lstUsers.ItemData(i) = UserIndex Then
-        GetChatIndex = i
+    If IsNumeric(lstUsers.ItemData(i)) Then
+        'ChatUsers(lstUsers.ItemData(i)) = UID
+        GetChatIndexFromUID = i
         Exit Function
     End If
 Next i
 
-GetChatIndex = -1
+GetChatIndexFromUID = -1
 
 End Function
 Private Sub txtEnter_KeyDown(KeyCode As Integer, Shift As Integer)

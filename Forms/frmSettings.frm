@@ -3,7 +3,7 @@ Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
 Begin VB.Form frmSettings 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Settings"
-   ClientHeight    =   3495
+   ClientHeight    =   3750
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   9975
@@ -11,7 +11,7 @@ Begin VB.Form frmSettings
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3495
+   ScaleHeight     =   3750
    ScaleWidth      =   9975
    StartUpPosition =   1  'CenterOwner
    Begin VB.Frame Frame4 
@@ -19,7 +19,7 @@ Begin VB.Form frmSettings
       Height          =   1095
       Left            =   3720
       TabIndex        =   25
-      Top             =   2280
+      Top             =   2520
       Width           =   3135
       Begin VB.CommandButton cmdReset 
          Caption         =   "Reset"
@@ -129,7 +129,7 @@ Begin VB.Form frmSettings
       Height          =   615
       Left            =   7080
       TabIndex        =   16
-      Top             =   2160
+      Top             =   2520
       Width           =   2775
    End
    Begin VB.Frame Frame3 
@@ -185,7 +185,7 @@ Begin VB.Form frmSettings
    End
    Begin VB.Frame Frame2 
       Caption         =   "LanParty Options"
-      Height          =   3255
+      Height          =   3495
       Left            =   120
       TabIndex        =   20
       Top             =   120
@@ -286,11 +286,20 @@ Begin VB.Form frmSettings
    End
    Begin VB.Frame Frame1 
       Caption         =   "LanChat Options"
-      Height          =   2055
+      Height          =   2415
       Left            =   3720
       TabIndex        =   19
       Top             =   120
       Width           =   3135
+      Begin VB.CheckBox chkResumePrivateChat 
+         Caption         =   "Resume Private Chats"
+         Height          =   195
+         Left            =   120
+         TabIndex        =   39
+         ToolTipText     =   "If you receive an unsolicited Private Chat message a new window will be opened, displaying it."
+         Top             =   2040
+         Width           =   2895
+      End
       Begin VB.CheckBox chkShowStatus 
          Caption         =   "Show User's Status Next To Name"
          Height          =   195
@@ -340,7 +349,7 @@ Begin VB.Form frmSettings
       Height          =   495
       Left            =   6960
       TabIndex        =   17
-      Top             =   2880
+      Top             =   3120
       Width           =   1455
    End
    Begin VB.CommandButton cmdSave 
@@ -348,7 +357,7 @@ Begin VB.Form frmSettings
       Height          =   495
       Left            =   8400
       TabIndex        =   18
-      Top             =   2880
+      Top             =   3120
       Width           =   1455
    End
 End
@@ -496,6 +505,7 @@ chkDisableLan.Value = IIf(Settings.DisableLan, vbChecked, vbUnchecked)
 chkJason.Value = IIf(Settings.Jason, vbChecked, vbUnchecked)
 chkUpdate.Value = IIf(Settings.AutoUpdate, vbChecked, vbUnchecked)
 chkVersion.Value = IIf(Settings.SameVersion, vbChecked, vbUnchecked)
+chkResumePrivateChat.Value = IIf(Settings.ResumePrivateChat, vbChecked, vbUnchecked)
 
 txtChatSize.Text = Settings.ChatTextSize: vsChatSize.Value = Settings.ChatTextSize
 txtIconSize.Text = Settings.IconTextSize: vsIconSize.Value = Settings.IconTextSize
@@ -527,7 +537,7 @@ Private Sub SetSettings()
     Settings.AllowCommands = chkAllowCommands.Value
     'chkShareLanGame.Value = IIf(Settings.MinimizeAfterLaunch, vbChecked, vbUnchecked)
     'chkDisableLan.Value = IIf(Settings.MinimizeAfterLaunch, vbChecked, vbUnchecked)
-    
+    Settings.ResumePrivateChat = chkResumePrivateChat.Value
     Settings.ChatTextSize = Val(txtChatSize.Text)
     Settings.IconTextSize = Val(txtIconSize.Text)
     Settings.ChatBGColor = Val(picChatBGColor.BackColor)

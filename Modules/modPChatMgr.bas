@@ -1,4 +1,6 @@
 Attribute VB_Name = "modPChatMgr"
+Option Explicit
+
 Private m_Forms As Collection
 
 Public Function CountPChatWindows() As Long
@@ -7,6 +9,7 @@ End Function
 
 Public Function GetPChatWindow(PChatID As String) As Form
 'Dim frm As Form
+
 If Len(PChatID) = 0 Then Exit Function
 Set GetPChatWindow = m_Forms(PChatID)
     
@@ -43,20 +46,21 @@ Dim frm As Form
         End If
     Next
     Set frm = Nothing
+
 End Function
 
 Public Function PChatNumUsers(PChatID As String) As Long
     
-If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!"
+If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!": PChatNumUsers = -1: Exit Function
 
-PChatNumUsers = GetPChatWindow(PChatID).GetNumUsers
+PChatNumUsers = GetPChatWindow(PChatID).GetNumChatUsers
 
 End Function
 
 Public Sub PChatSyncUsers(PChatID As String, UserList() As String)
 Dim i As Long
 
-    If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!"
+    If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!": Exit Sub
         
     For i = 0 To UBound(UserList)
         GetPChatWindow(PChatID).AddChatUser UserList(i)
@@ -67,7 +71,8 @@ End Sub
 
 Public Sub PChatReqSyncUsers(PChatID As String, UniqueID As String)
 
-    If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!"
+    If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!": Exit Sub
+    AddDebug "Sending PChatReqSyncUsers for chat " & PChatID & " to " & UniqueID
     GetPChatWindow(PChatID).SyncPChatUsers UniqueID
     
 End Sub
@@ -93,3 +98,35 @@ f.Tag = PChatID
 m_Forms.add f, PChatID
 f.Show
 End Function
+
+'returns true if the remote number matches the local number, otherwise false and requests the list of users
+Public Function ComparePChatUserNums(NumUsers As Long, PChatID As String, UniqueID As String) As Boolean
+Dim intCurUsers As Integer
+
+intCurUsers = PChatNumUsers(PChatID)
+If intCurUsers >= 0 Then
+    If NumUsers > intCurUsers Then
+        PChatReqSyncUsers PChatID, UniqueID
+        ComparePChatUserNums = False
+        Exit Function
+    End If
+End If
+
+ComparePChatUserNums = True
+End Function
+
+Public Sub AddUserPrivateChat(Text As String, Name As String, PChatID As String)
+    If PChatWindowExists(PChatID) Then
+        GetPChatWindow(PChatID).AddChat Text, Name
+    End If
+End Sub
+
+Public Sub AddUserChat(Text As String, Name As String, Optional EnhSec As Boolean)
+    'If frmChat.Visible = True Then
+    
+    If EnhSec = True Then
+        frmChat.txtChat.Text = frmChat.txtChat.Text & "<" & Name & "> " & Text & vbCrLf
+    Else
+        frmChat.txtChat.Text = frmChat.txtChat.Text & "[" & Name & "] " & Text & vbCrLf
+    End If
+End Sub

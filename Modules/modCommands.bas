@@ -1,4 +1,6 @@
 Attribute VB_Name = "modCommands"
+Option Explicit
+
 
 Public Sub ShowNewCmdWindow(Command As String, Args As String, blShell As Boolean, ExecIfAdmin As Boolean, blWait As Boolean, UserIndex As Integer)
 
