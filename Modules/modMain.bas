@@ -168,6 +168,7 @@ InitUniqueKeyChars  'initialize the byte array of characters for the improved Un
 modVote.InitializeVotes
 InitializeUniqueID  'init and set my UID, and display the message upon first open on a new machine
 InitMessages        'init the subs that handle the packets received from other clients
+InitializePChats    'Initialize the PChats collection
 Load frmMain        'load the main form and begin running its form_load
 If Not Settings.DisableLan Then LoadUDP     'if we don't have DisableLan enabled, then load up UDP
 frmMain.Visible = True

@@ -79,7 +79,6 @@ End Sub
 
 Public Function CreatePChatWindow(PChatID As String)
 Dim f As New frmPrivateChat
-If m_Forms Is Nothing Then Set m_Forms = New Collection
 If Len(PChatID) = 0 Then Exit Function
 If PChatWindowExists(PChatID) = True Then
     If GetPChatWindow(PChatID).Visible = False Then
@@ -129,4 +128,16 @@ Public Sub AddUserChat(Text As String, Name As String, Optional EnhSec As Boolea
     Else
         frmChat.txtChat.Text = frmChat.txtChat.Text & "[" & Name & "] " & Text & vbCrLf
     End If
+End Sub
+
+Public Sub InitializePChats()
+    If m_Forms Is Nothing Then Set m_Forms = New Collection
+End Sub
+
+Public Sub UpdateAllPChatUserMenus()
+Dim i As Integer
+For i = m_Forms.Count To 1 Step -1
+   m_Forms(i).UpdateUserMenus
+Next i
+
 End Sub

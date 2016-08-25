@@ -295,6 +295,7 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                     'AddDebug "Verification failed."
                     RemoveUser UserIndex
                 End If
+                UpdateAllPChatUserMenus
                 
             Case Is = 6
             
@@ -316,6 +317,8 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                     'AddDebug "Verification failed."
                     RemoveUser UserIndex
                 End If
+                UpdateAllPChatUserMenus
+                
         End Select
 
     Set Buffer = Nothing

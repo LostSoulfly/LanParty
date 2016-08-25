@@ -86,6 +86,10 @@ Begin VB.Form frmPrivateChat
       End
       Begin VB.Menu mnuInvite 
          Caption         =   "Invite Users"
+         Begin VB.Menu mnuUserInvite 
+            Caption         =   "[User]"
+            Index           =   0
+         End
       End
       Begin VB.Menu mnuLeave 
          Caption         =   "Leave Chat"
@@ -210,6 +214,23 @@ Next i
 
 End Sub
 
+Private Sub mnuUserInvite_Click(Index As Integer)
+Dim strKey As String
+Dim UserIndex As Integer
+UserIndex = UserIndexByUID(mnuUserInvite(Index).Tag)
+If UserIndex = -1 Then Exit Sub
+    
+    strKey = Me.Tag                                                                         'Key is this pchat's tag
+    Me.AddChatUser User(UserIndex).UniqueID                                                 'Add the user to the pchat
+    SendCryptTo UserIndex, PrivateChatPacket(1, 0, User(UserIndex).UniqueID, strKey, "")    'Ask the user if they'd like to join
+    DoEvents
+    AddChat "Sending invite to " & GetUserNameByIndex(UserIndex) & "..", "System"           'Write to chat what we're doing
+    SendChat "Sending invite to " & GetUserNameByIndex(UserIndex) & ", please wait.."       'Send a message to other users in pchat,
+                                                                                            'also sends the current pchat number of users
+                                                                                            'thus forcing other users to request the list of users from us.
+    
+End Sub
+
 Private Sub txtChat_Change()
 Dim ChatLen As Long
 ChatLen = Len(txtChat.Text)
@@ -254,6 +275,8 @@ Else
     AddChat UniqueID & " already exists in the chat list?", "ERROR"
 End If
 
+UpdateUserMenus
+
 End Sub
 
 Public Sub RemoveChatUser(UniqueID As String)
@@ -274,6 +297,36 @@ Else
 End If
 
 If UBound(ChatUsers) <= 1 And frameInvite.Visible = True Then DoEvents: Unload Me
+
+UpdateUserMenus
+
+End Sub
+
+Public Sub UpdateUserMenus()
+Dim i As Integer
+
+For i = (Me.mnuUserInvite.Count - 1) To 1 Step -1
+    Unload Me.mnuUserInvite(i)
+Next i
+
+If UBound(User) = 1 Then
+    Me.mnuInvite.Visible = False
+    Me.mnuUserInvite(0).Caption = "No other users!"
+    Exit Sub
+Else
+    Me.mnuInvite.Visible = True
+End If
+
+For i = 1 To UBound(User)
+    If GetChatIndexFromUID(User(i).UniqueID) = -1 Then
+        Load Me.mnuUserInvite(i)
+        With Me.mnuUserInvite(i)
+            .Caption = GetUserNameByIndex(i)
+            .Tag = User(i).UniqueID
+            '.Visible = True
+        End With
+    End If
+Next i
 
 End Sub
 

@@ -204,6 +204,9 @@ Begin VB.Form frmMain
    End
    Begin VB.Menu mnuUser 
       Caption         =   "[Selected User]"
+      Begin VB.Menu mnuStartPChat 
+         Caption         =   "Start New Private Chat"
+      End
       Begin VB.Menu mnuMsg 
          Caption         =   "Send MessageBox"
          Begin VB.Menu mnuMsgThisUser 
@@ -839,6 +842,19 @@ Settings.IconSize = 1
 IconWidth = 600
 IconHeight = 600
 UpdateIconList True
+End Sub
+
+Private Sub mnuStartPChat_Click()
+Dim strKey As String
+Dim UserIndex As Integer
+UserIndex = GetUserIndexFromChat
+If UserIndex = -1 Then Exit Sub
+    strKey = InputBox("PChatID?") 'GenUniqueKey(21) 'gen a new chat ID
+    CreatePChatWindow strKey  'Create the new chat window with the ID, then invite the remote user.
+    GetPChatWindow(strKey).AddChatUser User(UserIndex).UniqueID
+    AddUserPrivateChat "Sending invite to " & GetUserNameByIndex(UserIndex) & ", please wait..", "System", strKey
+    SendCryptTo UserIndex, PrivateChatPacket(1, 0, User(UserIndex).UniqueID, strKey, "")
+    
 End Sub
 
 Private Sub mnuSuggest_Click()
