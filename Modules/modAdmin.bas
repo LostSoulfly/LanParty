@@ -35,7 +35,8 @@ AddDebug "Finished syncing AdminLists.."
 HasSyncedAdmins = True
 IsSyncingAdmins = False
 
-SyncAllVotes
+'SyncAllVotes
+frmMain.tmrVotesSync.Enabled = True
 
 End Function
 
@@ -123,12 +124,15 @@ End Function
 
 Public Sub SetUserLanAdmin(UID As String, isAdmin As Boolean)
 
+    If User(UserIndexByUID(UID)).LanAdmin = isAdmin Then Exit Sub
+
     If UID = Settings.UniqueID Then
         Settings.LanAdmin = True
         UpdateAdminMenus (True)
     Else
         User(UserIndexByUID(UID)).LanAdmin = isAdmin
     End If
+    
     AddChat "<--- " & GetUserName(UID) & " has been elected a LanAdmin --->"
     
 End Sub

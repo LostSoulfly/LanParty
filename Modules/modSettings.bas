@@ -25,7 +25,7 @@ Public Type GlobalSettings
     AutoUpdate As Boolean
     SameVersion As Boolean
     ShowStatus As Boolean
-    ResumePrivateChat As Boolean
+    AcceptPrivateChat As Boolean
     LanAdmin As Boolean
     AltChatType As Boolean
     MonitorGame As Boolean 'monitor when a game's EXE has exited to bring up the launcher again.
@@ -72,7 +72,7 @@ AddToString "ShowStatus " & .ShowStatus, strSettings
 AddToString "ImJason " & .Jason, strSettings
 AddToString "KeyGen " & .KeyGen, strSettings
 AddToString "AutoUpdate " & .AutoUpdate, strSettings
-AddToString "ResumePrivateChat " & .ResumePrivateChat, strSettings
+AddToString "AcceptPrivateChat " & .AcceptPrivateChat, strSettings
 AddToString "SameVersion " & .SameVersion, strSettings
 AddToString "AltChatType " & .AltChatType, strSettings
 AddToString "MainWindowWidth " & .MainWindowWidth, strSettings
@@ -107,7 +107,7 @@ If LenB(strSettings) < 1 Then
     .ShowChat = True
     .DockChat = True
     .KeyGen = 5
-    .ResumePrivateChat = True
+    .AcceptPrivateChat = False
     .SameVersion = False
     .AutoUpdate = False
     .ShowStatus = True
@@ -181,8 +181,8 @@ If UBound(lines) > 1 Then
                 Case "sameversion"
                 Settings.SameVersion = IIf(LCase$(strData) = "true", True, False)
                 
-                Case "resumeprivatechat"
-                Settings.ResumePrivateChat = IIf(LCase$(strData) = "true", True, False)
+                Case "acceptprivatechat"
+                Settings.AcceptPrivateChat = IIf(LCase$(strData) = "true", True, False)
                 
                 Case "altchattype"
                 Settings.AltChatType = IIf(LCase$(strData) = "true", True, False)

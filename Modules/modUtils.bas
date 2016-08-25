@@ -324,33 +324,27 @@ Case Is = 5
 Case Is = 6
     GetMsgTypeName = "LPong"
 Case Is = 7
-    GetMsgTypeName = "LExecute"
-Case Is = 8
     GetMsgTypeName = "LSuggest"
-Case Is = 9
+Case Is = 8
     GetMsgTypeName = "LChat"
+Case Is = 9
+   GetMsgTypeName = "LPrivateChat"
 Case Is = 10
-    GetMsgTypeName = "LPrivateChat"
-Case Is = 11
     GetMsgTypeName = "LVote"
-Case Is = 12
-    GetMsgTypeName = "LPoll"
-Case Is = 13
-    GetMsgTypeName = "LKick"
-Case Is = 14
+Case Is = 11
     GetMsgTypeName = "LChangeName"
-Case Is = 15
+Case Is = 12
     GetMsgTypeName = "LSyncAdmin"
-Case Is = 16
+Case Is = 13
     GetMsgTypeName = "LLanAdmin"
-Case Is = 17
+Case Is = 14
     GetMsgTypeName = "LNowPlaying"
-Case Is = 18
+Case Is = 15
     GetMsgTypeName = "LReqList"
-Case Is = 19
-    GetMsgTypeName = "LCrypted"
-Case Is = 20
+Case Is = 16
     GetMsgTypeName = "LDrew"
+Case Is = 17
+    GetMsgTypeName = "LCrypted"
 Case Else
     GetMsgTypeName = "Unknown"
 End Select
@@ -374,14 +368,23 @@ Public Sub AddDebug(Text As String, Optional blToFile As Boolean = False)
 If blToFile Then WriteFile "[DEBUG] " & Text & vbCrLf
 If Settings.blDebug = False Then Exit Sub
     If frmChat.Visible = True Then
-        frmChat.txtChat.Text = frmChat.txtChat.Text & "[DEBUG] " & Text & vbCrLf
+        frmChat.txtChat.Text = frmChat.txtChat.Text & Time & " [DEBUG] " & Text & vbCrLf
     End If
 End Sub
 
+Public Sub AddUserChat(Text As String, Name As String, Optional EnhSec As Boolean)
+    'If frmChat.Visible = True Then
+    
+    If EnhSec = True Then
+        frmChat.txtChat.Text = frmChat.txtChat.Text & Time & " <" & Name & "> " & Text & vbCrLf
+    Else
+        frmChat.txtChat.Text = frmChat.txtChat.Text & Time & " [" & Name & "] " & Text & vbCrLf
+    End If
+End Sub
 
 Public Sub AddChat(Text As String)
     'If frmChat.Visible = True Then
-        frmChat.txtChat.Text = frmChat.txtChat.Text & Text & vbCrLf
+        frmChat.txtChat.Text = frmChat.txtChat.Text & Time & " " & Text & vbCrLf
     'End If
 End Sub
 
@@ -695,7 +698,7 @@ End Sub
 
 Public Function GenUniqueKey(Optional KeyLen As Integer = 0) As String
 Dim i As Long
-    If Settings.blDebug Then AddChat "Using KeyGen: " & Settings.KeyGen
+    If Settings.blDebug Then AddUserChat "Using KeyGen: " & Settings.KeyGen, "System", True
 
     Select Case Settings.KeyGen
     
@@ -743,7 +746,7 @@ Dim i As Long
             
     End Select
 
-If Settings.Jason Then AddChat "[System] New Key Generated (Len: " & KeyLen & "): " & GenUniqueKey
+If Settings.Jason Then AddUserChat "New Key Generated (Len: " & KeyLen & "): " & GenUniqueKey, "System", True
 
 End Function
 

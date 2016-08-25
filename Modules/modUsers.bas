@@ -16,6 +16,7 @@ Public Type LanUser
     AdminList() As String
     SyncingAdminList As Boolean
     SyncingVotes As Boolean
+    HasSyncedVotes As Boolean
     AppVersion As String
     'ConnState As Long
 End Type
@@ -31,8 +32,8 @@ Public Sub RemoveUser(UserIndex As Integer)
 AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has left."
 RemoveUserFromChat UserIndex
 ClearUser (UserIndex)
-HasSyncedAdmins = False
-IsSyncingAdmins = True
+'HasSyncedAdmins = False
+'IsSyncingAdmins = True
 
 End Sub
 
@@ -89,6 +90,9 @@ With User(UserIndex)
     '.ConnState = 0
 End With
 
+IsSyncingAdmins = True
+HasSyncedAdmins = False
+frmMain.tmrAdmins.Enabled = True
 
 NewUser = UserIndex
 AddUserToChat UserIndex

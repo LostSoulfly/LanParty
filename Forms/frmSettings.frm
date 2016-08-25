@@ -291,8 +291,8 @@ Begin VB.Form frmSettings
       TabIndex        =   19
       Top             =   120
       Width           =   3135
-      Begin VB.CheckBox chkResumePrivateChat 
-         Caption         =   "Resume Private Chats"
+      Begin VB.CheckBox chkAcceptPrivateChat 
+         Caption         =   "Auto-Accept Private Chats"
          Height          =   195
          Left            =   120
          TabIndex        =   39
@@ -505,7 +505,7 @@ chkDisableLan.Value = IIf(Settings.DisableLan, vbChecked, vbUnchecked)
 chkJason.Value = IIf(Settings.Jason, vbChecked, vbUnchecked)
 chkUpdate.Value = IIf(Settings.AutoUpdate, vbChecked, vbUnchecked)
 chkVersion.Value = IIf(Settings.SameVersion, vbChecked, vbUnchecked)
-chkResumePrivateChat.Value = IIf(Settings.ResumePrivateChat, vbChecked, vbUnchecked)
+chkAcceptPrivateChat.Value = IIf(Settings.AcceptPrivateChat, vbChecked, vbUnchecked)
 
 txtChatSize.Text = Settings.ChatTextSize: vsChatSize.Value = Settings.ChatTextSize
 txtIconSize.Text = Settings.IconTextSize: vsIconSize.Value = Settings.IconTextSize
@@ -537,7 +537,7 @@ Private Sub SetSettings()
     Settings.AllowCommands = chkAllowCommands.Value
     'chkShareLanGame.Value = IIf(Settings.MinimizeAfterLaunch, vbChecked, vbUnchecked)
     'chkDisableLan.Value = IIf(Settings.MinimizeAfterLaunch, vbChecked, vbUnchecked)
-    Settings.ResumePrivateChat = chkResumePrivateChat.Value
+    Settings.AcceptPrivateChat = chkAcceptPrivateChat.Value
     Settings.ChatTextSize = Val(txtChatSize.Text)
     Settings.IconTextSize = Val(txtIconSize.Text)
     Settings.ChatBGColor = Val(picChatBGColor.BackColor)

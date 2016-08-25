@@ -62,6 +62,11 @@ RefreshDebug
 
 End Sub
 
+Private Sub cmdRefresh_Click()
+    Text1.Text = ""
+    RefreshDebug
+End Sub
+
 Private Sub Form_Load()
 
     Text1.Text = ""
@@ -93,7 +98,7 @@ Dim i As Integer
 For i = 1 To UBound(User)
 AddText GetUserNameByIndex(i) & vbTab & vbTab & User(i).UniqueID & vbTab & User(i).IP & vbTab & "Ver:" & User(i).AppVersion & vbTab & "CompName: " & User(i).CompName
 AddText "MyUniqueKey: " & User(i).MyUniqueKey & vbNewLine & "Their UniqueKey: " & User(i).UniqueKey
-AddText "Playing: " & GetGameName(GameIndexByUID(User(i).CurrentlyPlaying)) & " (" & User(i).CurrentlyPlaying & ")" & vbTab & "LanAdmin: " & User(i).LanAdmin & vbTab & "LastHeard: " & User(i).LastHeard & vbTab & "SyncingVotes: " & User(i).SyncingVotes
+AddText "Playing: " & GetGameName(GameIndexByUID(User(i).CurrentlyPlaying)) & " (" & User(i).CurrentlyPlaying & ")" & vbTab & "LanAdmin: " & User(i).LanAdmin & vbTab & "LastHeard: " & User(i).LastHeard & vbTab & "SyncingVotes: " & User(i).SyncingVotes & vbTab & "HasSyncedVotes: " & User(i).HasSyncedVotes
 AddText strSep
 Next i
 

@@ -213,6 +213,6 @@ End Sub
 
 Private Sub mnuSync_Click()
 
-    SyncAllVotes
+    SyncAllVotes , True
 
 End Sub

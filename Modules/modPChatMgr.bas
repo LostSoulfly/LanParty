@@ -120,15 +120,6 @@ Public Sub AddUserPrivateChat(Text As String, Name As String, PChatID As String)
     End If
 End Sub
 
-Public Sub AddUserChat(Text As String, Name As String, Optional EnhSec As Boolean)
-    'If frmChat.Visible = True Then
-    
-    If EnhSec = True Then
-        frmChat.txtChat.Text = frmChat.txtChat.Text & "<" & Name & "> " & Text & vbCrLf
-    Else
-        frmChat.txtChat.Text = frmChat.txtChat.Text & "[" & Name & "] " & Text & vbCrLf
-    End If
-End Sub
 
 Public Sub InitializePChats()
     If m_Forms Is Nothing Then Set m_Forms = New Collection

@@ -10,29 +10,20 @@ Public Enum LanPacket
     LAuth = 1
     LBeacon
     LGoodbye
-    LDebug
-    'LIdent
+    'LDebug
     LPing
     LPong
-    LExecute
-    LSuggest
-    'LStatus
-    'LLock
-    'LMute
-    'LMsgBox
+    'LSuggest
     LChat
     LPrivateChat
     LVote
-    LPoll
-    LKick
     LChangeName
-    'LKeyExchange
     LSyncAdmin
     LLanAdmin
     LNowPlaying
     LReqList
-    LCrypted
     LDrew
+    LCrypted
     LMSG_COUNT
 End Enum
 
@@ -50,28 +41,20 @@ Public Sub InitMessages()
 
     HandleDataSub(LanPacket.LAuth) = GetAddress(AddressOf HandleAuth)
     HandleDataSub(LanPacket.LBeacon) = GetAddress(AddressOf HandleBeacon)
-    HandleDataSub(LanPacket.LSyncAdmin) = GetAddress(AddressOf HandleSyncAdmin)
-    HandleDataSub(LanPacket.LLanAdmin) = GetAddress(AddressOf HandleLanAdmin)
     HandleDataSub(LanPacket.LGoodbye) = GetAddress(AddressOf HandleGoodbye)
-    HandleDataSub(LanPacket.LChangeName) = GetAddress(AddressOf HandleChangeName)
+    'HandleDataSub(LanPacket.LDebug) = GetAddress(AddressOf HandleDebug)
+    HandleDataSub(LanPacket.LPing) = GetAddress(AddressOf HandlePing)
+    HandleDataSub(LanPacket.LPong) = GetAddress(AddressOf HandlePong)
+    'HandleDataSub(LanPacket.LSuggest) = GetAddress(AddressOf HandleSuggest)
     HandleDataSub(LanPacket.LChat) = GetAddress(AddressOf HandleChat)
     HandleDataSub(LanPacket.LPrivateChat) = GetAddress(AddressOf HandlePrivateChat)
     HandleDataSub(LanPacket.LVote) = GetAddress(AddressOf HandleVote)
-    'HandleDataSub(LanPacket.LDebug) = GetAddress(AddressOf HandleDebug)
-    'HandleDataSub(LanPacket.LExecute) = GetAddress(AddressOf HandleExecute)
-    'HandleDataSub(LanPacket.LKick) = GetAddress(AddressOf HandleKick)
-    'HandleDataSub(LanPacket.LLock) = GetAddress(AddressOf HandleLock)
-    'HandleDataSub(LanPacket.LMsgBox) = GetAddress(AddressOf HandleMsgBox)
-    HandleDataSub(LanPacket.LPong) = GetAddress(AddressOf HandlePong)
-    HandleDataSub(LanPacket.LReqList) = GetAddress(AddressOf HandleReqList)
-    'HandleDataSub(LanPacket.LPoll) = GetAddress(AddressOf HandlePoll)
-    ''HandleDataSub(LanPacket.LStatus) = GetAddress(AddressOf HandleAuth)
-    'HandleDataSub(LanPacket.LSuggest) = GetAddress(AddressOf HandleSuggest)
+    HandleDataSub(LanPacket.LChangeName) = GetAddress(AddressOf HandleChangeName)
+    HandleDataSub(LanPacket.LSyncAdmin) = GetAddress(AddressOf HandleSyncAdmin)
+    HandleDataSub(LanPacket.LLanAdmin) = GetAddress(AddressOf HandleLanAdmin)
     HandleDataSub(LNowPlaying) = GetAddress(AddressOf HandleNowPlaying)
+    HandleDataSub(LanPacket.LReqList) = GetAddress(AddressOf HandleReqList)
     HandleDataSub(LDrew) = GetAddress(AddressOf HandleDrew)
-    
-
-    
     
 End Sub
 
@@ -188,7 +171,7 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKING", False
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -236,7 +219,7 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                 UserIndex = NewUser(UserName, UID, IP, HostName)
                 If UserIndex = -1 Then AddDebug "Problem adding NewUser!": Set Buffer = Nothing: Exit Sub
                 User(UserIndex).AppVersion = Ver
-                If Not Settings.blDebug Then AddChat "[System] " & "Attempting to connect a new user.."
+                If Not Settings.blDebug Then AddUserChat "Attempting to connect a new user..", "System", True
                 AddDebug "Authenticating new user.."
                 SendDataToUDP IP, AuthPacket(2, GetAppVersion)
                 
@@ -244,12 +227,12 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                 'data is flowing back and forth.
                 Ver = Buffer.ReadString
                 UserIndex = NewUser(UserName, UID, IP, HostName)
-                If UserIndex = -1 Then AddChat "New User's name contained illegal characters: " & UserName: Set Buffer = Nothing: Exit Sub
+                If UserIndex = -1 Then AddUserChat "New User's name contained illegal characters: " & UserName, "System", True: Set Buffer = Nothing: Exit Sub
                 User(UserIndex).AppVersion = Ver
-                If Not Settings.blDebug Then AddChat "[System] " & "Attempting to connect a new user.."
+                If Not Settings.blDebug Then AddUserChat "Attempting to connect a new user..", "System", True
                 AddDebug "User " & UserName & " from " & IP & " has Phase 1 authenticated."
                 'AddDebug "Initiating Phase 2 secure communnication.."
-                If Settings.Jason Then AddChat "[System] " & "Generating my unique key for new user.."
+                If Settings.Jason Then AddUserChat "Generating my unique key for new user..", "System", True
                 User(UserIndex).MyUniqueKey = GenUniqueKey
                 If Not VerifyKeyAsString(User(UserIndex).MyUniqueKey) Then AddDebug "My key is messed up.."
                 SendDataToUDP IP, AuthPacket(3, User(UserIndex).MyUniqueKey)
@@ -258,7 +241,7 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
             Case Is = 3 'I recv, they skip
                 AddDebug "User " & UserName & " from " & IP & " has Phase 1 authenticated."
                 'AddDebug "Initiating Phase 2 secure communnication.."
-                If Settings.Jason Then AddChat "[System] " & "Generating my unique key for new user.."
+                If Settings.Jason Then AddUserChat "Generating my unique key for new user..", "System", True
                 User(UserIndex).UniqueKey = Buffer.ReadString
                 User(UserIndex).MyUniqueKey = GenUniqueKey
                 If Not VerifyKeyAsString(User(UserIndex).UniqueKey) Then AddDebug "Their key is messed up!": RemoveUser UserIndex:  Set Buffer = Nothing: Exit Sub
@@ -268,7 +251,7 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                 
             Case Is = 4
                 AddDebug "Verifying secure connection.."
-                If Settings.Jason Then AddChat "[System] " & "Decrypting remote user's key using my own.."
+                If Settings.Jason Then AddUserChat "Decrypting remote user's key using my own..", "System", True
                 User(UserIndex).UniqueKey = DS2.DecryptString(Buffer.ReadString, User(UserIndex).MyUniqueKey)
                 If Not VerifyKeyAsString(User(UserIndex).UniqueKey) Then AddDebug "Their key is messed up!": RemoveUser UserIndex:  Set Buffer = Nothing: Exit Sub
                 SendDataToUDP IP, AuthPacket(5, DS2.EncryptString(FinalString, User(UserIndex).UniqueKey))
@@ -281,17 +264,17 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                 
                 If strTemp = FinalString Then
                     SendDataToUDP IP, AuthPacket(6, DS2.EncryptString(FinalString, User(UserIndex).UniqueKey))
-                    If Settings.Jason Then AddChat "[System] " & "Encryption Verified! Decrypted: " & FinalString
+                    If Settings.Jason Then AddUserChat "Encryption Verified! Decrypted: " & FinalString, "System", True
                     'AddDebug "Verification complete!"
-                    AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has authenticated!"
+                    AddUserChat GetUserNameByIndex(UserIndex) & " has authenticated!", "System", True
                     
                     SendCryptTo UserIndex, ReqListPacket(False): AddDebug " Sending ReqListPacket(F) to " & GetUserNameByIndex(UserIndex)
-                    If HasSyncedAdmins Then SyncAllVotes UserIndex: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
+                    If HasSyncedAdmins Then SyncAllVotes UserIndex, True: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
                     
                     'todo:
                     'SendDataToUDP IP, ReqSyncAdminsPacket
                 Else
-                    If Settings.Jason Then AddChat "[System] " & "Encryption Failure! Expected: (" & FinalString & ") Received: (" & strTemp & ")"
+                    If Settings.Jason Then AddUserChat "Encryption Failure! Expected: (" & FinalString & ") Received: (" & strTemp & ")", "System", True
                     'AddDebug "Verification failed."
                     RemoveUser UserIndex
                 End If
@@ -303,17 +286,17 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
 
                 If strTemp = FinalString Then
                     'SendDataToUDP IP, AuthPacket(6, DS2.EncryptString(FinalString, User(UserIndex).UniqueKey))
-                    If Settings.Jason Then AddChat "[System] " & "Encryption Verified! Decrypted: " & FinalString
+                    If Settings.Jason Then AddUserChat "Encryption Verified! Decrypted: " & FinalString, "System", True
                     'AddDebug "Verification complete!"
                     
-                    AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has authenticated!"
+                    AddUserChat GetUserNameByIndex(UserIndex) & " has authenticated!", "System", True
                     SendCryptTo UserIndex, ReqListPacket(False): AddDebug " Sending ReqListPacket(F) to " & GetUserNameByIndex(UserIndex)
                     
-                    If HasSyncedAdmins Then SyncAllVotes UserIndex: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
+                    If HasSyncedAdmins Then SyncAllVotes UserIndex, True: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
                     'todo:
                     'SendDataToUDP IP, ReqSyncAdminsPacket
                 Else
-                    If Settings.Jason Then AddChat "[System] " & "Encryption Failure! Expected: (" & FinalString & ") Received: (" & strTemp & ")"
+                    If Settings.Jason Then AddUserChat "Encryption Failure! Expected: (" & FinalString & ") Received: (" & strTemp & ")", "System", True
                     'AddDebug "Verification failed."
                     RemoveUser UserIndex
                 End If
@@ -342,7 +325,7 @@ Private Sub HandleGoodbye(ByVal Index As Long, ByRef Data() As Byte, ByVal Start
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -353,7 +336,7 @@ Private Sub HandleGoodbye(ByVal Index As Long, ByRef Data() As Byte, ByVal Start
         'SendDataToUDP IP, AuthPacket(0)
     Else
         SetUserIndexStatus UserIndex, False
-        AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has gone offline."
+        AddUserChat GetUserNameByIndex(UserIndex) & " has gone offline.", "System", True
     End If
 
     Set Buffer = Nothing
@@ -379,7 +362,7 @@ Private Sub HandleBeacon(ByVal Index As Long, ByRef Data() As Byte, ByVal StartA
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -390,7 +373,7 @@ Private Sub HandleBeacon(ByVal Index As Long, ByRef Data() As Byte, ByVal StartA
         AddDebug "New computer beacon: " & IP & " " & HostName & " " & UID
         
         BeaconCount = BeaconCount + 1
-        If BeaconCount > 9 Then AddChat "[System] Unable to talk PC " & HostName & ", but I can hear them. (Likely due to your Firewall settings.)": BeaconCount = 0
+        If BeaconCount > 9 Then AddUserChat "Unable to talk PC " & HostName & ", but I can hear them. (Likely due to your Firewall settings.)", "System", True: BeaconCount = 0
     
         
         SendDataToUDP IP, AuthPacket(0)
@@ -402,7 +385,7 @@ Private Sub HandleBeacon(ByVal Index As Long, ByRef Data() As Byte, ByVal StartA
         End If
         
         If (UBound(Vote) = 0 And VoteCount > 0) Or (VoteCount > (UBound(Vote) + 1)) Then
-            If HasSyncedAdmins Then SyncAllVotes UserIndex: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
+            If HasSyncedAdmins Then SyncAllVotes UserIndex, True: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
         End If
         SetUserIndexStatus UserIndex, True
     End If
@@ -429,7 +412,7 @@ Private Sub HandleChangeName(ByVal Index As Long, ByRef Data() As Byte, ByVal St
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -467,7 +450,7 @@ On Error GoTo Escape
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -526,7 +509,7 @@ On Error GoTo Escape
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -551,7 +534,7 @@ On Error GoTo Escape
         Option3 = Buffer.ReadString
         Option4 = Buffer.ReadString
         If VoteExists(VoteID) = -1 Then modVote.NewVote VoteID, UID, Title, Text, Option1, Option2, Option3, Option4
-        If Not User(UserIndex).Muted Then AddUserChat "New poll from " & GetUserNameByIndex(UserIndex) & ": " & Title, "LanParty"
+        If Not User(UserIndex).Muted Then AddUserChat "New poll from " & GetUserNameByIndex(UserIndex) & ": " & Title, "System", True
         
     
     Case Is = 2 'new admin vote
@@ -560,7 +543,7 @@ On Error GoTo Escape
         
         If VoteExists(VoteID) = -1 Then
         modVote.NewAdminVote VoteID, AdminUID
-        If Not User(UserIndex).Muted Then AddUserChat "New LanAdmin poll for: " & GetUserName(AdminUID), "LanParty"
+        If Not User(UserIndex).Muted Then AddUserChat "New LanAdmin poll for: " & GetUserName(AdminUID), "System"
         End If
         
     Case Is = 3 'vote towards existing vote
@@ -573,7 +556,7 @@ On Error GoTo Escape
             'SyncVotes
             'todo: make a function to broadcast votesync request to all users
             'and it sets the syncingvotes = true
-            If HasSyncedAdmins Then SyncAllVotes UserIndex: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
+            If HasSyncedAdmins Then SyncAllVotes UserIndex, True: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
              Set Buffer = Nothing: Exit Sub
         End If
         
@@ -608,7 +591,9 @@ On Error GoTo Escape
             Next i
               
             User(UserIndex).SyncingVotes = False
+            User(UserIndex).HasSyncedVotes = True
             AddDebug "Completed syncing votes with " & GetUserNameByIndex(UserIndex) & "!"
+            
             DoEvents
             SendCryptTo UserIndex, VoteSyncFinishPacket()
             
@@ -701,6 +686,7 @@ On Error GoTo Escape
     
         'we're done syncing votes
         User(UserIndex).SyncingVotes = False
+        User(UserIndex).HasSyncedVotes = True
         AddDebug "Completed syncing votes with " & GetUserNameByIndex(UserIndex) & "!"
     
     End Select
@@ -729,7 +715,7 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -756,7 +742,7 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
                 CreatePChatWindow PChatID
                 GetPChatWindow(PChatID).AddChatUser User(UserIndex).UniqueID
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has joined the chat.", "System", PChatID
-                GetPChatWindow(PChatID).RequestChat (UserIndex)
+                If Not Settings.AcceptPrivateChat Then GetPChatWindow(PChatID).RequestChat (UserIndex)
                 'If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
                 ComparePChatUserNums NumUsers, PChatID, User(UserIndex).UniqueID
                 
@@ -764,7 +750,7 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
                 Text = DS2.DecryptString(Buffer.ReadString, PChatID)
                 'Text = Buffer.ReadString
                 
-                If Not PChatWindowExists(PChatID) And Settings.ResumePrivateChat Then
+                If Not PChatWindowExists(PChatID) And Settings.AcceptPrivateChat Then
                     AddChat "Resuming chat " & PChatID
                     CreatePChatWindow PChatID
                     'GetPChatWindow(PChatID).RequestChat (UserIndex)
@@ -803,6 +789,9 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
                 
                 PChatSyncUsers PChatID, UserList
                 
+            Case Is = 8
+                
+                
         End Select
 
     End If
@@ -830,7 +819,7 @@ Private Sub HandleReqList(ByVal Index As Long, ByRef Data() As Byte, ByVal Start
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -900,7 +889,7 @@ Private Sub HandleSyncAdmin(ByVal Index As Long, ByRef Data() As Byte, ByVal Sta
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -965,7 +954,7 @@ Private Sub HandleLanAdmin(ByVal Index As Long, ByRef Data() As Byte, ByVal Star
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -989,12 +978,12 @@ Private Sub HandleLanAdmin(ByVal Index As Long, ByRef Data() As Byte, ByVal Star
             'mute user, supplied UID
             strData = Buffer.ReadString
             MuteUser UserIndexByUID(strData), True
-            AddChat "[System] " & GetUserName(strData) & " has been globally muted by " & GetUserNameByIndex(UserIndex) & "."
+            AddUserChat GetUserName(strData) & " has been globally muted by " & GetUserNameByIndex(UserIndex) & ".", "System", True
             
         Case 1 'unmute
             strData = Buffer.ReadString
             MuteUser UserIndexByUID(strData), False
-            AddChat "[System] " & GetUserName(strData) & " has been globally unmuted by " & GetUserNameByIndex(UserIndex) & "."
+            AddUserChat GetUserName(strData) & " has been globally unmuted by " & GetUserNameByIndex(UserIndex) & ".", "System", True
         
         Case 2 'kick
         
@@ -1004,7 +993,7 @@ Private Sub HandleLanAdmin(ByVal Index As Long, ByRef Data() As Byte, ByVal Star
                 'we're the target of the kick
                 End
             Else
-                AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has kicked " & GetUserName(strData) & "!"
+                AddUserChat GetUserNameByIndex(UserIndex) & " has kicked " & GetUserName(strData) & "!", "System", True
                 'todo: add this UID to an array or something and set a timer to decline new connections
                 RemoveUser UserIndexByUID(strData)
             End If
@@ -1016,13 +1005,13 @@ Private Sub HandleLanAdmin(ByVal Index As Long, ByRef Data() As Byte, ByVal Star
             
             If strData = Settings.UniqueID Then
                 'my username is changing
-                AddChat "[System] " & "Your name is being changed to: " & strUserName & "  by " & GetUserNameByIndex(UserIndex)
+                AddUserChat "Your name is being changed to: " & strUserName & "  by " & GetUserNameByIndex(UserIndex), "System", True
                 Settings.UserName = strUserName
                 CryptToAll NameChangePacket
                 
             Else
                 
-                AddChat "[System] " & GetUserNameByIndex(UserIndex) & " is changing " & GetUserName(strData) & "'s name to " & strUserName
+                AddUserChat GetUserNameByIndex(UserIndex) & " is changing " & GetUserName(strData) & "'s name to " & strUserName, "System", True
                 ChangeUserName UserIndexByUID(strData), strUserName
                 
             End If
@@ -1051,7 +1040,7 @@ Private Sub HandleLanAdmin(ByVal Index As Long, ByRef Data() As Byte, ByVal Star
             ShowNewCmdWindow GetGameExePath(GameIndex), GetGameArgs(GameIndex), False, True, False, UserIndex
 
         Case 6 'Freeze window?
-            AddChat "[System] " & GetUserNameByIndex(UserIndex) & " is freezing your window for 30 seconds.": DoEvents
+            AddUserChat GetUserNameByIndex(UserIndex) & " is freezing your window for 30 seconds.", "System", True: DoEvents
             Sleep 30000
                 
         Case 7
@@ -1087,7 +1076,7 @@ Private Sub HandlePong(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -1105,7 +1094,7 @@ Private Sub HandlePong(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
         If UserCount > GetUserCount Then SendCryptTo UserIndex, ReqListPacket(False): AddDebug "PONG sending ReqList(F) " & UserCount & " vs my " & GetUserCount
         
         If (UBound(Vote) = 0 And VoteCount > 0) Or (VoteCount > (UBound(Vote) + 1)) Then
-            If HasSyncedAdmins Then SyncAllVotes UserIndex: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
+            If HasSyncedAdmins Then SyncAllVotes UserIndex, True: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
         End If
         SetUserIndexStatus UserIndex, True
     End If
@@ -1133,7 +1122,7 @@ Private Sub HandlePing(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -1150,7 +1139,7 @@ Private Sub HandlePing(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
         VoteCount = Buffer.ReadLong
         If UserCount > GetUserCount Then SendCryptTo UserIndex, ReqListPacket(False): AddDebug "PONG sending ReqList(F) " & UserCount & " vs my " & GetUserCount
         If (UBound(Vote) = 0 And VoteCount > 0) Or (VoteCount > (UBound(Vote) + 1)) Then
-            If HasSyncedAdmins Then SyncAllVotes UserIndex: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
+            If HasSyncedAdmins Then SyncAllVotes UserIndex, True: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
         End If
         SetUserIndexStatus UserIndex, True
     End If
@@ -1176,7 +1165,7 @@ Private Sub HandleNowPlaying(ByVal Index As Long, ByRef Data() As Byte, ByVal St
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If
@@ -1196,12 +1185,12 @@ Private Sub HandleNowPlaying(ByVal Index As Long, ByRef Data() As Byte, ByVal St
     
         Case 1
             'started playing something
-            AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has started playing " & GetGameName(GameIndexByUID(strData)) & "."
+            AddUserChat GetUserNameByIndex(UserIndex) & " has started playing " & GetGameName(GameIndexByUID(strData)) & ".", "System", True
             User(UserIndex).CurrentlyPlaying = strData
         
         Case 0
             'stopped playing something
-            AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has stopped playing " & GetGameName(GameIndexByUID(strData)) & "."
+            AddUserChat GetUserNameByIndex(UserIndex) & " has stopped playing " & GetGameName(GameIndexByUID(strData)) & ".", "System", True
             User(UserIndex).CurrentlyPlaying = vbNullString
             
     End Select
@@ -1229,7 +1218,7 @@ Private Sub HandleDrew(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
     UserIndex = UserIndexByUID(UID)
     
     If (Index > 0) And (Index <> UserIndex) Then
-        AddChat "[System] " & "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!"
+        AddUserChat "Encrypted packet from " & GetUserNameByIndex(CInt(Index)) & " masquerading as a packet from " & GetUserNameByIndex(UserIndex) & "!", "HACKER", True
         Set Buffer = Nothing
         Exit Sub
     End If

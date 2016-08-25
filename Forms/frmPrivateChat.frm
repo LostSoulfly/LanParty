@@ -222,7 +222,7 @@ If UserIndex = -1 Then Exit Sub
     
     strKey = Me.Tag                                                                         'Key is this pchat's tag
     Me.AddChatUser User(UserIndex).UniqueID                                                 'Add the user to the pchat
-    SendCryptTo UserIndex, PrivateChatPacket(1, 0, User(UserIndex).UniqueID, strKey, "")    'Ask the user if they'd like to join
+    SendCryptTo UserIndex, PrivateChatPacket(1, GetNumChatUsers, User(UserIndex).UniqueID, strKey, "")    'Ask the user if they'd like to join
     DoEvents
     AddChat "Sending invite to " & GetUserNameByIndex(UserIndex) & "..", "System"           'Write to chat what we're doing
     SendChat "Sending invite to " & GetUserNameByIndex(UserIndex) & ", please wait.."       'Send a message to other users in pchat,
@@ -305,17 +305,9 @@ End Sub
 Public Sub UpdateUserMenus()
 Dim i As Integer
 
-For i = (Me.mnuUserInvite.Count - 1) To 1 Step -1
+For i = (Me.mnuUserInvite.Count) To 2 Step -1
     Unload Me.mnuUserInvite(i)
 Next i
-
-If UBound(User) = 1 Then
-    Me.mnuInvite.Visible = False
-    Me.mnuUserInvite(0).Caption = "No other users!"
-    Exit Sub
-Else
-    Me.mnuInvite.Visible = True
-End If
 
 For i = 1 To UBound(User)
     If GetChatIndexFromUID(User(i).UniqueID) = -1 Then
@@ -328,6 +320,14 @@ For i = 1 To UBound(User)
     End If
 Next i
 
+If UBound(User) = 1 Or (Me.mnuUserInvite.Count = 1) Then
+    Me.mnuInvite.Visible = False
+    Me.mnuUserInvite(0).Caption = "No other users!"
+    Exit Sub
+Else
+    Me.mnuInvite.Visible = True
+End If
+
 End Sub
 
 Private Function GetChatIndexFromUID(UID As String) As Long
@@ -336,9 +336,7 @@ Dim i As Long
 
 For i = 0 To lstUsers.ListCount - 1
     If IsNumeric(lstUsers.ItemData(i)) Then
-        'ChatUsers(lstUsers.ItemData(i)) = UID
-        GetChatIndexFromUID = i
-        Exit Function
+        If ChatUsers(lstUsers.ItemData(i)) = UID Then GetChatIndexFromUID = i: Exit Function
     End If
 Next i
 

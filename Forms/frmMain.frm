@@ -28,6 +28,12 @@ Begin VB.Form frmMain
       TabIndex        =   1
       Top             =   0
       Width           =   7815
+      Begin VB.Timer tmrVotesSync 
+         Enabled         =   0   'False
+         Interval        =   1500
+         Left            =   7440
+         Top             =   1920
+      End
       Begin VB.Timer tmrMonitorGame 
          Interval        =   3000
          Left            =   6960
@@ -893,7 +899,12 @@ End Sub
 
 Private Sub tmrAdmins_Timer()
 CalculateAdminLists
-tmrAdmins.Enabled = False
+If IsSyncingAdmins = True Or HasSyncedAdmins = False Then
+    CryptToAllAdminSync ReqAdminSyncPacket
+Else
+    tmrAdmins.Enabled = False
+End If
+
 End Sub
 
 Private Sub tmrAdminSync_Timer()
@@ -1033,6 +1044,10 @@ For i = 1 To UBound(User)
     End With
 Next i
 
+End Sub
+
+Private Sub tmrVotesSync_Timer()
+    SyncAllVotes
 End Sub
 
 Private Sub vsScroll_Change()

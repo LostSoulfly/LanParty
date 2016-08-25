@@ -339,30 +339,36 @@ End Function
 Private Function CheckVoteID(VoteID As String) As Boolean
 On Error Resume Next
 
-If Len(VoteID$) < 19 Then CheckVoteID = True: AddDebug "VoteID not = 19 len"
+If Len(VoteID$) < 19 Then CheckVoteID = True: AddDebug "VoteID not >= 19 len"
 
 End Function
 
-Public Sub SyncAllVotes(Optional UserIndex As Integer = -1)
+Public Sub SyncAllVotes(Optional UserIndex As Integer = -1, Optional blForceSync As Boolean = False)
 Dim i As Integer
+Dim numLeft As Integer
 
 If UserIndex = -1 Then
 
     For i = 1 To UBound(User)
-        If Not User(i).SyncingVotes Then
-            SendCryptTo i, ReqSyncVotePacket
+        'If Not User(i).SyncingVotes Then
+        If blForceSync Or User(i).HasSyncedVotes = False Then
+            numLeft = numLeft + 1
             User(i).SyncingVotes = True
+            User(i).HasSyncedVotes = False
+            SendCryptTo i, ReqSyncVotePacket
             DoEvents
         End If
     Next
-
-'CryptToAll ReqSyncVotePacket
-
+    
+    If numLeft = 0 Then frmMain.tmrVotesSync.Enabled = False: Exit Sub
+    AddDebug "Users left to sync votes with: " & numLeft
+    
 Else
     'User(UserIndex).SyncingVotes = False
-    If User(UserIndex).SyncingVotes Then Exit Sub
+    If blForceSync = False Or User(UserIndex).HasSyncedVotes Then Exit Sub
     
     User(UserIndex).SyncingVotes = True
+    User(UserIndex).HasSyncedVotes = False
     SendCryptTo UserIndex, ReqSyncVotePacket
     
 End If
