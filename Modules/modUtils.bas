@@ -696,11 +696,13 @@ Next times
     
 End Sub
 
-Public Function GenUniqueKey(Optional KeyLen As Integer = 0) As String
+Public Function GenUniqueKey(Optional KeyLen As Integer = 0, Optional KeyGen As Integer = -1) As String
 Dim i As Long
-    If Settings.blDebug Then AddUserChat "Using KeyGen: " & Settings.KeyGen, "System", True
+    If Settings.blDebug Then AddUserChat "Using KeyGen: " & KeyGen, "System", True
 
-    Select Case Settings.KeyGen
+    If KeyGen = -1 Then KeyGen = Settings.KeyGen
+
+    Select Case KeyGen
     
         Case Is = 0
             GenUniqueKey = GenUniqueKey1(KeyLen)
@@ -741,6 +743,9 @@ Dim i As Long
                 GenUniqueKey = GenUniqueKey & 1
             Next i
             
+        Case Is = 8
+            GenUniqueKey = GenUniqueKeySimple(KeyLen)
+            
         Case Else
             GenUniqueKey = GenUniqueKey1(KeyLen)
             
@@ -769,6 +774,22 @@ If KeyLen = 0 Then KeyLen = DS2.PRNG(29, 40)
     'If Not VerifyKey(StrConv(GenUniqueKey, vbFromUnicode)) Then MsgBox "Fail!"
     
 'If Settings.Jason Then AddChat "[System] New Key1 Generated (Len: " & KeyLen & "): " & GenUniqueKey
+End Function
+
+Public Function GenUniqueKeySimple(Optional KeyLen As Integer = 0) As String
+Dim i As Long
+Dim DS2 As clsDS2
+Set DS2 = New clsDS2
+If KeyLen = 0 Then KeyLen = DS2.PRNG(4, 12)
+
+    Dim strChars As String
+'    strChars = strChars & UCase(strChars) & "0123456789" & "~!@#$%^&*()_+=-`,./<>';"":}{][\|"
+    strChars = "abcdefghijklmnopqrstuvwxyz0123456789"
+    
+    For i = 0 To KeyLen
+        GenUniqueKeySimple = GenUniqueKeySimple & Mid$(strChars, DS2.PRNG(1, 36), 1)
+    Next
+    
 End Function
 
 Public Function GenUniqueKey2(Optional KeyLen As Integer = 0) As String

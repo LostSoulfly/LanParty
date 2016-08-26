@@ -117,8 +117,8 @@ Dim strKey As String
 Dim UserIndex As Integer
 UserIndex = GetUserIndexFromChat
 If UserIndex = -1 Then Exit Sub
-    strKey = GenUniqueKey(21) 'gen a new chat ID
-    CreatePChatWindow strKey  'Create the new chat window with the ID, then invite the remote user.
+    strKey = GenUniqueKeySimple(6) 'gen a new chat ID
+    CreatePChatWindow strKey   'Create the new chat window with the ID, then invite the remote user.
     GetPChatWindow(strKey).AddChatUser User(UserIndex).UniqueID
     AddUserPrivateChat "Sending invite to " & GetUserNameByIndex(UserIndex) & ", please wait..", "System", strKey
     SendCryptTo UserIndex, PrivateChatPacket(1, 0, User(UserIndex).UniqueID, strKey, "")
