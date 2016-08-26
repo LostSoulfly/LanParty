@@ -236,7 +236,7 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                 User(UserIndex).MyUniqueKey = GenUniqueKey
                 If Not VerifyKeyAsString(User(UserIndex).MyUniqueKey) Then AddDebug "My key is messed up.."
                 SendDataToUDP IP, AuthPacket(3, User(UserIndex).MyUniqueKey)
-                If IsSyncingAdmins Then frmMain.tmrAdmins.Enabled = False
+                If IsSyncingAdmins Then frmMain.tmrAdmins.Enabled = True
                 
             Case Is = 3 'I recv, they skip
                 AddDebug "User " & UserName & " from " & IP & " has Phase 1 authenticated."
@@ -247,7 +247,7 @@ Private Sub HandleAuth(ByVal Index As Long, ByRef Data() As Byte, ByVal StartAdd
                 If Not VerifyKeyAsString(User(UserIndex).UniqueKey) Then AddDebug "Their key is messed up!": RemoveUser UserIndex:  Set Buffer = Nothing: Exit Sub
                 If Not VerifyKeyAsString(User(UserIndex).MyUniqueKey) Then AddDebug "My key is messed up.."
                 SendDataToUDP IP, AuthPacket(4, DS2.EncryptString(User(UserIndex).MyUniqueKey, User(UserIndex).UniqueKey))
-                If IsSyncingAdmins Then frmMain.tmrAdmins.Enabled = False
+                If IsSyncingAdmins Then frmMain.tmrAdmins.Enabled = True
                 
             Case Is = 4
                 AddDebug "Verifying secure connection.."
@@ -763,11 +763,11 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
                 
                 
             Case Is = 3 'PChat Leaving
-                AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has left the chat.", "System", PChatID
+                'AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has left the chat.", "System", PChatID
                 If PChatWindowExists(PChatID) Then GetPChatWindow(PChatID).RemoveChatUser User(UserIndex).UniqueID
                 
             Case Is = 4
-                AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has joined the chat.", "System", PChatID
+                'AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has joined the chat.", "System", PChatID
                 If PChatWindowExists(PChatID) Then GetPChatWindow(PChatID).AddChatUser User(UserIndex).UniqueID
                 'If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
                 ComparePChatUserNums NumUsers, PChatID, User(UserIndex).UniqueID
@@ -776,11 +776,14 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has declined the offer.", "System", PChatID
 
             Case Is = 6 'We have a request to sync the chat's userlist
-                PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
+                'PChatSyncUsers PChatID, User(UserIndex).UniqueID
+                If PChatWindowExists(PChatID) Then GetPChatWindow(PChatID).SendChatUserList User(UserIndex).UniqueID
                 
             Case Is = 7 'we're receiving a chat userlist that we've requested
             
                 Dim i As Long, UserList() As String
+                NumUsers = Buffer.ReadLong
+                
                 ReDim UserList(NumUsers)
                 
                 For i = 0 To NumUsers

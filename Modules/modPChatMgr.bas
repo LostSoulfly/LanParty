@@ -104,10 +104,12 @@ Dim intCurUsers As Integer
 
 intCurUsers = PChatNumUsers(PChatID)
 If intCurUsers >= 0 Then
-    If NumUsers > intCurUsers Then
+    If (NumUsers > intCurUsers) Then
         PChatReqSyncUsers PChatID, UniqueID
         ComparePChatUserNums = False
         Exit Function
+    ElseIf intCurUsers > NumUsers Then
+        GetPChatWindow(PChatID).SendChatUserList UniqueID
     End If
 End If
 
@@ -120,7 +122,6 @@ Public Sub AddUserPrivateChat(Text As String, Name As String, PChatID As String)
     End If
 End Sub
 
-
 Public Sub InitializePChats()
     If m_Forms Is Nothing Then Set m_Forms = New Collection
 End Sub
@@ -129,6 +130,14 @@ Public Sub UpdateAllPChatUserMenus()
 Dim i As Integer
 For i = m_Forms.Count To 1 Step -1
    m_Forms(i).UpdateUserMenus
+Next i
+
+End Sub
+
+Public Sub RemoveUserFromAllPChats(UniqueID As String)
+Dim i As Integer
+For i = m_Forms.Count To 1 Step -1
+   m_Forms(i).RemoveChatUser UniqueID
 Next i
 
 End Sub

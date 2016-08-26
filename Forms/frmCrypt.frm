@@ -89,7 +89,7 @@ AddText strSep
 AddText "User Name" & vbTab & "HardwareID" & vbTab & "CurrentIP"
 AddText Settings.UserName & vbTab & vbTab & Settings.UniqueID & vbTab & Settings.CurrentIP
 AddText "IsSyncing: " & IsSyncingAdmins & vbTab & " HasSyncedAdmins: " & HasSyncedAdmins _
-& vbTab & " tmrAdmin: " & frmMain.tmrAdmins.Enabled & vbTab & " tmrAdminSync: " & frmMain.tmrAdminSync.Enabled
+& vbTab & " tmrAdmin: " & frmMain.tmrAdmins.Enabled
 
 AddText strSep
 

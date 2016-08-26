@@ -47,8 +47,7 @@ Private Sub Main()
         err.Clear
     End If
     On Error GoTo 0
-    '... show your main form next (i.e., frmDebug.Show)
-    ' frmDebug.Show
+    
     If hMod Then FreeLibrary hMod
 
 Call ActualMain

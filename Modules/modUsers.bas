@@ -30,10 +30,15 @@ End Sub
 Public Sub RemoveUser(UserIndex As Integer)
 
 AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has left."
+RemoveUserFromAllPChats User(UserIndex).UniqueID
 RemoveUserFromChat UserIndex
+
+DoEvents
+
 ClearUser (UserIndex)
 'HasSyncedAdmins = False
 'IsSyncingAdmins = True
+'frmMain.tmrAdmins.Enabled = True
 
 End Sub
 
@@ -136,6 +141,7 @@ Case Is = False
     User(UserIndex).Online = False
     
 Case Is = True
+    If User(UserIndex).Online = False Then frmMain.tmrAdmins.Enabled = True
     User(UserIndex).LastHeard = 0
     User(UserIndex).Online = True
     

@@ -122,6 +122,8 @@ Case Is = 6 'requesting a list
 
 Case Is = 7 'sending a list of users
 
+    Buffer.WriteLong UBound(UserList)
+
     For i = 0 To UBound(UserList)
         Buffer.WriteString UserList(i)
     Next i

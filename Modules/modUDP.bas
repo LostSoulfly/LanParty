@@ -243,7 +243,6 @@ AddDebug "[System] Disabling Network Features.."
 
 With frmMain
     .tmrAdmins.Enabled = False
-    .tmrAdminSync.Enabled = False
     .tmrBeacon.Enabled = False
     .tmrPing.Enabled = False
 End With

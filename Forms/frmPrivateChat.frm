@@ -130,7 +130,7 @@ Public Function GetNumChatUsers() As Long
 End Function
 
 Public Sub SyncPChatUsers(UniqueID As String)
-    SendChatUserList UniqueID
+    SendChat "", 6
 End Sub
 
 Private Sub Form_Load()
@@ -167,10 +167,10 @@ If Not blDidSend Then AddChat "Your message echoes endlessly into the void..", "
 
 End Sub
 
-Private Sub SendChatUserList(UID As String)
+Public Sub SendChatUserList(UID As String)
 Dim UserIndex As Integer
 UserIndex = UserIndexByUID(UID)
-AddDebug "Sending PrivateChatUserListPacket 7 of PChat" & Me.Tag & " to: " & UID
+AddDebug "Sending PrivateChatUserListPacket 7 of PChat " & Me.Tag & " to: " & UID
 If UserIndex > 0 Then SendCryptTo UserIndex, PrivateChatUserListPacket(7, GetNumChatUsers, User(UserIndex).UniqueID, Me.Tag, ChatUsers)
 
 End Sub
@@ -182,8 +182,9 @@ End Sub
 Private Sub Form_Resize()
 On Error Resume Next
 
-txtChat.Width = Me.Width - 450
+txtChat.Width = Me.Width - lstUsers.Width - 550
 txtChat.Height = Me.Height - txtEnter.Height - 1200
+lstUsers.Height = txtChat.Height
 txtEnter.Width = txtChat.Width
 txtEnter.Top = txtChat.Height + txtChat.Top + 120
 
@@ -214,6 +215,16 @@ Next i
 
 End Sub
 
+Private Sub mnuShowUserList_Click()
+    mnuShowUserList.Checked = Not mnuShowUserList.Checked
+    
+    If mnuShowUserList.Checked = False Then
+        do stuff here
+        and also in the resize for this form
+    
+    
+End Sub
+
 Private Sub mnuUserInvite_Click(Index As Integer)
 Dim strKey As String
 Dim UserIndex As Integer
@@ -224,8 +235,8 @@ If UserIndex = -1 Then Exit Sub
     Me.AddChatUser User(UserIndex).UniqueID                                                 'Add the user to the pchat
     SendCryptTo UserIndex, PrivateChatPacket(1, GetNumChatUsers, User(UserIndex).UniqueID, strKey, "")    'Ask the user if they'd like to join
     DoEvents
-    AddChat "Sending invite to " & GetUserNameByIndex(UserIndex) & "..", "System"           'Write to chat what we're doing
-    SendChat "Sending invite to " & GetUserNameByIndex(UserIndex) & ", please wait.."       'Send a message to other users in pchat,
+    AddChat "Adding user [" & GetUserNameByIndex(UserIndex) & "] to chat..", "System"       'Write to chat what we're doing
+    SendChat "Adding user [" & GetUserNameByIndex(UserIndex) & "] to chat.."                'Send a message to other users in pchat,
                                                                                             'also sends the current pchat number of users
                                                                                             'thus forcing other users to request the list of users from us.
     
@@ -250,6 +261,8 @@ Dim ChatIndex As Integer
 Dim i As Integer
 
 If Not Len(UniqueID) = 8 Then Exit Sub
+
+If UniqueID = Settings.UniqueID Then Exit Sub
 
 ChatIndex = GetChatIndexFromUID(UniqueID)
 
@@ -277,9 +290,18 @@ End If
 
 UpdateUserMenus
 
+AddChat GetUserName(UniqueID) & " has joined the chat.", "System"
+
 End Sub
 
 Public Sub RemoveChatUser(UniqueID As String)
+
+If GetChatIndexFromUID(UniqueID) > -1 Then
+    lstUsers.RemoveItem GetChatIndexFromUID(UniqueID)
+    'lstUsers.ItemData(lstUsers.ListCount) = UserIndex
+Else
+    AddChat UniqueID & " doesn't exist in the chat?", "ERROR"
+End If
 
 For i = 1 To UBound(ChatUsers)
 
@@ -289,43 +311,63 @@ For i = 1 To UBound(ChatUsers)
     End If
 Next i
 
-If GetChatIndexFromUID(UniqueID) > -1 Then
-    lstUsers.RemoveItem GetChatIndexFromUID(UniqueID)
-    'lstUsers.ItemData(lstUsers.ListCount) = UserIndex
-Else
-    AddChat UniqueID & " doesn't exist in the chat?", "ERROR"
-End If
-
 If UBound(ChatUsers) <= 1 And frameInvite.Visible = True Then DoEvents: Unload Me
 
 UpdateUserMenus
+
+AddChat GetUserName(UniqueID) & " has left the chat.", "System"
 
 End Sub
 
 Public Sub UpdateUserMenus()
 Dim i As Integer
+Dim numCount As Integer
+Dim strUsers As String
 
 For i = (Me.mnuUserInvite.Count) To 2 Step -1
     Unload Me.mnuUserInvite(i)
 Next i
 
+Me.mnuUserInvite(0).Caption = ""
+Me.mnuUserInvite(0).Tag = ""
+
 For i = 1 To UBound(User)
     If GetChatIndexFromUID(User(i).UniqueID) = -1 Then
-        Load Me.mnuUserInvite(i)
-        With Me.mnuUserInvite(i)
-            .Caption = GetUserNameByIndex(i)
-            .Tag = User(i).UniqueID
-            '.Visible = True
-        End With
+        If LenB(Me.mnuUserInvite(0).Caption) > 0 Then
+            Load Me.mnuUserInvite(i)
+            With Me.mnuUserInvite(i)
+                .Caption = GetUserNameByIndex(i)
+                .Tag = User(i).UniqueID
+                '.Visible = True
+            End With
+        Else
+            Me.mnuUserInvite(0).Caption = GetUserNameByIndex(i)
+            Me.mnuUserInvite(0).Tag = User(i).UniqueID
+        End If
     End If
 Next i
 
-If UBound(User) = 1 Or (Me.mnuUserInvite.Count = 1) Then
+If LenB(Me.mnuUserInvite(0).Caption) = 0 Then
     Me.mnuInvite.Visible = False
-    Me.mnuUserInvite(0).Caption = "No other users!"
-    Exit Sub
 Else
     Me.mnuInvite.Visible = True
+End If
+
+For i = 0 To UBound(ChatUsers)
+    If LenB(ChatUsers(i)) > 0 Then
+        If numCount > 5 Then
+            Exit For
+        Else
+            numCount = numCount + 1
+            strUsers = strUsers & GetUserName(ChatUsers(i)) & ", "
+        End If
+    End If
+Next i
+
+If numCount > 0 Then
+    Me.Caption = "Private Chat [" & Me.Tag & "] with " & Left(strUsers, Len(strUsers) - 2) & ".."
+Else
+    Me.Caption = "Private Chat [" & Me.Tag & "]"
 End If
 
 End Sub

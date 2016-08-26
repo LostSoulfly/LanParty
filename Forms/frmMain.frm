@@ -31,22 +31,17 @@ Begin VB.Form frmMain
       Begin VB.Timer tmrVotesSync 
          Enabled         =   0   'False
          Interval        =   1500
-         Left            =   7440
-         Top             =   1920
+         Left            =   6960
+         Top             =   1440
       End
       Begin VB.Timer tmrMonitorGame 
          Interval        =   3000
          Left            =   6960
          Top             =   1920
       End
-      Begin VB.Timer tmrAdminSync 
-         Interval        =   1500
-         Left            =   6960
-         Top             =   1440
-      End
       Begin VB.Timer tmrAdmins 
          Enabled         =   0   'False
-         Interval        =   3000
+         Interval        =   2000
          Left            =   6960
          Top             =   960
       End
@@ -330,7 +325,7 @@ DoEvents
 mnuUser.Visible = False
 'todo: enable for builds
 'CRASHES on breakpoints often
-'WheelHook Me.hwnd
+WheelHook Me.hwnd
 
 InitializeUsers
 Me.Caption = "LanParty Launcher v" & App.Major & "." & App.Minor & "." & App.Revision
@@ -855,7 +850,7 @@ Dim strKey As String
 Dim UserIndex As Integer
 UserIndex = GetUserIndexFromChat
 If UserIndex = -1 Then Exit Sub
-    strKey = InputBox("PChatID?") 'GenUniqueKey(21) 'gen a new chat ID
+    strKey = InputBox("What would you like to call this private chat?", "Private Chat ID", GenUniqueKeySimple(6)) 'GenUniqueKey(21) 'gen a new chat ID
     CreatePChatWindow strKey  'Create the new chat window with the ID, then invite the remote user.
     GetPChatWindow(strKey).AddChatUser User(UserIndex).UniqueID
     AddUserPrivateChat "Sending invite to " & GetUserNameByIndex(UserIndex) & ", please wait..", "System", strKey
@@ -898,22 +893,16 @@ Private Sub sckListen_Error(ByVal Number As Integer, Description As String, ByVa
 End Sub
 
 Private Sub tmrAdmins_Timer()
-CalculateAdminLists
+If GetUserCount <= 0 Then Exit Sub
+    
 If IsSyncingAdmins = True Or HasSyncedAdmins = False Then
     CryptToAllAdminSync ReqAdminSyncPacket
 Else
     tmrAdmins.Enabled = False
 End If
 
-End Sub
+CalculateAdminLists
 
-Private Sub tmrAdminSync_Timer()
-On Error Resume Next
-    If GetUserCount > 0 Then
-    If HasSyncedAdmins Then tmrAdminSync.Enabled = False: Exit Sub
-        If Not HasSyncedAdmins Then CryptToAllAdminSync ReqAdminSyncPacket
-        'CryptToAll ReqAdminSyncPacket
-    End If
 End Sub
 
 Private Sub tmrBeacon_Timer()
