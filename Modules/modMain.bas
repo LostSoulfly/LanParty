@@ -71,13 +71,11 @@ Dim i As Integer
 
 On Error Resume Next
 
-If LCase$(App.EXEName) = "lanparty.new" Then
+If LCase$(App.EXEName) = "lanparty.new" Or LCase$(App.EXEName) = "lanparty.update" Then
 'MsgBox "lanparty.update"
 
-
-    
     For i = 0 To 20
-        Sleep 500 'pause for a second
+        Sleep 500 'pause for a bit
             If FileExists(App.Path & "\LanParty.exe") Then
                 Kill App.Path & "\LanParty.exe"
                 DoEvents
@@ -103,8 +101,8 @@ If FileExists(App.Path & "\LanParty.Update.exe") Then
     Sleep 500
     For i = 0 To 20
         Sleep 500 'pause for a second
-            If FileExists(App.Path & "\LanParty.New.exe") Then
-                Kill App.Path & "\LanParty.New.exe"
+            If FileExists(App.Path & "\LanParty.Update.exe") Then
+                Kill App.Path & "\LanParty.Update.exe"
                 DoEvents
             Else
                 Exit For
