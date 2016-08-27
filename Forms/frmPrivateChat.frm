@@ -15,6 +15,7 @@ Begin VB.Form frmPrivateChat
       Left            =   6840
       TabIndex        =   6
       Top             =   120
+      Visible         =   0   'False
       Width           =   1815
    End
    Begin VB.Frame frameInvite 
@@ -181,12 +182,24 @@ End Sub
 
 Private Sub Form_Resize()
 On Error Resume Next
+If lstUsers.Visible Then
+    
+    txtChat.Width = Me.Width - lstUsers.Width - 550
+    txtChat.Height = Me.Height - txtEnter.Height - 1200
+    lstUsers.Left = txtChat.Left + txtChat.Width + 150
+    lstUsers.Height = txtChat.Height
+    txtEnter.Width = txtChat.Width
+    txtEnter.Top = txtChat.Height + txtChat.Top + 120
 
-txtChat.Width = Me.Width - lstUsers.Width - 550
-txtChat.Height = Me.Height - txtEnter.Height - 1200
-lstUsers.Height = txtChat.Height
-txtEnter.Width = txtChat.Width
-txtEnter.Top = txtChat.Height + txtChat.Top + 120
+Else
+    
+    txtChat.Width = Me.Width - 450
+    txtChat.Height = Me.Height - txtEnter.Height - 1200
+    txtEnter.Width = txtChat.Width
+    txtEnter.Top = txtChat.Height + txtChat.Top + 120
+
+End If
+
 
 End Sub
 
@@ -217,11 +230,9 @@ End Sub
 
 Private Sub mnuShowUserList_Click()
     mnuShowUserList.Checked = Not mnuShowUserList.Checked
+    lstUsers.Visible = mnuShowUserList.Checked
     
-    If mnuShowUserList.Checked = False Then
-        do stuff here
-        and also in the resize for this form
-    
+    Call Form_Resize
     
 End Sub
 

@@ -51,6 +51,7 @@ Description="LanParty Client"
 CompatibleMode="0"
 MajorVer=1
 MinorVer=0
+RevisionVer=286
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Your gateway to easy LAN gaming."
