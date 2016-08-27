@@ -72,7 +72,8 @@ End Sub
 
 Private Sub Form_Load()
     Resize
-    AddChat "*Welcome to the LanParty Client " & GetAppVersion & "*" & vbNewLine & "Please check for updates by going to Menu -> Check For Updates." & vbNewLine & "Type /help for a list of commands that are supported in this window."
+    AddUserChat "LanParty Client " & GetAppVersion, "System", False
+    AddUserChat "Type /help for a list of supported chat commands.", "System", False
 End Sub
 
 Public Sub DockChat()
@@ -233,7 +234,7 @@ If KeyAscii = 13 Then
         CryptToAll ChatPacket(strData, 1)
         
     Case "pm", "whisper"
-        AddChat "[System] Meh. Just double click on their name to open a window."
+        AddUserChat "Meh. Just double click on their name to open a window.", "System", False
     
     Case "killchat", "killchats", "closechats", "closeallchats"
         RemoveAllPChatWindows
@@ -245,23 +246,23 @@ If KeyAscii = 13 Then
         CheckUpdate
         
     Case "savegames", "savegame"
-        AddChat "[System] Saving games list.."
+        AddUserChat "Saving games list..", "System", False
         SaveGames
     
     Case "vote"
-        AddChat "[System] Showing newest vote.."
+        AddUserChat "Showing newest vote..", "System", False
         If UBound(Vote) = 0 Then txtEnter.Text = "": Exit Sub
         ShowVoteWindow UBound(Vote)
         
     Case "votelist"
-        AddChat "[System] Showing vote window.."
+        AddUserChat "Showing vote window..", "System", False
         frmVoteList.Visible = True
         frmVoteList.RefreshList
     
     Case "launch2"
         If Len(strData$) < 1 Then AddChat "Must specify something else to run this command!": txtEnter.Text = "": Exit Sub
         strData = LCase$(strData)
-        AddChat "[System] Searching games for pattern: " & strData
+       AddUserChat "Searching games for pattern: " & strData, "System", False
 
         For i = 1 To UBound(Game)
             
@@ -275,9 +276,9 @@ If KeyAscii = 13 Then
         Next i
     
     Case "launch"
-    If Len(strData$) < 1 Then AddChat "[System] If I actually did that, it would launch every game. EVERY GAME.": Exit Sub
+    If Len(strData$) < 1 Then AddUserChat "If I actually did that, it would launch every game. EVERY GAME.", "System", False: Exit Sub
         strData = "*" & LCase$(strData) & "*"
-        AddChat "[System] Searching games for pattern: " & strData
+        AddUserChat "Searching games for pattern: " & strData, "System", False
 
         For i = 1 To UBound(Game)
             
@@ -292,7 +293,7 @@ If KeyAscii = 13 Then
     
     
     Case Else
-        AddChat "[System] Unknown command: " & strCommand
+        AddUserChat "Unknown command: " & strCommand, "System", False
     
     End Select
     

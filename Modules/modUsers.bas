@@ -27,9 +27,9 @@ Public Sub InitializeUsers()
     ReDim User(0) As LanUser
 End Sub
 
-Public Sub RemoveUser(UserIndex As Integer)
+Public Sub RemoveUser(UserIndex As Integer, Optional blSilent As Boolean = False)
 
-AddChat "[System] " & GetUserNameByIndex(UserIndex) & " has left."
+If blSilent = False Then AddUserChat GetUserNameByIndex(UserIndex) & " has left.", "System", False
 RemoveUserFromAllPChats User(UserIndex).UniqueID
 RemoveUserFromChat UserIndex
 
@@ -207,7 +207,7 @@ Public Sub ChangeUserName(UserIndex As Integer, Name As String)
     
     If ChatIndex = -1 Then AddDebug "CUCN: Not in list - " & Name: Exit Sub
     
-    AddChat "[System] Changing " & GetUserNameByIndex(UserIndex) & "'s name to: " & Name
+    AddUserChat "Changing " & GetUserNameByIndex(UserIndex) & "'s name to: " & Name, "System", False
     User(UserIndex).UserName = Name
     frmChat.lstUsers.List(ChatIndex) = Name
     
@@ -274,11 +274,11 @@ Public Function MuteUser(UserIndex As Integer, Mute As Boolean)
 
     If UserIndex = -1 Then
         frmChat.txtEnter.Enabled = Not Mute
-        AddChat "[System] " & "You have been globally " & IIf(Mute, "muted.", "unmuted.")
+        AddUserChat "You have been globally " & IIf(Mute, "muted.", "unmuted."), "System", False
         Exit Function
     End If
 
-    AddChat "[System] " & "You have " & IIf(Mute, "muted ", "unmuted ") & GetUserNameByIndex(UserIndex) & "."
+    AddUserChat "You have " & IIf(Mute, "muted ", "unmuted ") & GetUserNameByIndex(UserIndex) & ".", "System", False
 
     User(UserIndex).Muted = Mute
     frmMain.UpdateMenu UserIndex
@@ -288,7 +288,7 @@ Public Function MuteUserUID(UID As String, Mute As Boolean)
 
     If UID = Settings.UniqueID Then
         frmChat.txtEnter.Enabled = Not Mute
-        AddChat "[System] " & "You have been globally " & IIf(Mute, "muted.", "unmuted.")
+        AddUserChat "You have been globally " & IIf(Mute, "muted.", "unmuted."), "System", False
         Exit Function
     End If
 

@@ -159,7 +159,7 @@ Else
     CryptKey = "e)_o2%$b.Bz+5xjVCcgJ'n-Zw*MIAL7>(|lYscES,&WXv4/NA?{<1tHd3UKfa}=_" & CalculateAdler(LoadFile(App.Path & "\" & App.EXEName & ".exe"))
 End If
 
-If Settings.Jason Then AddChat "[System] CryptKey: " & CStr(CryptKey)
+'If Settings.Jason Then AddChat "[System] CryptKey: " & CStr(CryptKey)
 'If Settings.Jason Then AddChat "[System] This is the main cryptography key that all packets are encrypted with. The last few characters are generated at runtime " & _
 '    "and change with every version of the program, as it is essentially a hash of this EXE itself. This means that each version can only talk to the same version of itself."
     

@@ -65,7 +65,7 @@ Case Is = 4
 
 End Select
 
-If Not Syncing Then AddChat "[System] " & GetUserName(UID) & " has voted in " & Chr(34) & Vote(VoteIndex).Title & Chr(34)
+If Not Syncing Then AddUserChat GetUserName(UID) & " has voted in " & Chr(34) & Vote(VoteIndex).Title & Chr(34), "System", False
 
 If Vote(VoteIndex).AdminVote Then
     If CalculateAdminVote(VoteID) Then

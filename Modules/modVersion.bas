@@ -102,7 +102,7 @@ If DownloadFile("http://trollparty.org/LAN/version.txt", App.Path & "\Version.tx
     strFile = Split(LoadFile(App.Path & "\Version.txt"), vbNewLine)
     'MsgBox LoadFile(App.Path & "\Version.txt")
     If UBound(strFile) >= 1 Then
-        If Not InStr(1, strFile(0), ".") >= 1 Or Len(strFile(0)) > 10 Then AddUserChat "Update file is corrupt or incorrect format!", "System", True: Exit Sub
+        If Not InStr(1, strFile(0), ".") >= 1 Or Len(strFile(0)) > 10 Then AddUserChat "Update file is corrupt or incorrect format!", "System", False: Exit Sub
         strVersion = Trim$(Replace(strFile(0), ".", ""))
         strDownload = Trim$(strFile(1))
         
@@ -115,18 +115,18 @@ If DownloadFile("http://trollparty.org/LAN/version.txt", App.Path & "\Version.tx
            
         If FileExists(App.Path & "\Version.txt") Then Kill App.Path & "\Version.txt"
             If CLng(strVersion) = CLng(App.Major & App.Minor & App.Revision) Then
-                AddUserChat "Your version is up to date!", "System", True
+                AddUserChat "Your version is up to date!", "System", False
                 Exit Sub
             ElseIf CLng(strVersion) < CLng(App.Major & App.Minor & App.Revision) Then
-                AddUserChat "You have a newer version than the server!", "System", True
+                AddUserChat "You have a newer version than the server!", "System", False
                 Exit Sub
             ElseIf CLng(strVersion) > CLng(App.Major & App.Minor & App.Revision) Then
-                AddUserChat "There is an update available: " & App.Major & App.Minor & App.Revision & " -> " & strVersion, "System", True
+                AddUserChat "There is an update available: " & App.Major & App.Minor & App.Revision & " -> " & strVersion, "System", False
                 If MsgBox(strChangeLog, vbYesNo, "Update Available") = vbYes Then
-                        AddUserChat "Downloading update, please wait..", "System", True
+                        AddUserChat "Downloading update, please wait..", "System", False
                         DoEvents
                     If DownloadFile(strDownload, App.Path & "\LanParty.New.exe") = True Then
-                        AddUserChat "Update downloaded! Updating..", "System", True
+                        AddUserChat "Update downloaded! Updating..", "System", False
                         Sleep 1500
                         If Not isAdmin Then
                             MsgBox "You aren't running this program as an Administrator." & vbNewLine & vbNewLine & _
@@ -137,7 +137,7 @@ If DownloadFile("http://trollparty.org/LAN/version.txt", App.Path & "\Version.tx
                         frmMain.DoExit
                         
                     Else
-                        AddUserChat "There was an issue downloading the update..", "System", True
+                        AddUserChat "There was an issue downloading the update..", "System", False
                         Exit Sub
                     End If
                 Else
@@ -147,7 +147,7 @@ If DownloadFile("http://trollparty.org/LAN/version.txt", App.Path & "\Version.tx
             End If
     Else
         If FileExists(App.Path & "\Version.txt") Then Kill App.Path & "\Version.txt"
-        AddUserChat "Version file is corrupt or incorrect format!", "System", True: Exit Sub
+        AddUserChat "Version file is corrupt or incorrect format!", "System", False: Exit Sub
     End If
 End If
 

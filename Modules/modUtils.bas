@@ -698,7 +698,7 @@ End Sub
 
 Public Function GenUniqueKey(Optional KeyLen As Integer = 0, Optional KeyGen As Integer = -1) As String
 Dim i As Long
-    If Settings.blDebug Then AddUserChat "Using KeyGen: " & KeyGen, "System", True
+    If Settings.blDebug Then AddUserChat "Using KeyGen: " & KeyGen, "System", False
 
     If KeyGen = -1 Then KeyGen = Settings.KeyGen
 
@@ -751,7 +751,7 @@ Dim i As Long
             
     End Select
 
-If Settings.Jason Then AddUserChat "New Key Generated (Len: " & KeyLen & "): " & GenUniqueKey, "System", True
+If Settings.Jason Then AddUserChat "New Key Generated (Len: " & KeyLen & "): " & GenUniqueKey, "System", False
 
 End Function
 

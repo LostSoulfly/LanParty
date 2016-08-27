@@ -33,11 +33,11 @@ End With
 Exit Sub
 Escape:
 If err.Number = 10048 Then
-    AddChat "[System] Unable to bind UDP to port " & UDPClientPort & "; port is in use."
-    AddChat "[System] Network functions will not work, please restart the program after freeing the port in question."
+    AddUserChat "Unable to bind UDP to port " & UDPClientPort & "; port is in use.", "System", False
+    AddUserChat "Network functions will not work, please restart the program after freeing the port in question.", "System", False
     
 Else
-    AddChat "[System] " & "LoadUDP Error: " & err.Number & " " & err.Description
+    AddUserChat "LoadUDP Error: " & err.Number & " " & err.Description, "System", False
 End If
 
 err.Clear

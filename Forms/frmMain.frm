@@ -332,7 +332,7 @@ Me.Caption = "LanParty Launcher v" & App.Major & "." & App.Minor & "." & App.Rev
 'mnuApplyAdmin_Click
 RefreshBackground
 SelectGame 1
-AddChat "[System] " & "Please wait while I locate other users.."
+AddUserChat "Please wait while I locate other users..", "System", False
 UpdateAdminMenus False
 'Start broadcasting our existence.
 
@@ -407,7 +407,7 @@ CryptToAll NewAdminVotePacket(VoteID, Settings.UniqueID)
 
 ShowVoteWindow VoteExists(VoteID)
 
-AddChat "[System] Starting new LanAdmin vote.."
+AddUserChat "Starting new LanAdmin vote..", "System", False
 
 End Sub
 
@@ -735,7 +735,7 @@ If Len(Game(CurrentGameIndex).EXEPath) = 0 Then
         'because assuming is easy.
         'I could loop through the PATH system variable but
         'I doubt anyone would ever use it in that way
-        AddChat "[System] I'm assuming the System32 folder because I'm lazy."
+        AddUserChat "I'm assuming the System32 folder because I'm lazy.", "System", False
         dirPath = Environ("WINDIR") & "\System32\"
     Else
         Exit Sub
@@ -752,7 +752,7 @@ If DirExists(dirPath) Then
     
 Else
     
-    AddChat "[System] Unable to locate Game directory."
+    AddUserChat "Unable to locate Game directory.", "System", False
     
 End If
     
@@ -1102,7 +1102,7 @@ strResources = Split(LoadFile(App.Path & "\Resources.txt"), vbNewLine)
 
 If UBound(strResources) < 1 Then mnuResources.Visible = False: Exit Sub
 
-If (UBound(strResources) + 1) Mod 2 <> 0 Then AddChat "[System] Incorrect number of lines in Resources.txt!": Exit Sub
+If (UBound(strResources) + 1) Mod 2 <> 0 Then AddUserChat "Incorrect number of lines in Resources.txt!", "System", False: Exit Sub
 
 'mnuResource(0).Visible = False
 

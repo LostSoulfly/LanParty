@@ -51,7 +51,7 @@ End Function
 
 Public Function PChatNumUsers(PChatID As String) As Long
     
-If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!": PChatNumUsers = -1: Exit Function
+If Not PChatWindowExists(PChatID) Then AddDebug "PChat " & PChatID & " doesn't exist!": PChatNumUsers = -1: Exit Function
 
 PChatNumUsers = GetPChatWindow(PChatID).GetNumChatUsers
 
@@ -60,7 +60,7 @@ End Function
 Public Sub PChatSyncUsers(PChatID As String, UserList() As String)
 Dim i As Long
 
-    If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!": Exit Sub
+    If Not PChatWindowExists(PChatID) Then AddDebug "PChat " & PChatID & " doesn't exist!": Exit Sub
         
     For i = 0 To UBound(UserList)
         GetPChatWindow(PChatID).AddChatUser UserList(i)
@@ -71,7 +71,7 @@ End Sub
 
 Public Sub PChatReqSyncUsers(PChatID As String, UniqueID As String)
 
-    If Not PChatWindowExists(PChatID) Then AddChat "PChat " & PChatID & " doesn't exist!": Exit Sub
+    If Not PChatWindowExists(PChatID) Then AddDebug "PChat " & PChatID & " doesn't exist!": Exit Sub
     AddDebug "Sending PChatReqSyncUsers for chat " & PChatID & " to " & UniqueID
     GetPChatWindow(PChatID).SyncPChatUsers UniqueID
     

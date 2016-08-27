@@ -256,7 +256,7 @@ Public Function StoppedPlaying(GameIndex As Integer)
 'broadcast stopped playing
 'also anything else
 CryptToAll NowPlayingPacket(0, Game(GameIndex).GameUID)
-AddChat "[System] You've stopped playing: " & Game(GameIndex).Name
+AddUserChat "You've stopped playing: " & Game(GameIndex).Name, "System", False
 Settings.CurrentGame = 0
 End Function
 
@@ -264,7 +264,7 @@ Public Function StartedPlaying(GameIndex As Integer)
 'broadcast started playing game
 If IsGameRunning(GameIndex) Then
     Settings.CurrentGame = GameIndex
-    AddChat "[System] You've started playing: " & Game(GameIndex).Name
+    AddUserChat "You've started playing: " & Game(GameIndex).Name, "System", False
     CryptToAll NowPlayingPacket(1, Game(GameIndex).GameUID)
 Else
     AddDebug "Unable to locate GameEXE: " & Game(GameIndex).GameEXE
@@ -438,12 +438,12 @@ End Function
 Public Function InstallGame(GameIndex As Integer) As Boolean
 Dim idProg As Long, iExit As Long
 
-If Len(Game(GameIndex).InstallerPath$) = 0 Then AddChat "[System] InstallerPath is null.": Exit Function
+If Len(Game(GameIndex).InstallerPath$) = 0 Then AddUserChat "InstallerPath is null.", "System", False: Exit Function
 
 Dim strPath As String
 strPath = FixFilePath(Game(GameIndex).InstallerPath)
 
-If Not FileExists(strPath) Then AddChat "[System] InstallerPath cannot be located.": Exit Function
+If Not FileExists(strPath) Then AddUserChat "InstallerPath cannot be located.", "System", False: Exit Function
 
 
 
