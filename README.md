@@ -1,7 +1,7 @@
 # LanParty
 Chat client and game launcher designed for simplifying LAN parties. Written in Visual Basic 6.
 
-![Screenshot](/master/Screens/1.JPG?raw=true)
+![Screenshot](screens/1.jpg?raw=true)
 
 The LanParty Client is designed to be distributed with a pre-made database of games of your choosing, ensuring that each game is available on the end user's computer.
 
