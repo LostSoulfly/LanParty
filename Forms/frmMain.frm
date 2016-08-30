@@ -938,9 +938,11 @@ End Sub
 Private Sub tmrIconSize_Timer()
 On Error GoTo Escape
 
+If ((Not Game) = -1) Then Exit Sub 'catch a crash
+
 If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
 
-    UpdateIconList
+    UpdateIconList True
     If frmMain.picContainer.Height < frmMain.Height Then frmMain.picContainer.Height = frmMain.Height + 200
     If frmMain.picContainer.Width < frmMain.Width Then frmMain.picContainer.Width = frmMain.Width + 200
     
@@ -953,7 +955,7 @@ If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
     If (UBound(Game) / lngLastIconsPerRow) > NumOfRows Then NumOfRows = NumOfRows + 1
     
     'biggest height the box needs to be
-    MaxLocationIcon = NumOfRows * (imgIcon(1).Top + imgIcon(1).Height + lblIcon(1).Height)
+    MaxLocationIcon = NumOfRows * (imgIcon(0).Top + imgIcon(0).Height + lblIcon(0).Height)
     
     'num rows visi
     
@@ -963,7 +965,7 @@ If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
         Dim i As Integer
         
         For i = 1 To NumOfRows
-            If i * (imgIcon(1).Top + imgIcon(1).Height + lblIcon(1).Height) >= frmMain.Height Then
+            If i * (imgIcon(0).Top + imgIcon(0).Height + lblIcon(0).Height) >= frmMain.Height Then
                 NumRowsVisible = i - 1
                 Exit For
             End If
@@ -989,7 +991,8 @@ Exit Sub
 Escape:
 
 If err.Number = 9 Then err.Clear: Exit Sub
-
+If err.Number = 360 Then Resume Next
+If err.Number = 365 Then Resume Next
 AddDebug "tmrIconSize " & err.Number & ": " & err.Description
 
 End Sub

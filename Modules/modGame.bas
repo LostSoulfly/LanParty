@@ -63,28 +63,31 @@ AddToString "", strGames
 
 For i = 1 To UBound(Game)
     With Game(i)
-        AddToString "Name " & .Name, strGames
-        AddToString "IconPath " & .IconPath, strGames
-        AddToString "EXEPath " & .EXEPath, strGames
-        AddToString "GameEXE " & .GameEXE, strGames
-        AddToString "CommandArgs " & .CommandArgs, strGames
-        AddToString "MonitorRunning " & .MonitorRunning, strGames
-        AddToString "MonitorEXE " & .MonitorEXE, strGames
-        If Len(.GameUID$) = 0 Then
-            .GameUID = CalcGameUID(i)
+        If LenB(Game(i).GameEXE) > 0 Then
+            AddToString "Name " & .Name, strGames
+            AddToString "IconPath " & .IconPath, strGames
+            AddToString "EXEPath " & .EXEPath, strGames
+            AddToString "GameEXE " & .GameEXE, strGames
+            AddToString "CommandArgs " & .CommandArgs, strGames
+            AddToString "MonitorRunning " & .MonitorRunning, strGames
+            AddToString "MonitorEXE " & .MonitorEXE, strGames
+            If Len(.GameUID$) = 0 Then
+                .GameUID = CalcGameUID(i)
+            End If
+            AddToString "GameUID " & .GameUID, strGames
+            AddToString "InstallFirst " & .InstallFirst, strGames
+            AddToString "InstallerPath " & .InstallerPath, strGames
+            AddToString "GameType " & .GameType, strGames
+            'AddToString "ConfigFile " & .ConfigFile, strGames
+            'AddToString "UserNameField " & .UserNameField, strGames
+            'AddToString "UserNameConfigMethod " & .UserNameConfigMethod, strGames
+            AddToString "", strGames
         End If
-        AddToString "GameUID " & .GameUID, strGames
-        AddToString "InstallFirst " & .InstallFirst, strGames
-        AddToString "InstallerPath " & .InstallerPath, strGames
-        AddToString "GameType " & .GameType, strGames
-        'AddToString "ConfigFile " & .ConfigFile, strGames
-        'AddToString "UserNameField " & .UserNameField, strGames
-        'AddToString "UserNameConfigMethod " & .UserNameConfigMethod, strGames
-        AddToString "", strGames
     End With
 Next
 
 AddToString "// Settings file generated on " & IIf(IsHost64Bit, "64-bit", "32-bit") & " " & NativeGetVersion & " //", strGames
+FileCopy GameFile, GameFile & ".bak"
 WriteFile strGames, GameFile, True
 
 End Sub

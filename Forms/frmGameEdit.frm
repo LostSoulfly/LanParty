@@ -14,6 +14,14 @@ Begin VB.Form frmGameEdit
    ScaleWidth      =   6840
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton cmdDelete 
+      Caption         =   "Delete Game"
+      Height          =   255
+      Left            =   5520
+      TabIndex        =   24
+      Top             =   120
+      Width           =   1215
+   End
    Begin VB.CheckBox chkCommand 
       Caption         =   "Run As Command"
       Height          =   255
@@ -70,7 +78,7 @@ Begin VB.Form frmGameEdit
       TabIndex        =   0
       Text            =   "Text1"
       Top             =   120
-      Width           =   5535
+      Width           =   4215
    End
    Begin VB.CommandButton cmdUpdate 
       Caption         =   "= Update ="
@@ -273,24 +281,38 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Dim GameIndex As Integer
 
-Private Sub UpdateGame(Index As Integer)
-AddDebug "UpdateGame: " & Index
-With Game(Index)
-    
-    .EXEPath = Trim$(txtEXEPath.Text)
-    .GameEXE = Trim$(txtGameEXE.Text)
-    .CommandArgs = Trim$(txtCMDArgs.Text)
-    .IconPath = Trim$(txtIconPath.Text)
-    .MonitorRunning = IIf(chkMonitor.Value = vbChecked, True, False)
-    .MonitorEXE = Trim$(txtMonitorEXE.Text)
-    .Name = Trim$(txtName.Text)
-    .InstallerPath = Trim$(txtInstallerPath.Text)
-    .InstallFirst = IIf(chkInstallFirst.Value = vbChecked, True, False)
-    .GameType = IIf(chkCommand.Value = vbChecked, 1, 0)
-    'AddDebug "UpdateGame - CalcGameUID"
-    CalcGameUID Index
-End With
-
+Private Sub UpdateGame(Index As Integer, Optional blDelete As Boolean = False)
+AddDebug "UpdateGame: " & Index & " blDelete: " & blDelete
+If Not blDelete Then
+    With Game(Index)
+        .EXEPath = Trim$(txtEXEPath.Text)
+        .GameEXE = Trim$(txtGameEXE.Text)
+        .CommandArgs = Trim$(txtCMDArgs.Text)
+        .IconPath = Trim$(txtIconPath.Text)
+        .MonitorRunning = IIf(chkMonitor.Value = vbChecked, True, False)
+        .MonitorEXE = Trim$(txtMonitorEXE.Text)
+        .Name = Trim$(txtName.Text)
+        .InstallerPath = Trim$(txtInstallerPath.Text)
+        .InstallFirst = IIf(chkInstallFirst.Value = vbChecked, True, False)
+        .GameType = IIf(chkCommand.Value = vbChecked, 1, 0)
+        'AddDebug "UpdateGame - CalcGameUID"
+        CalcGameUID Index
+    End With
+Else
+    With Game(Index)
+        .EXEPath = ""
+        .GameEXE = ""
+        .CommandArgs = ""
+        .IconPath = ""
+        .MonitorRunning = False
+        .MonitorEXE = ""
+        .Name = ""
+        .InstallerPath = ""
+        .InstallFirst = False
+        .GameType = 0
+        .GameUID = ""
+    End With
+End If
 End Sub
 
 Public Sub RefreshGame(Index As Integer)
@@ -347,6 +369,19 @@ If GameIndex <= LBound(Game) Then GameIndex = LBound(Game) + 1
 RefreshGame GameIndex
 End Sub
 
+Private Sub cmdDelete_Click()
+If MsgBox("Are you certain you wish to delete this game?", vbYesNoCancel, "Delete Game") = vbYes Then
+    UpdateGame GameIndex, True
+    SaveGames
+    DoEvents
+    InitializeGameArray
+    UpdateIconList True
+    DoEvents
+    
+    cmdNext_Click
+End If
+End Sub
+
 Private Sub cmdLocalPath_Click()
 
     txtEXEPath.Text = FormatToLocalPath(txtEXEPath.Text)
@@ -395,10 +430,9 @@ txtGameEXE.Text = Trim(txtGameEXE.Text$)
         End If
     Else
         UpdateGame GameIndex
-        If chkGameUID.Value = vbChecked Then
-            CalcGameUID GameIndex, True
-        End If
     End If
+    
+    If chkGameUID.Value = vbChecked Then CalcGameUID GameIndex, True
 End Sub
 
 Private Sub Form_Load()

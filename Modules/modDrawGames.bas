@@ -17,7 +17,7 @@ On Error GoTo oops
 Dim i As Integer
 
 'this is sure to error often.
-For i = 1 To UBound(Game)
+For i = 2 To frmMain.imgIcon.Count
     Unload frmMain.imgIcon(i)
     Unload frmMain.lblIcon(i)
 Next i
@@ -28,6 +28,8 @@ oops:
 
 If err.Number = 340 Then err.Clear: Exit Sub
 
+If err.Number = 360 Then Resume Next
+If err.Number = 365 Then Resume Next
 AddDebug err.Number & ": " & err.Description
 
 End Sub
@@ -41,6 +43,8 @@ Dim NextLeft As Long
 Dim NextTop As Long
 Dim IconTotalWidth As Long
 Dim IconTotalHeight As Long
+
+If ((Not Game) = -1) Then Exit Sub 'prevent an early error, though it would be caught with err 9 at the bottom
 
 If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
 
@@ -97,9 +101,10 @@ Dim i As Integer
             LoopCurrentRow = 0
         End If
         
-        Load frmMain.imgIcon(i)
-        Load frmMain.lblIcon(i)
-        
+        If i >= frmMain.imgIcon.Count Then
+            Load frmMain.imgIcon(i)
+            Load frmMain.lblIcon(i)
+        End If
         'determine this icon's placement.
         
         With frmMain.imgIcon(i)
@@ -152,8 +157,9 @@ Exit Sub
 
 Escape:
 
-If err.Number = 9 Then err.Clear: Exit Sub
 
+If err.Number = 360 Then Resume Next
+If err.Number = 365 Then Resume Next
 AddDebug err.Number & ": " & err.Description
 'err.Clear
 
