@@ -993,6 +993,7 @@ Escape:
 If err.Number = 9 Then err.Clear: Exit Sub
 If err.Number = 360 Then Resume Next
 If err.Number = 365 Then Resume Next
+'Resume Next
 AddDebug "tmrIconSize " & err.Number & ": " & err.Description
 
 End Sub

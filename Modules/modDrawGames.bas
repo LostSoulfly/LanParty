@@ -27,9 +27,9 @@ Exit Sub
 oops:
 
 If err.Number = 340 Then err.Clear: Exit Sub
-
 If err.Number = 360 Then Resume Next
 If err.Number = 365 Then Resume Next
+'Resume Next
 AddDebug err.Number & ": " & err.Description
 
 End Sub
@@ -157,9 +157,10 @@ Exit Sub
 
 Escape:
 
-
+If err.Number = 9 Then err.Clear: Exit Sub
 If err.Number = 360 Then Resume Next
 If err.Number = 365 Then Resume Next
+'Resume Next
 AddDebug err.Number & ": " & err.Description
 'err.Clear
 
