@@ -210,14 +210,17 @@ End If
 If Game(GameIndex).InstallFirst Then
     If Game(GameIndex).Installed = False Then
         'needs to install the game first
-        MsgBox "This game must be installed before launching." & vbNewLine & _
-        "If you've installed it already, right click its icon and choose ""Locate Game""", vbExclamation, "Installation Required"
+            If MsgBox("This game must be installed before launching." & vbNewLine & _
+            "Would you like to begin the installation?" & vbNewLine & _
+            "(If you've installed it already, right click its icon and choose ""Locate Game"")", vbYesNoCancel, "Installation Required") = vbYes Then
+                InstallGame GameIndex
+            End If
         Exit Function
     Else
-        
         If Not FileExists(GetGameExePath(GameIndex)) Then
             MsgBox "This game must be installed before launching." & vbNewLine & _
-        "If you've installed it already, right click its icon and choose ""Locate Game""", vbExclamation, "Unable To Locate Game"
+            "If you've installed it already, right click its icon and choose ""Locate Game""", vbExclamation, "Unable To Locate Game"
+            Exit Function
         End If
     End If
 End If

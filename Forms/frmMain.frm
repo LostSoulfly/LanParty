@@ -1085,8 +1085,7 @@ ResetGameSelect
     'lblIcon(GameIndex).ForeColor = vbGreen
 
 CurrentGameIndex = GameIndex
-mnuInstallGame.Visible = Game(GameIndex).InstallFirst And (Not Game(GameIndex).Installed)
-
+mnuInstallGame.Visible = (Game(GameIndex).InstallFirst And (Not Game(GameIndex).Installed))
 End Sub
 
 Public Sub UpdateMenu(UserIndex As Integer)
