@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form frmGameEdit 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Game Editor"
-   ClientHeight    =   4200
+   ClientHeight    =   4530
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   6840
@@ -10,10 +10,20 @@ Begin VB.Form frmGameEdit
    MaxButton       =   0   'False
    MinButton       =   0   'False
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   4200
+   ScaleHeight     =   4530
    ScaleWidth      =   6840
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin VB.TextBox txtPlayers 
+      Alignment       =   2  'Center
+      Height          =   285
+      Left            =   1200
+      TabIndex        =   25
+      Text            =   "0"
+      ToolTipText     =   "Multiple games can be separated by semicolons ( ; )"
+      Top             =   2640
+      Width           =   495
+   End
    Begin VB.CommandButton cmdDelete 
       Caption         =   "Delete Game"
       Height          =   255
@@ -27,7 +37,7 @@ Begin VB.Form frmGameEdit
       Height          =   255
       Left            =   2400
       TabIndex        =   11
-      Top             =   2760
+      Top             =   3120
       Width           =   1815
    End
    Begin VB.CheckBox chkMonitor 
@@ -35,7 +45,7 @@ Begin VB.Form frmGameEdit
       Height          =   255
       Left            =   120
       TabIndex        =   8
-      Top             =   2760
+      Top             =   3120
       Width           =   2055
    End
    Begin VB.CheckBox chkInstallFirst 
@@ -43,7 +53,7 @@ Begin VB.Form frmGameEdit
       Height          =   255
       Left            =   120
       TabIndex        =   9
-      Top             =   3000
+      Top             =   3360
       Width           =   1935
    End
    Begin VB.TextBox txtInstallerPath 
@@ -61,16 +71,16 @@ Begin VB.Form frmGameEdit
       Height          =   255
       Left            =   120
       TabIndex        =   10
-      Top             =   3240
+      Top             =   3600
       Width           =   1455
    End
    Begin VB.CommandButton cmdLocalPath 
       Caption         =   "Convert To Local Paths"
       Height          =   255
-      Left            =   4080
+      Left            =   4800
       TabIndex        =   7
-      Top             =   2280
-      Width           =   2655
+      Top             =   2640
+      Width           =   1935
    End
    Begin VB.TextBox txtName 
       Height          =   285
@@ -85,7 +95,7 @@ Begin VB.Form frmGameEdit
       Height          =   375
       Left            =   1800
       TabIndex        =   13
-      Top             =   3720
+      Top             =   4080
       Width           =   1575
    End
    Begin VB.CommandButton cmdNew 
@@ -93,7 +103,7 @@ Begin VB.Form frmGameEdit
       Height          =   375
       Left            =   3480
       TabIndex        =   14
-      Top             =   3720
+      Top             =   4080
       Width           =   1575
    End
    Begin VB.CommandButton cmdNext 
@@ -101,7 +111,7 @@ Begin VB.Form frmGameEdit
       Height          =   375
       Left            =   5160
       TabIndex        =   15
-      Top             =   3720
+      Top             =   4080
       Width           =   1575
    End
    Begin VB.CommandButton chkPrevious 
@@ -109,7 +119,7 @@ Begin VB.Form frmGameEdit
       Height          =   375
       Left            =   120
       TabIndex        =   12
-      Top             =   3720
+      Top             =   4080
       Width           =   1575
    End
    Begin VB.TextBox txtCMDArgs 
@@ -124,10 +134,10 @@ Begin VB.Form frmGameEdit
       Height          =   285
       Left            =   1200
       TabIndex        =   6
-      Text            =   "Monitor EXE"
+      Text            =   "Monitor EXE(s)"
       ToolTipText     =   "Multiple games can be separated by semicolons ( ; )"
       Top             =   2280
-      Width           =   1575
+      Width           =   3135
    End
    Begin VB.TextBox txtGameEXE 
       Height          =   285
@@ -155,12 +165,20 @@ Begin VB.Form frmGameEdit
       Top             =   480
       Width           =   5535
    End
+   Begin VB.Label lblPlayers 
+      Caption         =   "Max Players:"
+      Height          =   255
+      Left            =   120
+      TabIndex        =   26
+      Top             =   2640
+      Width           =   975
+   End
    Begin VB.Image Image3 
       Height          =   255
       Left            =   1560
       Picture         =   "frmGameEdit.frx":0000
       Stretch         =   -1  'True
-      Top             =   3240
+      Top             =   3600
       Width           =   315
    End
    Begin VB.Image Image2 
@@ -168,12 +186,12 @@ Begin VB.Form frmGameEdit
       Left            =   5400
       Picture         =   "frmGameEdit.frx":0442
       Stretch         =   -1  'True
-      Top             =   3240
+      Top             =   3600
       Width           =   315
    End
    Begin VB.Image Image1 
       Height          =   255
-      Left            =   2880
+      Left            =   4440
       Picture         =   "frmGameEdit.frx":0884
       Stretch         =   -1  'True
       Top             =   2280
@@ -182,8 +200,8 @@ Begin VB.Form frmGameEdit
    Begin VB.Line Line5 
       X1              =   0
       X2              =   6840
-      Y1              =   2640
-      Y2              =   2640
+      Y1              =   3000
+      Y2              =   3000
    End
    Begin VB.Label label8 
       Caption         =   "Installer Path:"
@@ -204,26 +222,26 @@ Begin VB.Form frmGameEdit
    Begin VB.Line Line4 
       X1              =   6720
       X2              =   6720
-      Y1              =   2760
-      Y2              =   3600
+      Y1              =   3120
+      Y2              =   3960
    End
    Begin VB.Line Line3 
       X1              =   5880
       X2              =   6720
-      Y1              =   3600
-      Y2              =   3600
+      Y1              =   3960
+      Y2              =   3960
    End
    Begin VB.Line Line2 
       X1              =   5880
       X2              =   6720
-      Y1              =   2760
-      Y2              =   2760
+      Y1              =   3120
+      Y2              =   3120
    End
    Begin VB.Line Line1 
       X1              =   5880
       X2              =   5880
-      Y1              =   2760
-      Y2              =   3600
+      Y1              =   3120
+      Y2              =   3960
    End
    Begin VB.Label Label5 
       Caption         =   "Cmd Args:"
@@ -270,7 +288,7 @@ Begin VB.Form frmGameEdit
       Height          =   495
       Left            =   4680
       TabIndex        =   21
-      Top             =   2760
+      Top             =   3120
       Width           =   1335
    End
 End
@@ -295,6 +313,7 @@ If Not blDelete Then
         .InstallerPath = Trim$(txtInstallerPath.Text)
         .InstallFirst = IIf(chkInstallFirst.Value = vbChecked, True, False)
         .GameType = IIf(chkCommand.Value = vbChecked, 1, 0)
+        .MaxPlayers = IIf(IsNumeric(txtPlayers.Text), CInt(txtPlayers.Text), 0)
         'AddDebug "UpdateGame - CalcGameUID"
         CalcGameUID Index
     End With
@@ -311,6 +330,7 @@ Else
         .InstallFirst = False
         .GameType = 0
         .GameUID = ""
+        .MaxPlayers = 0
     End With
 End If
 End Sub
@@ -330,7 +350,8 @@ With Game(Index)
     chkInstallFirst.Value = IIf(.InstallFirst, vbChecked, vbUnchecked)
     chkCommand.Value = IIf(.GameType = 0, vbUnchecked, vbChecked)
     Me.Caption = "Game Editor - " & Index & " - " & .Name
-
+    txtPlayers.Text = .MaxPlayers
+    
 End With
 
 UpdateCmdChk

@@ -24,6 +24,7 @@ Public Type GameData
     InstallerPath As String
     Installed As Boolean
     GameType As Integer
+    MaxPlayers As Integer
     'ConfigFile As String
     'UserNameField As String
     'UserNameConfigMethod As Integer
@@ -78,6 +79,7 @@ For i = 1 To UBound(Game)
             AddToString "InstallFirst " & .InstallFirst, strGames
             AddToString "InstallerPath " & .InstallerPath, strGames
             AddToString "GameType " & .GameType, strGames
+            AddToString "MaxPlayers " & .MaxPlayers, strGames
             'AddToString "ConfigFile " & .ConfigFile, strGames
             'AddToString "UserNameField " & .UserNameField, strGames
             'AddToString "UserNameConfigMethod " & .UserNameConfigMethod, strGames
@@ -174,6 +176,9 @@ If UBound(lines) > 1 Then
 
                 Case "gametype"
                 Game(GameIndex).GameType = CInt(strData)
+                
+                Case "maxplayers"
+                Game(GameIndex).MaxPlayers = CInt(strData)
 
                 'Case "usernameconfigmethod"
                 'Game(GameIndex).UserNameConfigMethod = CInt(strData)

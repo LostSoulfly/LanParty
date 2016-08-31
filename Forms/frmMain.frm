@@ -140,6 +140,13 @@ Begin VB.Form frmMain
          Caption         =   "Dock LanChat"
          Checked         =   -1  'True
       End
+      Begin VB.Menu mnuPlayers 
+         Caption         =   "Filter Games By Max Players"
+         Begin VB.Menu mnuNumPlayers 
+            Caption         =   "Players"
+            Index           =   0
+         End
+      End
       Begin VB.Menu mnuSize 
          Caption         =   "Icon Size"
          Begin VB.Menu mnuHuge 
@@ -325,7 +332,7 @@ DoEvents
 mnuUser.Visible = False
 'todo: enable for builds
 'CRASHES on breakpoints often
-WheelHook Me.hwnd
+'WheelHook Me.hwnd
 
 InitializeUsers
 Me.Caption = "LanParty Launcher v" & App.Major & "." & App.Minor & "." & App.Revision
@@ -334,6 +341,7 @@ RefreshBackground
 SelectGame 1
 AddUserChat "Please wait while I locate other users..", "System", False
 UpdateAdminMenus False
+UpdateMaxPlayersMenu
 'Start broadcasting our existence.
 
 End Sub
@@ -727,6 +735,13 @@ Private Sub mnuNormal_Click()
 SetIconsTo 2
 End Sub
 
+Private Sub mnuNumPlayers_Click(Index As Integer)
+
+    NumPlayers = mnuNumPlayers(Index).Tag
+    UpdateIconList True
+
+End Sub
+
 Private Sub mnuOpenFolder_Click()
 Dim dirPath As String
 
@@ -816,8 +831,9 @@ Public Sub UncheckAllSizes()
 End Sub
 
 Private Sub imgIcon_Click(Index As Integer)
-    SelectGame Index
-    SetCaption Game(Index).Name
+    
+    SelectGame imgIcon(Index).Tag
+    SetCaption Game(imgIcon(Index).Tag).Name
 End Sub
 
 Private Sub imgIcon_DblClick(Index As Integer)
@@ -828,9 +844,9 @@ Private Sub imgIcon_MouseDown(Index As Integer, Button As Integer, Shift As Inte
 
 If Button = 2 Then
     'right click
-    SelectGame Index
-    mnuLaunch.Caption = "Launch " & Game(Index).Name
-    mnuEditGame.Caption = "Edit " & Game(Index).Name
+    SelectGame imgIcon(Index).Tag
+    mnuLaunch.Caption = "Launch " & Game(imgIcon(Index).Tag).Name
+    mnuEditGame.Caption = "Edit " & Game(imgIcon(Index).Tag).Name
     PopupMenu mnuGame
 End If
 
