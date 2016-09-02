@@ -190,13 +190,21 @@ Begin VB.Form frmSettings
       TabIndex        =   20
       Top             =   120
       Width           =   3495
+      Begin VB.CheckBox chkScanStartup 
+         Caption         =   "Scan For Games At Startup"
+         Height          =   255
+         Left            =   240
+         TabIndex        =   40
+         Top             =   2760
+         Width           =   3135
+      End
       Begin VB.CheckBox chkUpdate 
          Caption         =   "Auto Check For Updates"
          Height          =   195
          Left            =   240
          TabIndex        =   37
          ToolTipText     =   "Check for updates at program startup."
-         Top             =   2520
+         Top             =   2400
          Width           =   3015
       End
       Begin VB.PictureBox picLanBG 
@@ -205,7 +213,7 @@ Begin VB.Form frmSettings
          ScaleHeight     =   240
          ScaleWidth      =   315
          TabIndex        =   34
-         Top             =   1080
+         Top             =   960
          Width           =   375
       End
       Begin VB.CheckBox chkJason 
@@ -214,7 +222,7 @@ Begin VB.Form frmSettings
          Left            =   240
          TabIndex        =   5
          ToolTipText     =   "This provides extra information where necessary to make Jason Copple more comfortable."
-         Top             =   2880
+         Top             =   3120
          Width           =   1935
       End
       Begin VB.CheckBox chkShowIcons 
@@ -223,7 +231,7 @@ Begin VB.Form frmSettings
          Left            =   240
          TabIndex        =   2
          ToolTipText     =   $"frmSettings.frx":1544C
-         Top             =   1440
+         Top             =   1320
          Width           =   3015
       End
       Begin VB.CheckBox chkMinimize 
@@ -232,7 +240,7 @@ Begin VB.Form frmSettings
          Left            =   240
          TabIndex        =   3
          ToolTipText     =   "Minimize the LanParty client upon launching a game."
-         Top             =   1800
+         Top             =   1680
          Width           =   3135
       End
       Begin VB.CommandButton cmdOpen 
@@ -240,14 +248,14 @@ Begin VB.Form frmSettings
          Height          =   300
          Left            =   2520
          TabIndex        =   23
-         Top             =   1080
+         Top             =   960
          Width           =   375
       End
       Begin VB.TextBox txtBG 
          Height          =   285
          Left            =   240
          TabIndex        =   1
-         Top             =   1080
+         Top             =   960
          Width           =   2175
       End
       Begin VB.CheckBox chkMonitorGame 
@@ -256,7 +264,7 @@ Begin VB.Form frmSettings
          Left            =   240
          TabIndex        =   4
          ToolTipText     =   $"frmSettings.frx":154D9
-         Top             =   2160
+         Top             =   2040
          Width           =   3015
       End
       Begin VB.TextBox txtUser 
@@ -272,7 +280,7 @@ Begin VB.Form frmSettings
          Height          =   255
          Left            =   240
          TabIndex        =   24
-         Top             =   840
+         Top             =   720
          Width           =   2295
       End
       Begin VB.Label Label1 
@@ -504,6 +512,7 @@ chkShowStatus.Value = IIf(Settings.ShowStatus, vbChecked, vbUnchecked)
 chkDisableLan.Value = IIf(Settings.DisableLan, vbChecked, vbUnchecked)
 chkJason.Value = IIf(Settings.Jason, vbChecked, vbUnchecked)
 chkUpdate.Value = IIf(Settings.AutoUpdate, vbChecked, vbUnchecked)
+chkScanStartup.Value = IIf(Settings.ScanAtStartup, vbChecked, vbUnchecked)
 chkVersion.Value = IIf(Settings.SameVersion, vbChecked, vbUnchecked)
 chkAcceptPrivateChat.Value = IIf(Settings.AcceptPrivateChat, vbChecked, vbUnchecked)
 
@@ -531,6 +540,7 @@ Private Sub SetSettings()
     Settings.ShowStatus = chkShowStatus.Value
     Settings.Jason = chkJason.Value
     Settings.AutoUpdate = chkUpdate.Value
+    Settings.ScanAtStartup = chkScanStartup.Value
     Settings.SameVersion = chkVersion.Value
     Settings.DisableLan = chkDisableLan.Value
     'chkDisableChat.Value = IIf(Settings.DisableChat, vbChecked, vbUnchecked)

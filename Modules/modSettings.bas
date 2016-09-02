@@ -23,6 +23,7 @@ Public Type GlobalSettings
     Jason As Boolean
     KeyGen As Integer
     AutoUpdate As Boolean
+    ScanAtStartup As Boolean
     SameVersion As Boolean
     ShowStatus As Boolean
     AcceptPrivateChat As Boolean
@@ -72,6 +73,7 @@ AddToString "ShowStatus " & .ShowStatus, strSettings
 AddToString "ImJason " & .Jason, strSettings
 AddToString "KeyGen " & .KeyGen, strSettings
 AddToString "AutoUpdate " & .AutoUpdate, strSettings
+AddToString "ScanAtStartup " & .ScanAtStartup, strSettings
 AddToString "AcceptPrivateChat " & .AcceptPrivateChat, strSettings
 AddToString "SameVersion " & .SameVersion, strSettings
 AddToString "AltChatType " & .AltChatType, strSettings
@@ -110,6 +112,7 @@ If LenB(strSettings) < 1 Then
     .AcceptPrivateChat = False
     .SameVersion = False
     .AutoUpdate = False
+    .ScanAtStartup = True
     .ShowStatus = True
     .LogChat = False
     '.UserName = "LanScrub"
@@ -177,6 +180,9 @@ If UBound(lines) > 1 Then
                 
                 Case "autoupdate"
                 Settings.AutoUpdate = IIf(LCase$(strData) = "true", True, False)
+                
+                Case "scanatstartup"
+                Settings.ScanAtStartup = IIf(LCase$(strData) = "true", True, False)
                 
                 Case "sameversion"
                 Settings.SameVersion = IIf(LCase$(strData) = "true", True, False)
@@ -290,9 +296,11 @@ If Settings.DisableLan Then DisableNetwork
 .mnuAllowCommands.Checked = Settings.AllowCommands
 .mnuLanChat.Checked = Settings.ShowChat
 .mnuDockChat.Checked = Settings.DockChat
-frmChat.Visible = Settings.ShowChat
-If Settings.ShowChat Then If Settings.DockChat = True Then frmChat.DockChat
-.SetIconsTo Settings.IconSize
+If blBootComplete = True Then
+    If Settings.ShowChat Then If Settings.DockChat = True Then frmChat.DockChat
+    frmChat.Visible = Settings.ShowChat
+    .SetIconsTo Settings.IconSize
+End If
 .Width = Settings.MainWindowWidth
 .Height = Settings.MainWindowHeight
 frmChat.txtChat.BackColor = Settings.ChatBGColor

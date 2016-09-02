@@ -2,17 +2,75 @@ VERSION 5.00
 Begin VB.Form frmStartup 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Startup"
-   ClientHeight    =   2715
+   ClientHeight    =   1725
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   6255
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   2715
+   ScaleHeight     =   1725
    ScaleWidth      =   6255
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   3  'Windows Default
+   StartUpPosition =   1  'CenterOwner
+   Begin VB.Timer tmrUpdate 
+      Enabled         =   0   'False
+      Interval        =   100
+      Left            =   5760
+      Top             =   120
+   End
+   Begin VB.Line Line1 
+      X1              =   1920
+      X2              =   4320
+      Y1              =   650
+      Y2              =   650
+   End
+   Begin VB.Label lblLoading 
+      Alignment       =   2  'Center
+      BackStyle       =   0  'Transparent
+      Caption         =   "Loading, please wait.."
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   0
+      TabIndex        =   2
+      Top             =   360
+      Width           =   6255
+   End
+   Begin VB.Label lblStatus 
+      Alignment       =   2  'Center
+      BackStyle       =   0  'Transparent
+      Height          =   255
+      Left            =   0
+      TabIndex        =   1
+      Top             =   840
+      Width           =   6255
+   End
+   Begin VB.Label lblSkip 
+      BackStyle       =   0  'Transparent
+      Caption         =   "Skip"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   5760
+      TabIndex        =   0
+      Top             =   1440
+      Width           =   495
+   End
 End
 Attribute VB_Name = "frmStartup"
 Attribute VB_GlobalNameSpace = False
@@ -92,21 +150,20 @@ Private intTimer As Integer
 
 Private blUpdate As Boolean
 Private blCancel As Boolean
+Private strGameFiles() As String
 
-Public Sub LocateGame(Optional Path As String)
+Public Sub LocateGameFiles(GameFileName As String)
+Dim Path As String
 
-lstResults.Clear
-
-Status "Starting.."
 tmrUpdate.Enabled = True
+Path = App.Path
 
    'Dim tstart As Single   'timer var for this routine only
    'Dim tend As Single     'timer var for this routine only
-      If Len(Path$) = 0 Then Path = Environ("HOMEDRIVE")
       
    With fp
       .sFileRoot = QualifyPath(Path) 'start path
-      .sFileNameExt = Trim$(txtFile.Text) 'Game(GameIndex).GameEXE           'file type(s) of interest
+      .sFileNameExt = GameFileName 'Game(GameIndex).GameEXE           'file type(s) of interest
       .bRecurse = True       'True = recursive search
       .nCount = 0                          'results
       .nSearched = 0                       'results
@@ -117,72 +174,15 @@ tmrUpdate.Enabled = True
    'tend = GetTickCount()
    tmrUpdate.Enabled = False
    
-   Status "Searched " & Format$(fp.nSearched, "###,###,###,##0") & " files. Please select the correct file below."
-   
-    cmdSearch.Caption = "Start"
+   SetStatus "Searched " & Format$(fp.nSearched, "###,###,###,##0") & " files. Please select the correct file below."
+
     blCancel = True
-    txtFolder.Enabled = True
-    txtFile.Enabled = True
-    cmdFolder.Enabled = True
-   
-   'List1.Visible = True
-   'Text3.Text = Format$(fp.nSearched, "###,###,###,##0")
-   'Text4.Text = Format$(fp.nCount, "###,###,###,##0")
-   'Text5.Text = FormatNumber((tend - tstart) / 1000, 2) & "  seconds"
-
-End Sub
-
-Private Sub cmdAccept_Click()
-'check that fileexists
-'and set it to the game array object
-
-    txtLocation.Text = Trim$(txtLocation.Text)
-
-    Game(Me.Tag).EXEPath = Mid(txtLocation.Text, 1, InStrRev(txtLocation.Text, "\"))
-    'NoFileExtension = Mid(NoFilePath, InStrRev(NoFilePath, "\") + 1, InStrRev(NoFilePath, ".") - 1)
-    Game(Me.Tag).GameEXE = Mid(txtLocation.Text, InStrRev(txtLocation.Text, "\") + 1, Len(txtLocation.Text) - InStrRev(txtLocation.Text, "\") + 1)
-    blCancel = True
-    
-    Me.Visible = False
 
 End Sub
 
 Private Sub cmdCancel_Click()
 blCancel = True
 Me.Visible = False
-End Sub
-
-Private Sub cmdDlg_Click()
-tmrLocate.Enabled = False
-
-With comDialog
-    .DefaultExt = Game(Me.Tag).GameEXE
-    .InitDir = App.Path
-    .DialogTitle = "Locate " & Game(Me.Tag).GameEXE & ".."
-    .Filter = Game(Me.Tag).GameEXE & "|" & Game(Me.Tag).GameEXE & "|" _
-                            & "All Files" & "|" & "*.*"
-    .ShowOpen
-    If FileExists(.FileName) Then txtLocation.Text = .FileName
-End With
-
-'if game has been located, we can close this form after calling an update game function
-'and storing the new game exe path into the game object.
-End Sub
-
-Private Sub cmdFolder_Click()
-tmrLocate.Enabled = False
-
-    txtFolder.Text = GetFolder(Me.hwnd, txtFolder.Text, "Select a folder to start searching..")
-End Sub
-
-Private Sub cmdSearch_Click()
-
-    LocateGame ""
-
-End Sub
-
-Public Sub SetSearchFile(strFile As String)
-    txtFile.Text = strFile
 End Sub
 
 Private Sub Form_Click()
@@ -197,9 +197,38 @@ Private Sub Form_Click()
     'decide whether to
 End Sub
 
-Private Function Status(Text As String)
+Private Sub Form_Load()
+Me.BackColor = Settings.ChatBGColor
+lblLoading.ForeColor = Settings.ChatTextColor
+lblStatus.ForeColor = Settings.ChatTextColor
+lblSkip.ForeColor = Settings.ChatTextColor
+Me.Visible = True
+Me.Show
+Pause 100
+If Settings.ScanAtStartup Then
+    SetCaption "Scanning for games, please wait.."
+    SetStatus "Searching for games.."
+    LocateGameFiles "GameData.lan"
+    lblSkip.Visible = False
+    SetStatus "Parsing game files.."
+    ParseGameFiles strGameFiles
+End If
+Pause 500
+'Allow startup to continue
+blContinueStartup = True
+End Sub
+
+Public Sub SetStatus(Text As String)
+    If LenB(Text) = 0 Then Exit Sub
     lblStatus.Caption = Text
-End Function
+    DoEvents
+End Sub
+
+Public Sub SetCaption(Text As String)
+    If LenB(Text) = 0 Then Exit Sub
+    lblLoading.Caption = Text
+    DoEvents
+End Sub
 
 Private Sub SearchForFiles(sRoot As String)
 
@@ -216,14 +245,14 @@ Private Sub SearchForFiles(sRoot As String)
         
         If Len(sRoot) > 60 Then
             If Len(sRoot) < 100 Then
-                Status "Searching.. " & Left(sRoot, 10) & ".." & Right(sRoot, Len(sRoot) / 2)
+                SetStatus Left(sRoot, 10) & ".." & Right(sRoot, Len(sRoot) / 2)
             ElseIf Len(sRoot) < 150 Then
-                Status "Searching.. " & Left(sRoot, 5) & ".." & Right(sRoot, Len(sRoot) / 3)
+                SetStatus Left(sRoot, 5) & ".." & Right(sRoot, Len(sRoot) / 3)
             Else
-                Status "Searching.. " & Left(sRoot, 5) & ".." & Right(sRoot, Len(sRoot) / 5)
+                SetStatus Left(sRoot, 5) & ".." & Right(sRoot, Len(sRoot) / 5)
             End If
         Else
-            Status "Searching.. " & sRoot
+            SetStatus "Searching.. " & sRoot
         End If
     blUpdate = False
     End If
@@ -246,8 +275,7 @@ Private Sub SearchForFiles(sRoot As String)
            'must be a file..
             If MatchSpec(WFD.cFileName, fp.sFileNameExt) Then
                fp.nCount = fp.nCount + 1
-               lstResults.AddItem sRoot & TrimNull(WFD.cFileName)
-               If lstResults.ListCount = 1 Then lstResults.ListIndex = 0
+               AddGameDataFile sRoot & TrimNull(WFD.cFileName)
             End If  'If MatchSpec
       
          End If 'If WFD.dwFileAttributes
@@ -261,6 +289,14 @@ Private Sub SearchForFiles(sRoot As String)
    Call FindClose(hFile)
 
 End Sub
+
+Private Function AddGameDataFile(sFile As String)
+
+    If Not LenB(strGameFiles(0)) = 0 Then ReDim strGameFiles(UBound(strGameFiles) + 1)
+
+    strGameFiles(UBound(strGameFiles)) = sFile
+
+End Function
 
 Private Function QualifyPath(sPath As String) As String
 
@@ -283,6 +319,17 @@ Private Function MatchSpec(sFile As String, sSpec As String) As Boolean
    MatchSpec = PathMatchSpec(StrPtr(sFile), StrPtr(sSpec))
 
 End Function
+
+Private Sub Form_Unload(Cancel As Integer)
+    If blContinueStartup = False Then End
+    If blBootComplete = False Then End
+End Sub
+
+Private Sub lblSkip_Click()
+blCancel = True
+blContinueStartup = True
+
+End Sub
 
 Private Sub tmrUpdate_Timer()
 blUpdate = True

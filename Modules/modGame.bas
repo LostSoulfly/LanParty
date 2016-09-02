@@ -94,114 +94,89 @@ WriteFile strGames, GameFile, True
 
 End Sub
 
-Public Sub InitializeGameArray()
-Dim strGames As String
-Dim lines() As String
-Dim GameIndex As Integer
-ReDim Game(0)
-AddDebug "InitGameArray"
-GameFile = App.Path & "\Games.txt"
+Public Sub InitializeGameArray(Optional blForce As Boolean = False)
+    
+    If blForce Or ((Not Game) = -1) Then
+        GetGamesFromText LoadFile(App.Path & "\Games.txt"), Game   'this will clear the Game UDT
+    End If
 
-strGames = LoadFile(GameFile)
-'ReDim Game(1)
-'With Game(1)
-'    .CommandArgs = vbNullString
-'    .ConfigFile = vbNullString
-'    .EXEPath = ""
-'    .GameEXE = ""
-'    .IconPath = "F:\Dropbox\Programming\LanParty\New folder (3)\Public.bas"
-'    '.Icon = GetGamePicture(.IconPath)
-'    .MonitorRunning = True
-'    .Name = "Game 1"
-'    .UserNameConfigMethod = 1
-'    .UserNameField = "UserName"
-'End With
-
-If LenB(strGames) > 1 Then
-
-lines = Split(strGames, vbNewLine)
-
-If UBound(lines) > 1 Then
-    Dim i As Long
-    Dim Line As String
-    Dim strSwitch As String
-    Dim strData As String
-    For i = 0 To UBound(lines)
-        Line = Trim$(lines(i))
-        
-        If Not Left$(Line, 2) = "//" Then 'Next 'skip comments
-            If Not LenB(Line) < 1 Then
-                strSwitch = LCase$(Split(Line, " ")(0))
-                strData = Trim$(Right$(Line, Len(Line) - Len(strSwitch)))
-                
-                Select Case strSwitch
-                
-                Case "name"
-                GameIndex = GameIndex + 1
-                
-                'redim the array. Redim preserve is super slow, unfortunately. I could write a value in the file that would be read
-                'before everything else and use that to initialize the array, but it's not a probelm for a few games at a time..
-                ReDim Preserve Game(GameIndex)
-                Game(GameIndex).Name = strData
-                
-                Case "commandargs"
-                Game(GameIndex).CommandArgs = strData
-                
-                Case "gameexe"
-                Game(GameIndex).GameEXE = strData
-                
-                Case "gameuid"
-                Game(GameIndex).GameUID = strData
-                
-                Case "exepath"
-                Game(GameIndex).EXEPath = strData
-                
-                Case "monitorrunning"
-                Game(GameIndex).MonitorRunning = IIf(LCase$(strData) = "true", True, False)
-                
-                Case "monitorexe"
-                Game(GameIndex).MonitorEXE = strData
-                
-                'Case "configfile"
-                'Game(GameIndex).ConfigFile = strData
-                
-                Case "iconpath"
-                Game(GameIndex).IconPath = strData
-                
-                Case "installerpath"
-                Game(GameIndex).InstallerPath = strData
-                
-                Case "installfirst"
-                Game(GameIndex).InstallFirst = IIf(LCase$(strData) = "true", True, False)
-
-                Case "gametype"
-                Game(GameIndex).GameType = CInt(strData)
-                
-                Case "maxplayers"
-                Game(GameIndex).MaxPlayers = CInt(strData)
-
-                'Case "usernameconfigmethod"
-                'Game(GameIndex).UserNameConfigMethod = CInt(strData)
-                
-                'Case "usernamefield"
-                'Game(GameIndex).UserNameField = strData
-                
-                Case Else
-                    AddDebug "Unknown case: " & Line, True
-                
-                End Select
-            End If
-        End If
-    Next i
-End If
-
-
-End If
-
-'check for valid username.
-If LenB(Settings.UserName$) = 0 Then frmSettings.Show vbModal
 'AddDebug "InitGameArray [DONE]"
 End Sub
+
+Public Function GetGamesFromText(strGames As String, ByRef TempGame() As GameData)
+Dim i As Long
+Dim Line As String
+Dim lines() As String
+Dim strSwitch As String
+Dim strData As String
+Dim GameIndex As Integer
+
+    If LenB(strGames) > 0 Then
+        lines = Split(strGames, vbNewLine)
+        If UBound(lines) > 10 Then
+    
+            For i = 0 To UBound(lines)
+                Line = Trim$(lines(i))
+                
+                If Not Left$(Line, 2) = "//" Then 'Next 'skip comments
+                    If Not LenB(Line) < 1 Then
+                        strSwitch = LCase$(Split(Line, " ")(0))
+                        strData = Trim$(Right$(Line, Len(Line) - Len(strSwitch)))
+                        
+                        Select Case strSwitch
+                        
+                        Case "name"
+                        GameIndex = GameIndex + 1
+                        
+                        'redim the array. Redim preserve is super slow, unfortunately. I could write a value in the file that would be read
+                        'before everything else and use that to initialize the array, but it's not a probelm for a few games at a time..
+                        ReDim Preserve Game(GameIndex)
+                        TempGame(GameIndex).Name = strData
+                        
+                        Case "commandargs"
+                        TempGame(GameIndex).CommandArgs = strData
+                        
+                        Case "gameexe"
+                        TempGame(GameIndex).GameEXE = strData
+                        
+                        Case "gameuid"
+                        TempGame(GameIndex).GameUID = strData
+                        
+                        Case "exepath"
+                        TempGame(GameIndex).EXEPath = strData
+                        
+                        Case "monitorrunning"
+                        TempGame(GameIndex).MonitorRunning = IIf(LCase$(strData) = "true", True, False)
+                        
+                        Case "monitorexe"
+                        TempGame(GameIndex).MonitorEXE = strData
+        
+                        Case "iconpath"
+                        TempGame(GameIndex).IconPath = strData
+                        
+                        Case "installerpath"
+                        TempGame(GameIndex).InstallerPath = strData
+                        
+                        Case "installfirst"
+                        TempGame(GameIndex).InstallFirst = IIf(LCase$(strData) = "true", True, False)
+        
+                        Case "gametype"
+                        TempGame(GameIndex).GameType = CInt(strData)
+                        
+                        Case "maxplayers"
+                        TempGame(GameIndex).MaxPlayers = CInt(strData)
+                        
+                        Case Else
+                            AddDebug "Unknown case: " & Line, True
+                        
+                        End Select
+                    End If
+                End If
+            Next i
+        End If
+    End If
+
+End Function
 
 Public Function LaunchGame(Optional GameIndex As Integer, Optional WithArgs As Boolean = True) As Long
 If GameIndex = 0 Then GameIndex = CurrentGameIndex
@@ -384,6 +359,17 @@ Public Function CalcGameUID(GameIndex As Integer, Optional blForce As Boolean = 
 
     If FileExists(GetGameExePath(GameIndex)) Then
         CalcGameUID = CalculateAdler(CRC32File(GetGameExePath(GameIndex)) & Game(GameIndex).Name)
+    Else
+        CalcGameUID = CalculateAdler(Game(GameIndex).GameEXE & Game(GameIndex).GameType & Game(GameIndex).CommandArgs & Game(GameIndex).InstallerPath)
+    End If
+    
+    'Not sure how or why this would happen, but at least it will allow them to save the game/command..
+    If LenB(CalcGameUID) = 0 Then CalcGameUID = GenUniqueKey(8)
+    
+    If GameIndexByUID(CalcGameUID) > 0 Then
+        MsgBox "Seriously? This just happened. I don't believe it." _
+        & vbNewLine & "Please tell someone you saw this message."
+        CalcGameUID = GenUniqueKey(8)
     End If
     
 End Function
@@ -391,7 +377,7 @@ End Function
 Public Function GameIndexByUID(GameUID As String) As Integer
     Dim i As Integer
     For i = 1 To UBound(Game)
-        If (Len(Game(i).GameUID) > 0) And Game(i).GameUID = GameUID Then
+        If (LenB(Game(i).GameUID) > 0) And Game(i).GameUID = GameUID Then
             GameIndexByUID = i
             Exit Function
         End If
