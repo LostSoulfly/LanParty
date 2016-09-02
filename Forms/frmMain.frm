@@ -181,6 +181,9 @@ Begin VB.Form frmMain
       Begin VB.Menu mnuScanGame 
          Caption         =   "Scan For Running Game"
       End
+      Begin VB.Menu mnuExportGameFiles 
+         Caption         =   "Export Individual Game Files"
+      End
       Begin VB.Menu mnuSaveGames 
          Caption         =   "Save Games File"
       End
@@ -545,6 +548,22 @@ Public Sub DoExit()
 
     WheelUnHook Me.hwnd
     tmrClose.Enabled = True
+End Sub
+
+Private Sub mnuExportGameFiles_Click()
+    Dim i As Integer
+    
+    If MsgBox("This will attempt to export the bit of information to the Game's EXEPath, which tells the LanParty Client a game's information." & vbNewLine & _
+    "You would use this option if you wanted to share a game easily with friends, they simply drop the game into their LanParty folder and restart their client." & vbNewLine & vbNewLine & _
+    "Do you want to continue?", vbYesNo, "Export Individual Games") = vbYes Then
+    
+        For i = 1 To UBound(Game)
+            SaveGames i
+        Next
+        
+        MsgBox "Done. A file has been written for (hopefully) every game in the game's directory." & vbNewLine & _
+        "I'm not perfect, though, so please don't be mad if I messed up :'(", vbOKOnly, "Complete"
+    End If
 End Sub
 
 Private Sub mnuFreeze_Click()
