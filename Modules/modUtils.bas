@@ -441,6 +441,16 @@ On Error Resume Next
 
 End Function
 
+Public Function PathOfFile(fileName As String) As String
+    Dim posn As Integer
+    posn = InStrRev(fileName, "\")
+    If posn > 0 Then
+        PathOfFile = Left$(fileName, posn)
+    Else
+        PathOfFile = ""
+    End If
+End Function
+
 Public Function FormatToLocalPath(ByVal Path As String) As String
     If InStr(1, LCase$(Path), LCase$(App.Path & "\")) > 0 Then
         FormatToLocalPath = Right$(Path, Len(Path) - Len(App.Path))
@@ -450,6 +460,7 @@ Public Function FormatToLocalPath(ByVal Path As String) As String
 End Function
 
 Public Function FullPathFromLocal(ByVal Path As String) As String
+Dim strSlash As String
 
 If InStr(1, Path, ":") > 0 Then
     FullPathFromLocal = Path
@@ -473,14 +484,17 @@ If Len(Path$) = 0 Then Exit Function
     Path = Replace(Path, "\\", "\")
     Path = Replace(Path, "\\", "\")
     Path = Replace(Path, "//", "/")
+    If DirExists(Path) Then FixFilePath = Path
     If FileExists(FullPathFromLocal(Path)) Then FixFilePath = FullPathFromLocal(Path): Exit Function
     If FileExists(FormatToLocalPath(Path)) Then FixFilePath = FormatToLocalPath(Path): Exit Function
     If FileExists(Path) Then FixFilePath = Path: Exit Function
     If Left$(Path, 1) = "\" Then
-        If FileExists(Environ("WINDIR") & "\System32" & Path) Then FixFilePath = Environ("WINDIR") & "\System32" & Path
+        If FileExists(Environ("WINDIR") & "\System32" & Path) Then FixFilePath = Environ("WINDIR") & "\System32" & Path: Exit Function
     Else
-        If FileExists(Environ("WINDIR") & "\System32\" & Path) Then FixFilePath = Environ("WINDIR") & "\System32\" & Path
+        If FileExists(Environ("WINDIR") & "\System32\" & Path) Then FixFilePath = Environ("WINDIR") & "\System32\" & Path: Exit Function
     End If
+    
+    FixFilePath = Path
 End Function
 
 Public Function FixCmdArgs(ByVal Args As String) As String
