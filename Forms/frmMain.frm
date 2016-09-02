@@ -314,17 +314,21 @@ Private arrResources() As String
 
 Private Sub Form_Load()
 
+Me.Visible = False
 'load and apply settings from the udt
+SetStartupStatus "", "Reading Settings.."
+Pause 100
 RefreshSettings
 Me.Height = Settings.MainWindowHeight
 Me.Width = Settings.MainWindowWidth
-Me.Visible = True
-Me.Caption = "Loading, please wait.."
 
-'Load all games from file
-InitializeGameArray
+
+SetStartupStatus "", "Reading Network file.."
+Pause 100
 InitializeNetworkMenu
 
+SetStartupStatus "", "Checking Installed games.."
+Pause 100
 'check that games that are required to be installed are found
 CheckInstalled
 
@@ -333,16 +337,21 @@ mnuUser.Visible = False
 'todo: enable for builds
 'CRASHES on breakpoints often
 'WheelHook Me.hwnd
-
+SetStartupStatus "", "Initialize Users.."
+Pause 100
 InitializeUsers
 Me.Caption = "LanParty Launcher v" & App.Major & "." & App.Minor & "." & App.Revision
 'mnuApplyAdmin_Click
+SetStartupStatus "", "Finishing Startup.."
+Pause 250
 RefreshBackground
 SelectGame 1
 AddUserChat "Please wait while I locate other users..", "System", False
 UpdateAdminMenus False
 UpdateMaxPlayersMenu
 'Start broadcasting our existence.
+
+'HideLoadingWindow
 
 End Sub
 
@@ -635,7 +644,7 @@ UncheckAllSizes
     Settings.IconSize = size
     
     UpdateIconList True
-    Call tmrIconSize_Timer
+    If Not tmrIconSize.Enabled Then Call tmrIconSize_Timer
 End Sub
 
 Private Sub mnuLarge_Click()
@@ -1149,4 +1158,8 @@ For i = 0 To UBound(strResources) Step 2
 Next
 
 
+End Sub
+
+Public Sub Resize()
+    Call Form_Resize
 End Sub

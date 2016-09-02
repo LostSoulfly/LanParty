@@ -158,33 +158,61 @@ Else
 End If
 
 'If Settings.Jason Then AddChat "[System] CryptKey: " & CStr(CryptKey)
-'If Settings.Jason Then AddChat "[System] This is the main cryptography key that all packets are encrypted with. The last few characters are generated at runtime " & _
-'    "and change with every version of the program, as it is essentially a hash of this EXE itself. This means that each version can only talk to the same version of itself."
-    
+
+ShowLoadingWindow   'Show the loading window
+
+Do While blContinueStartup = False
+    Pause 50
+Loop
+
+SetStartupStatus "Loading, please wait..", "Lining up some ASCII characters.."
+Pause 100
 InitUniqueKeyChars  'initialize the byte array of characters for the improved UniqueKeyGenerator
+SetStartupStatus "", "Rigging the Vote System.."
+Pause 100
 modVote.InitializeVotes
+SetStartupStatus "", "Creating your beautiful snowflake ID.."
+Pause 100
 InitializeUniqueID  'init and set my UID, and display the message upon first open on a new machine
+SetStartupStatus "", "Initializing Network Message Subsystem.."
+Pause 100
 InitMessages        'init the subs that handle the packets received from other clients
+SetStartupStatus "", "Reading Game List Data.."
+Pause 100
+'Load all games from file
+InitializeGameArray True
+SetStartupStatus "", "Initializing PrivateChat Subsystem.."
+Pause 100
 InitializePChats    'Initialize the PChats collection
+If LenB(Settings.UserName$) = 0 Then frmSettings.Show vbModal
+SetStartupStatus "", "Loading main form.."
+Pause 200
 Load frmMain        'load the main form and begin running its form_load
-If Not Settings.DisableLan Then LoadUDP     'if we don't have DisableLan enabled, then load up UDP
-frmMain.Visible = True
-frmMain.Show
-If frmChat.Visible = True Then frmChat.Show
-If Not Settings.DisableLan Then frmMain.tmrBeacon.Enabled = True
+'frmChat.Visible = False
+If Settings.DisableLan Then
+    SetStartupStatus "", "< Paranoid User Detected >"
+    Pause 500
+    DisableNetwork
+Else
+    SetStartupStatus "", "Initializing Network.."
+    Pause 100
+    LoadUDP     'if we don't have DisableLan enabled, then load up UDP
+    frmMain.tmrBeacon.Enabled = True
+End If
+
 IsSyncingAdmins = True  'since we're just starting, let's sync admins once
-HasSyncedAdmins = False 'obviously we haven't connected to anyone yet, so how could we sync admins already?
+HasSyncedAdmins = False
 
-If Settings.DisableLan Then DisableNetwork  'one final check to make sure everything net related is disabled
 
-If Settings.AutoUpdate Then CheckUpdate
-DoEvents
+If Settings.AutoUpdate Then
+    SetStartupStatus "", "Do we have an old version?"
+    CheckUpdate
+End If
 
-'NewUser "Dragoon", VolumeSerialNumber, "127.0.0.1", "BRADLEY_SURFACE"
-'NewUser "Dragoon", VolumeSerialNumber, "127.0.0.1", "BRADLEY_SURFACE"
-'NewUser "Dragoon1", VolumeSerialNumber, "127.0.0.1", "BRADLEY_SURFACE"
-'NewUser "Dragoon2", VolumeSerialNumber & "1", "127.0.0.1", "BRADLEY_SURFACE"
-'NewUser "Dragoon3", VolumeSerialNumber & "2", "127.0.0.1", "BRADLEY_SURFACE"
+SetStartupStatus "LanParty", "Welcome, " & Settings.UserName & ". Let's game!"
+Pause 1500
+
+HideLoadingWindow
 
 Exit Sub
 oops:
@@ -195,8 +223,45 @@ Resume Next
 End Sub
 
 Public Sub FirstRun()
-'message boxes etc
-MsgBox "The LanParty client facilitate easy LAN gameplay and coordination." & vbNewLine & vbNewLine & _
-"An individual that is elected by his peers can become a LanParty Admin, allowing him to suggest commands or games (or run them directly if the option is enabled in settings)." & vbNewLine & vbNewLine, vbInformation, "Welcome!."
 
+    MsgBox "The LanParty client facilitate easy LAN gameplay and coordination." & vbNewLine & vbNewLine & _
+        "An individual that is elected by his peers can become a LanParty Admin, allowing him to suggest commands or games (or run them directly if the option is enabled in settings)." & vbNewLine & vbNewLine, vbInformation, "Welcome!."
+
+End Sub
+
+Public Sub SetStartupStatus(strCaption As String, Status As String)
+    If frmStartup Is Nothing Then Exit Sub
+    
+    With frmStartup
+        .SetCaption strCaption
+        .SetStatus Status
+    End With
+    
+End Sub
+
+Public Sub ShowLoadingWindow()
+    
+    If frmStartup Is Nothing Then Load frmStartup
+    frmStartup.Visible = True
+
+End Sub
+
+Public Sub HideLoadingWindow()
+    blBootComplete = True
+    frmStartup.Visible = False
+    If Not frmStartup Is Nothing Then Unload frmStartup
+    'blContinueStartup = True
+    DoEvents
+    frmMain.Visible = True
+    frmMain.Show
+    RefreshSettings
+End Sub
+
+Public Sub Pause(TimeToWait As Long)
+Dim i As Long
+    For i = 1 To TimeToWait Step 10
+        Sleep 10
+        DoEvents
+    Next i
+    
 End Sub

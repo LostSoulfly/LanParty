@@ -131,7 +131,8 @@ End Sub
 
 Private Sub tmrDock_Timer()
 On Error Resume Next
-    If Settings.DockChat = False Then UnDockChat
+If blBootComplete = False Then Exit Sub
+If Settings.DockChat = False Then UnDockChat
 If Me.Visible = False And frmMain.WindowState <> vbNormal Then Exit Sub
 If frmMain.WindowState <> vbNormal Then
     If Me.Visible = True Then Me.Visible = False

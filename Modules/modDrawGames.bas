@@ -112,6 +112,7 @@ Dim i As Integer
 Dim ii As Integer
 
     For i = 1 To UBound(Game)
+    DoEvents
         If NumPlayers = 0 Or (NumPlayers > 0 And Game(i).MaxPlayers = NumPlayers) Then
         
         If LoopCurrentRow = CurrentIconsPerRow Then
@@ -198,11 +199,13 @@ Public Function UpdateMaxPlayersMenu()
     ReDim arrGames(UBound(Game))
         
     For i = 0 To UBound(Game)
+    DoEvents
         With Game(i)
             If LenB(.GameEXE) > 0 Then
                 If .MaxPlayers > 0 Then 'the maxPlayers has been set for this game.
                     NotEmpty = True
                     For ii = 0 To UBound(arrGames)
+                    DoEvents
                         If arrGames(ii).NumPlayers = 0 Then arrGames(ii).NumPlayers = .MaxPlayers
                         If arrGames(ii).NumPlayers = .MaxPlayers Then _
                             arrGames(ii).GameCount = arrGames(ii).GameCount + 1: Exit For
@@ -229,6 +232,7 @@ Public Function UpdateMaxPlayersMenu()
 
     
     For i = 0 To UBound(arrGames)
+    DoEvents
         If arrGames(i).GameCount > 0 Then
             ii = frmMain.mnuNumPlayers.Count
                 Load frmMain.mnuNumPlayers(ii)
