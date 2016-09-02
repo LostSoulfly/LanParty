@@ -156,7 +156,7 @@ Public Sub LocateGameFiles(GameFileName As String)
 Dim Path As String
 
 tmrUpdate.Enabled = True
-Path = App.Path
+Path = App.Path & "\"
 
    'Dim tstart As Single   'timer var for this routine only
    'Dim tend As Single     'timer var for this routine only
@@ -174,7 +174,8 @@ Path = App.Path
    'tend = GetTickCount()
    tmrUpdate.Enabled = False
    
-   SetStatus "Searched " & Format$(fp.nSearched, "###,###,###,##0") & " files. Please select the correct file below."
+   SetStatus "Searched " & Format$(fp.nSearched, "###,###,###,##0") & " files.."
+   Pause 100
 
     blCancel = True
 
@@ -202,6 +203,7 @@ Me.BackColor = Settings.ChatBGColor
 lblLoading.ForeColor = Settings.ChatTextColor
 lblStatus.ForeColor = Settings.ChatTextColor
 lblSkip.ForeColor = Settings.ChatTextColor
+ReDim strGameFiles(0)
 Me.Visible = True
 Me.Show
 Pause 100
@@ -210,8 +212,9 @@ If Settings.ScanAtStartup Then
     SetStatus "Searching for games.."
     LocateGameFiles "GameData.lan"
     lblSkip.Visible = False
-    SetStatus "Parsing game files.."
-    ParseGameFiles strGameFiles
+    InitializeGameArray True
+    'SetStatus "Checking for new games.."
+    If Not ((Not strGameFiles) = -1) Then ParseGameFiles strGameFiles
 End If
 Pause 500
 'Allow startup to continue
@@ -292,8 +295,8 @@ End Sub
 
 Private Function AddGameDataFile(sFile As String)
 
-    If Not LenB(strGameFiles(0)) = 0 Then ReDim strGameFiles(UBound(strGameFiles) + 1)
-
+    If LenB(sFile) < 2 Then Exit Function
+    If LenB(strGameFiles(0)) > 0 Then ReDim Preserve strGameFiles(UBound(strGameFiles) + 1)
     strGameFiles(UBound(strGameFiles)) = sFile
 
 End Function

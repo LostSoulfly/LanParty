@@ -177,10 +177,8 @@ InitializeUniqueID  'init and set my UID, and display the message upon first ope
 SetStartupStatus "", "Initializing Network Message Subsystem.."
 Pause 100
 InitMessages        'init the subs that handle the packets received from other clients
-SetStartupStatus "", "Reading Game List Data.."
-Pause 100
 'Load all games from file
-InitializeGameArray True
+InitializeGameArray
 SetStartupStatus "", "Initializing PrivateChat Subsystem.."
 Pause 100
 InitializePChats    'Initialize the PChats collection
