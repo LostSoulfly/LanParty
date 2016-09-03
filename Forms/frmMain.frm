@@ -345,8 +345,9 @@ Pause 100
 InitializeUsers
 Me.Caption = "LanParty Launcher v" & App.Major & "." & App.Minor & "." & App.Revision
 'mnuApplyAdmin_Click
-SetStartupStatus "", "Finishing Startup.."
+SetStartupStatus "Finishing Things Up", "Loading game icons.."
 Pause 250
+UpdateIconList True
 RefreshBackground
 SelectGame 1
 AddUserChat "Please wait while I locate other users..", "System", False

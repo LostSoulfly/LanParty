@@ -519,6 +519,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     UpdateIconList True
+    UpdateMaxPlayersMenu
 End Sub
 
 Private Sub Image1_Click()

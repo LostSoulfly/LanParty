@@ -183,6 +183,7 @@ SetStartupStatus "", "Initializing PrivateChat Subsystem.."
 Pause 100
 InitializePChats    'Initialize the PChats collection
 If LenB(Settings.UserName$) = 0 Then frmSettings.Show vbModal
+If LenB(Settings.UserName$) = 0 Then MsgBox "Please try running me as an Administrator.", vbOKOnly, "Something went wrong.": End
 SetStartupStatus "", "Loading main form.."
 Pause 200
 Load frmMain        'load the main form and begin running its form_load
@@ -223,7 +224,7 @@ End Sub
 Public Sub FirstRun()
 
     MsgBox "The LanParty client facilitate easy LAN gameplay and coordination." & vbNewLine & vbNewLine & _
-        "An individual that is elected by his peers can become a LanParty Admin, allowing him to suggest commands or games (or run them directly if the option is enabled in settings)." & vbNewLine & vbNewLine, vbInformation, "Welcome!."
+        "An individual that is elected by his peers can become a LanParty Admin, allowing him to suggest commands or games (or run them directly if the option is enabled in settings)." & vbNewLine & vbNewLine, vbInformation, "Welcome!"
 
 End Sub
 

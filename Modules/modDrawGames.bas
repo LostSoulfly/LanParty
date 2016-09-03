@@ -57,7 +57,7 @@ If ((Not Game) = -1) Then Exit Sub 'prevent an early error, though it would be c
 
 If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
 
-If NumPlayers > 0 Then
+If NumPlayers > -1 Then
     'loop through the list of games and find each game with NumPlayers as .maxplayers
     'set it to displayicons
 Else
@@ -197,7 +197,7 @@ Public Function UpdateMaxPlayersMenu()
     Dim NotEmpty As Boolean
     Dim arrGames() As PlayersUDT
     ReDim arrGames(UBound(Game))
-        
+
     For i = 0 To UBound(Game)
     DoEvents
         With Game(i)
@@ -230,7 +230,7 @@ Public Function UpdateMaxPlayersMenu()
     frmMain.mnuNumPlayers(0).Tag = 0
     frmMain.mnuNumPlayers(0).Caption = "Clear Filter"
 
-    
+    Dim UnkPlayers As Integer
     For i = 0 To UBound(arrGames)
     DoEvents
         If arrGames(i).GameCount > 0 Then
@@ -238,8 +238,17 @@ Public Function UpdateMaxPlayersMenu()
                 Load frmMain.mnuNumPlayers(ii)
                 frmMain.mnuNumPlayers(ii).Tag = arrGames(i).NumPlayers
                 frmMain.mnuNumPlayers(ii).Caption = arrGames(i).NumPlayers & " Players (" & arrGames(i).GameCount & " Games)"
+        Else
+            UnkPlayers = UnkPlayers + 1
         End If
     Next
+    
+    If UnkPlayers > 0 Then
+        ii = frmMain.mnuNumPlayers.Count
+        Load frmMain.mnuNumPlayers(ii)
+        frmMain.mnuNumPlayers(ii).Tag = -1
+        frmMain.mnuNumPlayers(ii).Caption = "Unknown Players (" & (UnkPlayers - 1) & " Games)"
+    End If
     
     frmMain.mnuPlayers.Visible = True
     
