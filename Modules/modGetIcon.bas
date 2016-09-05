@@ -54,6 +54,7 @@ Public Function GetGamePicture(ByVal PathToFile As String) As Picture
 On Error GoTo badprogramming
 
 If LenB(PathToFile) = 0 Then Exit Function
+DoEvents
 
 'verify the file is ril, nigga
 'AddDebug PathToFile
@@ -79,29 +80,14 @@ Select Case err.Number
 Case Is = 481
     'invalid picture
     Select Case LCase$(Right$(PathToFile, 4))
-        Case Is = ".png"
+        Case Is = ".png", ".bmp", "tiff", ".tif", ".tga", ".jpg", ".gif"
             Set GetGamePicture = LoadPicturePlus(PathToFile)
-        Case Is = "tiff"
-            Set GetGamePicture = LoadPicturePlus(PathToFile)
-        Case Is = ".tif"
-            Set GetGamePicture = LoadPicturePlus(PathToFile)
-        Case Is = ".tga"
-            Set GetGamePicture = LoadPicturePlus(PathToFile)
-        Case Is = ".jpg"
-            Set GetGamePicture = LoadPicturePlus(PathToFile)
-        Case Is = ".gif"
-            Set GetGamePicture = LoadPicturePlus(PathToFile)
-        Case Is = ".bmp"
-            Set GetGamePicture = LoadPicturePlus(PathToFile)
-        Case Is = ".ico"
-            Set GetGamePicture = GetAssocIcon(PathToFile)
-        Case Is = ".exe"
+        Case Is = ".ico", ".exe"
             Set GetGamePicture = GetAssocIcon(PathToFile)
         Case Else
             Set GetGamePicture = GetAssocIcon(PathToFile)
     End Select
-    
-    
+        
 Case Else
 
     AddDebug err.Number & " " & err.Description

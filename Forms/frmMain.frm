@@ -340,13 +340,13 @@ mnuUser.Visible = False
 'todo: enable for builds
 'CRASHES on breakpoints often
 'WheelHook Me.hwnd
-SetStartupStatus "", "Initialize Users.."
+SetStartupStatus "Finishing Things Up", "Initialize Users.."
 Pause 100
 InitializeUsers
 Me.Caption = "LanParty Launcher v" & App.Major & "." & App.Minor & "." & App.Revision
 'mnuApplyAdmin_Click
-SetStartupStatus "Finishing Things Up", "Loading game icons.."
-Pause 250
+SetStartupStatus "", "Loading game icons.."
+NumPlayers = -1             'set the default max player filter to show all games
 UpdateIconList True
 RefreshBackground
 SelectGame 1
@@ -995,12 +995,12 @@ If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
     Dim NumRowsVisible As Integer
     Dim MaxLocationIcon As Long
     
-    NumOfRows = (UBound(Game) / lngLastIconsPerRow)
+    NumOfRows = Fix(UBound(Game) / lngLastIconsPerRow) - 1
     'round up..
     If (UBound(Game) / lngLastIconsPerRow) > NumOfRows Then NumOfRows = NumOfRows + 1
     
     'biggest height the box needs to be
-    MaxLocationIcon = NumOfRows * (imgIcon(0).Top + imgIcon(0).Height + lblIcon(0).Height)
+    MaxLocationIcon = NumOfRows * (imgIcon(0).Top + imgIcon(0).Height + lblIcon(0).Height) + 500
     
     'num rows visi
     
@@ -1011,7 +1011,7 @@ If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
         
         For i = 1 To NumOfRows
             If i * (imgIcon(0).Top + imgIcon(0).Height + lblIcon(0).Height) >= frmMain.Height Then
-                NumRowsVisible = i - 1
+                NumRowsVisible = i
                 Exit For
             End If
         Next i
@@ -1019,7 +1019,7 @@ If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
         'AddDebug "All rows NOT visible. Rows not visible: " & (NumOfRows - NumRowsVisible)
         'vsScroll.Max = (MaxLocationIcon - frmMain.Height) / NumOfRows
         vsScroll.Max = (NumOfRows - NumRowsVisible)
-        lngScrollAmt = (MaxLocationIcon / NumOfRows)
+        lngScrollAmt = (picContainer.Height - 500) / NumOfRows
         vsScroll.Visible = True
     Else
     'all rows are visible

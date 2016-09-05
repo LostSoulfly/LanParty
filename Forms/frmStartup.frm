@@ -47,7 +47,7 @@ Begin VB.Form frmStartup
    Begin VB.Label lblStatus 
       Alignment       =   2  'Center
       BackStyle       =   0  'Transparent
-      Height          =   255
+      Height          =   615
       Left            =   0
       TabIndex        =   1
       Top             =   840
@@ -237,6 +237,7 @@ Private Sub SearchForFiles(sRoot As String)
 
    Dim WFD As WIN32_FIND_DATA
    Dim hFile As Long
+   Dim sRootTemp As String
   
    hFile = FindFirstFile(sRoot & ALL_FILES, WFD)
   
@@ -245,17 +246,17 @@ Private Sub SearchForFiles(sRoot As String)
    If hFile <> INVALID_HANDLE_VALUE Then
     
     If blUpdate Then
-        
-        If Len(sRoot) > 60 Then
-            If Len(sRoot) < 100 Then
-                SetStatus Left(sRoot, 10) & ".." & Right(sRoot, Len(sRoot) / 2)
-            ElseIf Len(sRoot) < 150 Then
-                SetStatus Left(sRoot, 5) & ".." & Right(sRoot, Len(sRoot) / 3)
+        sRootTemp = Right(sRoot, Len(sRoot) - Len(App.Path & "\"))
+        If Len(sRootTemp) > 60 Then
+            If Len(sRootTemp) < 100 Then
+                SetStatus Left(sRootTemp, InStr(1, sRootTemp, "\")) & ".." & Right(sRootTemp, Len(sRootTemp) / 2)
+            ElseIf Len(sRootTemp) < 150 Then
+                SetStatus Left(sRootTemp, InStr(1, sRootTemp, "\")) & ".." & Right(sRootTemp, Len(sRootTemp) / 3)
             Else
-                SetStatus Left(sRoot, 5) & ".." & Right(sRoot, Len(sRoot) / 5)
+                SetStatus Left(sRootTemp, InStr(1, sRootTemp, "\")) & ".." & Right(sRootTemp, Len(sRootTemp) / 5)
             End If
         Else
-            SetStatus "Searching.. " & sRoot
+            SetStatus sRootTemp
         End If
     blUpdate = False
     End If
