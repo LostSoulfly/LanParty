@@ -339,7 +339,7 @@ DoEvents
 mnuUser.Visible = False
 'todo: enable for builds
 'CRASHES on breakpoints often
-'WheelHook Me.hwnd
+WheelHook Me.hwnd
 SetStartupStatus "Finishing Things Up", "Initialize Users.."
 Pause 100
 InitializeUsers
@@ -995,7 +995,7 @@ If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
     Dim NumRowsVisible As Integer
     Dim MaxLocationIcon As Long
     
-    NumOfRows = Fix(UBound(Game) / lngLastIconsPerRow) - 1
+    NumOfRows = Fix(UBound(Game) / lngLastIconsPerRow)
     'round up..
     If (UBound(Game) / lngLastIconsPerRow) > NumOfRows Then NumOfRows = NumOfRows + 1
     
