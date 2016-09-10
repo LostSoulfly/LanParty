@@ -395,7 +395,7 @@ If MsgBox("Are you certain you wish to delete this game?", vbYesNoCancel, "Delet
     UpdateGame GameIndex, True
     SaveGames
     DoEvents
-    InitializeGameArray
+    InitializeGameArray True
     UpdateIconList True
     DoEvents
     

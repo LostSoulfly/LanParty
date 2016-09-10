@@ -220,7 +220,7 @@ Public Sub FirstRun()
     'MsgBox "The LanParty client facilitate easy LAN gameplay and coordination." & vbNewLine & vbNewLine & _
         "An individual that is elected by his peers can become a LanParty Admin, allowing him to suggest commands or games (or run them directly if the option is enabled in settings)." & vbNewLine & vbNewLine, vbInformation, "Welcome!"
 
-    If Not isAdmin And Settings.blDebug = False Then
+    If Not isAdmin Then
         MsgBox "This program should be run with Admin rights to ensure proper launching/installing of games." & _
         vbNewLine & vbNewLine & "If you have issues, please run this program elevated.", vbCritical, "Some things may not work properly!"
         'End
@@ -229,9 +229,9 @@ Public Sub FirstRun()
 End Sub
 
 Public Sub SetStartupStatus(strCaption As String, Status As String)
-    If frmStartup Is Nothing Then Exit Sub
+    If blBootComplete Then Exit Sub
     
-    With frmStartup
+        With frmStartup
         .SetCaption strCaption
         .SetStatus Status
     End With
@@ -248,7 +248,7 @@ End Sub
 Public Sub HideLoadingWindow()
     blBootComplete = True
     frmStartup.Visible = False
-    If Not frmStartup Is Nothing Then Unload frmStartup
+    If Not frmStartup Is Nothing Then Unload frmStartup: Set frmStartup = Nothing
     'blContinueStartup = True
     DoEvents
     frmMain.Visible = True

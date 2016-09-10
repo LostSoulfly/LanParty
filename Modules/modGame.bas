@@ -113,7 +113,7 @@ End Sub
 Public Function GetSaveGameString(Index As Integer, ByRef strGames As String)
 
     With Game(Index)
-        If LenB(.GameUID$) = 0 Then .GameUID = CalcGameUID(Index)
+        'If LenB(.GameUID$) = 0 Then .GameUID = CalcGameUID(Index)
         If LenB(Game(Index).GameUID) > 0 Then
             AddToString "Name " & .Name, strGames
             AddToString "IconPath " & .IconPath, strGames
@@ -139,7 +139,6 @@ Public Sub InitializeGameArray(Optional blForce As Boolean = False)
         
     If blForce Or ((Not Game) = -1) Then
         SetStartupStatus "", "Loading games.."
-        Pause 100
         GetGamesFromText LoadFile(App.Path & "\Games.txt"), Game   'this will clear/initialize the Game UDT
     End If
 
