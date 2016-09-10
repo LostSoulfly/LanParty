@@ -127,12 +127,6 @@ On Error GoTo oops
 
 InitializeSettings
 
-If Not isAdmin And Settings.blDebug = False Then
-    MsgBox "This program should be run with Admin rights to ensure proper launching/installing of games." & _
-    vbNewLine & vbNewLine & "If you have issues, please run this program elevated.", vbCritical, "Stuff won't work right. I guarantee it."
-    'End
-End If
-
 'build the Winsock resource file and register it
 
 If Not FileExists(App.Path & "\MSWINSCK.OCX") And isAdmin Then
@@ -223,8 +217,14 @@ End Sub
 
 Public Sub FirstRun()
 
-    MsgBox "The LanParty client facilitate easy LAN gameplay and coordination." & vbNewLine & vbNewLine & _
+    'MsgBox "The LanParty client facilitate easy LAN gameplay and coordination." & vbNewLine & vbNewLine & _
         "An individual that is elected by his peers can become a LanParty Admin, allowing him to suggest commands or games (or run them directly if the option is enabled in settings)." & vbNewLine & vbNewLine, vbInformation, "Welcome!"
+
+    If Not isAdmin And Settings.blDebug = False Then
+        MsgBox "This program should be run with Admin rights to ensure proper launching/installing of games." & _
+        vbNewLine & vbNewLine & "If you have issues, please run this program elevated.", vbCritical, "Some things may not work properly!"
+        'End
+    End If
 
 End Sub
 

@@ -1,6 +1,6 @@
 frmMain = 7, 5, 1011, 570, , 57, 29, 674, 662, C
 frmChat = 0, 0, 1096, 519, , 57, 262, 674, 567, C
-frmSettings = 159, 370, 1026, 720, C, 6, 14, 745, 369, C
+frmSettings = 159, 370, 1026, 720, , 6, 14, 745, 369, C
 modGame = 42, 94, 1151, 715, C
 modWheel = 52, 52, 1274, 686, C
 modSettings = 104, 104, 1186, 675, 
@@ -12,7 +12,7 @@ modRegSvr = 190, 177, 1296, 703, C
 modVersion = 26, 26, 893, 376, C
 clsBuffer = 0, 0, 867, 350, C
 modNetwork = 3, 1, 1189, 624, C
-modMain = 172, 70, 1314, 620, C
+modMain = 172, 70, 1314, 620, 
 modAdmin = 130, 29, 1170, 610, C
 modGetIcon = 78, 78, 1023, 669, 
 modGDI = 260, 260, 1606, 824, C

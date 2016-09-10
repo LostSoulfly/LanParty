@@ -150,6 +150,7 @@ Begin VB.Form frmSettings
       End
       Begin VB.CheckBox chkChatType 
          Caption         =   "Broadcast, Not Direct"
+         Enabled         =   0   'False
          Height          =   255
          Left            =   120
          TabIndex        =   15
