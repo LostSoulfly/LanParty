@@ -310,6 +310,7 @@ frmChat.lstUsers.BackColor = Settings.ChatBGColor
 frmChat.txtEnter.BackColor = Settings.ChatBGColor
 frmChat.txtEnter.ForeColor = Settings.ChatTextColor
 .picContainer.BackColor = Settings.LanBGColor
+.BackColor = Settings.LanBGColor
 End With
 
 ColorIconText
