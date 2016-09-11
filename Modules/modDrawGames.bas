@@ -198,14 +198,16 @@ Public Function UpdateMaxPlayersMenu()
     Dim i As Integer
     Dim ii As Integer
     Dim NotEmpty As Boolean
+    Dim TotalGamesWithPlayers As Integer
     Dim arrGames() As PlayersUDT
     ReDim arrGames(UBound(Game))
-
+    
     For i = 0 To UBound(Game)
     DoEvents
         With Game(i)
             If LenB(.GameEXE) > 0 Then
                 If .MaxPlayers > 0 Then 'the maxPlayers has been set for this game.
+                    TotalGamesWithPlayers = TotalGamesWithPlayers + 1
                     NotEmpty = True
                     For ii = 0 To UBound(arrGames)
                     DoEvents
@@ -218,7 +220,8 @@ Public Function UpdateMaxPlayersMenu()
         End With
     Next i
     
-    If NotEmpty = False Then frmMain.mnuPlayers.Visible = False: Exit Function
+    frmMain.mnuPlayers.Visible = NotEmpty
+    If NotEmpty = False Then Exit Function
     
     
 
@@ -241,16 +244,16 @@ Public Function UpdateMaxPlayersMenu()
                 Load frmMain.mnuNumPlayers(ii)
                 frmMain.mnuNumPlayers(ii).Tag = arrGames(i).NumPlayers
                 frmMain.mnuNumPlayers(ii).Caption = arrGames(i).NumPlayers & " Players (" & arrGames(i).GameCount & " Games)"
-        Else
-            UnkPlayers = UnkPlayers + 1
         End If
     Next
+    
+    UnkPlayers = UBound(arrGames) - TotalGamesWithPlayers
     
     If UnkPlayers > 0 Then
         ii = frmMain.mnuNumPlayers.Count
         Load frmMain.mnuNumPlayers(ii)
         frmMain.mnuNumPlayers(ii).Tag = 0
-        frmMain.mnuNumPlayers(ii).Caption = "Unknown Players (" & (UnkPlayers - 1) & " Games)"
+        frmMain.mnuNumPlayers(ii).Caption = "Unknown Players (" & (UnkPlayers) & " Games)"
     End If
     
     frmMain.mnuPlayers.Visible = True
