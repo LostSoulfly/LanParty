@@ -406,6 +406,7 @@ Public Function FileExists(ByRef sFileName As String) As Boolean
 End Function
 
 Public Function ExecFile(FilePath As String, FileArgs As String, Optional Operation As String = "open", Optional Directory As String = vbNullString, Optional Visible As Long = 1) As Long
+On Error GoTo ErrorCatch
 Dim Ret As Long
     Ret = ShellExecute(frmMain.hwnd, Operation, FilePath, FileArgs, Directory, Visible)
     'ret = ShellExecute(0, Operation, FilePath, FileArgs, Directory, Visible)
@@ -418,7 +419,22 @@ Dim Ret As Long
     End If
     
     ExecFile = Ret
+    Exit Function
+    
+ErrorCatch:
 
+    Select Case err.Number
+        
+        Case 53:
+            AddUserChat "Unable to start file! Is it missing? (" & FilePath & ")", "Error", False
+            
+        Case Else:
+            AddUserChat err.Number & ": " & err.Description & " (" & FilePath & ")", "Error", False
+            
+    End Select
+    
+    err.Clear
+    
 End Function
 
 Public Sub SetCaption(Text As String)
@@ -441,11 +457,11 @@ On Error Resume Next
 
 End Function
 
-Public Function PathOfFile(fileName As String) As String
+Public Function PathOfFile(FileName As String) As String
     Dim posn As Integer
-    posn = InStrRev(fileName, "\")
+    posn = InStrRev(FileName, "\")
     If posn > 0 Then
-        PathOfFile = Left$(fileName, posn)
+        PathOfFile = Left$(FileName, posn)
     Else
         PathOfFile = ""
     End If
