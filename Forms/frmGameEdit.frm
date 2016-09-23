@@ -314,8 +314,7 @@ If Not blDelete Then
         .InstallFirst = IIf(chkInstallFirst.Value = vbChecked, True, False)
         .GameType = IIf(chkCommand.Value = vbChecked, 1, 0)
         .MaxPlayers = IIf(IsNumeric(txtPlayers.Text), CInt(txtPlayers.Text), 0)
-        'AddDebug "UpdateGame - CalcGameUID"
-        CalcGameUID Index
+        .GameUID = CalcGameUID(Index)
     End With
 Else
     With Game(Index)

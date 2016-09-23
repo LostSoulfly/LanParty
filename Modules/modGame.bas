@@ -434,22 +434,33 @@ Public Function CalcGameUID(GameIndex As Integer, Optional blForce As Boolean = 
     If blForce Then AddDebug "Force calculating GameUID.."
 
     If FileExists(GetGameExePath(GameIndex)) Then
-        CalcGameUID = CalculateAdler(CRC32File(GetGameExePath(GameIndex)) & Game(GameIndex).Name)
+        CalcGameUID = CalculateAdler(CRC32File(GetGameExePath(GameIndex)) & Game(GameIndex).Name & _
+        Game(GameIndex).CommandArgs & Game(GameIndex).MonitorEXE)
+    ElseIf Game(GameIndex).InstallFirst And FileExists(FixFilePath(Game(GameIndex).InstallerPath)) Then
+        CalcGameUID = CalculateAdler(CRC32File(FixFilePath(Game(GameIndex).InstallerPath)) & Game(GameIndex).Name & _
+        Game(GameIndex).CommandArgs & Game(GameIndex).MonitorEXE)
     Else
         CalcGameUID = CalculateAdler(Game(GameIndex).GameEXE & Game(GameIndex).GameType & Game(GameIndex).CommandArgs & Game(GameIndex).InstallerPath)
     End If
     
     'Not sure how or why this would happen, but at least it will allow them to save the game/command..
-    If LenB(CalcGameUID) = 0 Then CalcGameUID = GenUniqueKey(8)
+    'If LenB(CalcGameUID) = 0 Then CalcGameUID = GenUniqueKey(8)
+    
+    If IsNumeric(CalcGameUID) Then CalcGameUID = Format(Hex(CalcGameUID), "00000000")
+    
+    Do While Len(CalcGameUID) < 8
+        CalcGameUID = "0" & CalcGameUID
+    Loop
+    
+    
     
     If GameIndexByUID(CalcGameUID) > 0 Then
         AddDebug "*** Seriously? This just happened. Wtf."
         CalcGameUID = GenUniqueKey(8)
-    End If
-    
-    If GameIndexByUID(CalcGameUID) > 0 Then
-        AddDebug "*** Seriously? This just happened. Wtf."
-        CalcGameUID = GenUniqueKey(8)
+        If GameIndexByUID(CalcGameUID) > 0 Then
+            AddDebug "*** Seriously? This just happened. Wtf."
+            CalcGameUID = GenUniqueKey(8)
+        End If
     End If
     
 End Function
