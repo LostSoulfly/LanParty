@@ -25,6 +25,7 @@ Public Type GameData
     Installed As Boolean
     GameType As Integer
     MaxPlayers As Integer
+    GameExists As Boolean
     'ConfigFile As String
     'UserNameField As String
     'UserNameConfigMethod As Integer
@@ -251,6 +252,29 @@ ReDim TempGame(0)
             Next i
         End If
     End If
+
+CheckGamesExist
+
+End Function
+
+Public Function CheckGamesExist()
+Dim i As Integer
+    
+    For i = 1 To UBound(Game)
+        If FileExists(GetGameExePath(i)) Then
+            Game(i).GameExists = True
+        ElseIf FileExists(FixFilePath(Game(i).InstallerPath)) Then
+            Game(i).GameExists = True
+        End If
+    Next i
+End Function
+
+Public Function NumGamesExist() As Integer
+Dim i As Integer
+
+For i = 1 To UBound(Game)
+    If Game(i).GameExists Then NumGamesExist = NumGamesExist + 1
+Next
 
 End Function
 

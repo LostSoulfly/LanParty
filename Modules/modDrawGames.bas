@@ -7,6 +7,7 @@ Public lngScrollAmt As Long
 Public IconHeight As Long
 Public IconWidth As Long
 Public NumPlayers As Integer
+Public DisplayIcons As Integer
 
 Private Type PlayersUDT
     NumPlayers As Integer
@@ -51,7 +52,6 @@ Dim NextLeft As Long
 Dim NextTop As Long
 Dim IconTotalWidth As Long
 Dim IconTotalHeight As Long
-Dim DisplayIcons As Integer
 Dim i As Integer
 Dim ii As Integer
 
@@ -59,16 +59,18 @@ If ((Not Game) = -1) Then Exit Sub 'prevent an early error, though it would be c
 
 If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
 
+DisplayIcons = 0
+
 If NumPlayers > -1 Then
     'loop through the list of games and find each game with NumPlayers as .maxplayers
     'set it to displayicons
     
     For i = 1 To UBound(Game)
-        If Game(i).MaxPlayers = NumPlayers Then DisplayIcons = DisplayIcons + 1
+        If (Game(i).MaxPlayers = NumPlayers) And (Game(i).GameExists) Then DisplayIcons = DisplayIcons + 1
     Next i
     
 Else
-    DisplayIcons = UBound(Game)
+    DisplayIcons = NumGamesExist
 End If
 
 
@@ -117,7 +119,7 @@ InitIcons
 
     For i = 1 To UBound(Game)
     DoEvents
-        If NumPlayers = -1 Or (NumPlayers > -1 And Game(i).MaxPlayers = NumPlayers) Then
+        If (NumPlayers = -1 Or (NumPlayers > -1 And Game(i).MaxPlayers = NumPlayers)) And Game(i).GameExists Then
             If LoopCurrentRow = CurrentIconsPerRow Then
                 NextTop = NextTop + IconTotalHeight
                 NextLeft = DEFAULT_LEFT
@@ -172,6 +174,8 @@ InitIcons
             'If i = 1 Then NextLeft = IconTotalWidth
             lngCurrentNumIcons = lngCurrentNumIcons + 1
             LoopCurrentRow = LoopCurrentRow + 1
+        Else
+            AddDebug "Hiding " & GetGameName(i)
         End If
     Next i
     
@@ -180,6 +184,8 @@ InitIcons
     iconTopTotal = frmMain.imgIcon(DisplayIcons).Top + IconTotalHeight
     
     frmMain.picContainer.Height = iconTopTotal
+
+    SetCaption "Games: " & UBound(Game) & " Displayed: " & DisplayIcons
 
 Exit Sub
 

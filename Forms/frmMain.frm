@@ -343,7 +343,7 @@ WheelHook Me.hwnd
 SetStartupStatus "Finishing Things Up", "Initialize Users.."
 Pause 100
 InitializeUsers
-Me.Caption = "LanParty Launcher v" & App.Major & "." & App.Minor & "." & App.Revision
+SetCaption App.Major & "." & App.Minor & "." & App.Revision
 'mnuApplyAdmin_Click
 SetStartupStatus "", "Loading game icons.."
 NumPlayers = -1             'set the default max player filter to show all games
@@ -862,7 +862,7 @@ End Sub
 Private Sub imgIcon_Click(Index As Integer)
     
     SelectGame imgIcon(Index).Tag
-    SetCaption Game(imgIcon(Index).Tag).Name
+    SetCaption Game(imgIcon(Index).Tag).Name ' & " Exists: " & Game(imgIcon(Index).Tag).GameExists
 End Sub
 
 Private Sub imgIcon_DblClick(Index As Integer)
@@ -995,9 +995,9 @@ If (UBound(Game) = 0) And (LenB(Game(0).Name$) = 0) Then Exit Sub
     Dim NumRowsVisible As Integer
     Dim MaxLocationIcon As Long
     
-    NumOfRows = Fix(UBound(Game) / lngLastIconsPerRow)
+    NumOfRows = Fix(DisplayIcons / lngLastIconsPerRow)
     'round up..
-    If (UBound(Game) / lngLastIconsPerRow) > NumOfRows Then NumOfRows = NumOfRows + 1
+    If (DisplayIcons / lngLastIconsPerRow) > NumOfRows Then NumOfRows = NumOfRows + 1
     
     'biggest height the box needs to be
     MaxLocationIcon = NumOfRows * (imgIcon(0).Top + imgIcon(0).Height + lblIcon(0).Height) + 500

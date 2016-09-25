@@ -517,6 +517,7 @@ End If
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+    CheckGamesExist
     UpdateIconList True
     UpdateMaxPlayersMenu
 End Sub
