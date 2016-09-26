@@ -1,6 +1,6 @@
 Type=Exe
 Form=Forms\frmMain.frm
-Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\..\Windows\SysWOW64\stdole2.tlb#OLE Automation
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\SysWOW64\stdole2.tlb#OLE Automation
 Form=Forms\frmChat.frm
 Form=Forms\frmSettings.frm
 Module=modGame; Modules\modGame.bas
@@ -53,7 +53,7 @@ Description="LanParty Client"
 CompatibleMode="0"
 MajorVer=1
 MinorVer=0
-RevisionVer=305
+RevisionVer=307
 AutoIncrementVer=0
 ServerSupportFiles=0
 VersionComments="Your gateway to easy LAN gaming."

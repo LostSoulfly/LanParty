@@ -7,6 +7,7 @@ Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 Public Type GlobalSettings
     UserName As String
     blDebug As Boolean
+    DebugPackets As Boolean
     DisableLan As Boolean
     BackgroundPath As String
     ShowIcons As Boolean
@@ -52,6 +53,7 @@ AddToString "", strSettings
 
 AddToString "UserName " & .UserName, strSettings
 AddToString "Debug " & .blDebug, strSettings
+AddToString "DebugPackets " & .DebugPackets, strSettings
 AddToString "DisableLan " & .DisableLan, strSettings
 AddToString "BackgroundPath " & .BackgroundPath, strSettings
 AddToString "ShowIcons " & .ShowIcons, strSettings
@@ -156,6 +158,9 @@ If UBound(lines) > 1 Then
                 
                 Case "debug"
                 Settings.blDebug = IIf(LCase$(strData) = "true", True, False)
+                
+                Case "debugpackets"
+                Settings.DebugPackets = IIf(LCase$(strData) = "true", True, False)
                 
                 Case "disablelan"
                 Settings.DisableLan = IIf(LCase$(strData) = "true", True, False)
