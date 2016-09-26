@@ -93,7 +93,7 @@ Dim intSecure As Integer
 
     MsgType = ReadHandleDataType(Data, UID)         'We retrieve the actual data as well as the UID from the packet
     
-    If Settings.blDebug Then WriteLog "Packet MsgType: " & CStr(MsgType) & "(" & GetMsgTypeName(MsgType) & ")", App.Path & "\debug.txt"
+    If Settings.DebugPackets Then WriteLog "Packet MsgType: " & CStr(MsgType) & "(" & GetMsgTypeName(MsgType) & ")", App.Path & "\debug.txt"
     
     If LenB(UID) > 0 Then                               'if the UID is *something*,
         intSecure = UserIndexByUID(UID)                 'Determine the UserIndex by the packet's UID
@@ -397,7 +397,7 @@ Private Sub HandleBeacon(ByVal Index As Long, ByRef Data() As Byte, ByVal StartA
         If (UBound(Vote) = 0 And VoteCount > 0) Or (VoteCount > (UBound(Vote) + 1)) Then
             If HasSyncedAdmins Then SyncAllVotes UserIndex, True: AddDebug " Sending ReqSyncVotePacket to " & GetUserNameByIndex(UserIndex)
         End If
-        SetUserIndexStatus UserIndex, True
+        'SetUserIndexStatus UserIndex, True
     End If
 
     Set Buffer = Nothing
@@ -752,7 +752,7 @@ Private Sub HandlePrivateChat(ByVal Index As Long, ByRef Data() As Byte, ByVal S
                 CreatePChatWindow PChatID
                 GetPChatWindow(PChatID).AddChatUser User(UserIndex).UniqueID
                 AddUserPrivateChat GetUserNameByIndex(UserIndex) & " has joined the chat.", "System", PChatID
-                If Not Settings.AcceptPrivateChat Then GetPChatWindow(PChatID).RequestChat (UserIndex)
+                GetPChatWindow(PChatID).RequestChat (UserIndex)
                 'If NumUsers > PChatNumUsers(PChatID) Then PChatReqSyncUsers PChatID, User(UserIndex).UniqueID
                 ComparePChatUserNums NumUsers, PChatID, User(UserIndex).UniqueID
                 

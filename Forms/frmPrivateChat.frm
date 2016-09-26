@@ -4,11 +4,11 @@ Begin VB.Form frmPrivateChat
    ClientHeight    =   3135
    ClientLeft      =   165
    ClientTop       =   810
-   ClientWidth     =   8745
+   ClientWidth     =   6840
    Icon            =   "frmPrivateChat.frx":0000
    LinkTopic       =   "Form1"
    ScaleHeight     =   3135
-   ScaleWidth      =   8745
+   ScaleWidth      =   6840
    StartUpPosition =   3  'Windows Default
    Begin VB.ListBox lstUsers 
       Height          =   2595
@@ -21,9 +21,9 @@ Begin VB.Form frmPrivateChat
    Begin VB.Frame frameInvite 
       BorderStyle     =   0  'None
       Height          =   3255
-      Left            =   6720
+      Left            =   6840
       TabIndex        =   1
-      Top             =   120
+      Top             =   240
       Visible         =   0   'False
       Width           =   6855
       Begin VB.CommandButton cmdAccept 
@@ -144,11 +144,14 @@ txtEnter.ForeColor = Settings.ChatTextColor
 End Sub
 
 Public Sub RequestChat(UserIndex As Integer)
-frameInvite.Left = 0
-frameInvite.Top = 0
-frameInvite.Visible = True
-lblInvite.Caption = GetUserNameByIndex(UserIndex) & " wants to initiate a private chat with you." & vbNewLine & vbNewLine & "Do you accept?"
-
+If Not Settings.AcceptPrivateChat Then
+    frameInvite.Left = 0
+    frameInvite.Top = 0
+    frameInvite.Visible = True
+    lblInvite.Caption = GetUserNameByIndex(UserIndex) & " wants to initiate a private chat with you." & vbNewLine & vbNewLine & "Do you accept?"
+Else
+    SendChat "Auto", 4
+End If
     'SendDataToUDP User(UserIndex).IP, PrivateChatPacket(4, User(UserIndex).UniqueKey, Me.Tag, "Connected.")
 
 End Sub
