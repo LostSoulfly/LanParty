@@ -174,8 +174,8 @@ InitIcons
             'If i = 1 Then NextLeft = IconTotalWidth
             lngCurrentNumIcons = lngCurrentNumIcons + 1
             LoopCurrentRow = LoopCurrentRow + 1
-        Else
-            AddDebug "Hiding " & GetGameName(i)
+        'Else
+            'AddDebug "Hiding " & GetGameName(i)
         End If
     Next i
     

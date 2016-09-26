@@ -358,6 +358,10 @@ UpdateCmdChk
 GameIndex = Index
 End Sub
 
+Public Sub AddNewGame()
+    cmdNew_Click
+End Sub
+
 Private Sub UpdateCmdChk()
 
 If chkCommand.Value = vbChecked Then
@@ -437,6 +441,8 @@ RefreshGame GameIndex
 End Sub
 
 Private Sub cmdUpdate_Click()
+
+Call cmdLocalPath_Click
 
 txtGameEXE.Text = Trim(txtGameEXE.Text$)
 

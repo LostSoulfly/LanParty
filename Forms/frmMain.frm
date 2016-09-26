@@ -165,6 +165,7 @@ Begin VB.Form frmMain
          Begin VB.Menu mnuList 
             Caption         =   "List Icons"
             Enabled         =   0   'False
+            Visible         =   0   'False
          End
       End
    End
@@ -182,13 +183,15 @@ Begin VB.Form frmMain
          Caption         =   "Scan For Running Game"
       End
       Begin VB.Menu mnuExportGameFiles 
-         Caption         =   "Export Individual Game Files"
+         Caption         =   "Export Game Data"
       End
       Begin VB.Menu mnuSaveGames 
          Caption         =   "Save Games File"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuEditGameFile 
          Caption         =   "Edit GameInfo File"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuApplyAdmin 
          Caption         =   "Apply For Admin Status"
@@ -198,7 +201,7 @@ Begin VB.Form frmMain
          Visible         =   0   'False
       End
       Begin VB.Menu mnuGameEditor 
-         Caption         =   "Game Editor"
+         Caption         =   "Edit Game Data"
       End
       Begin VB.Menu mnuFirewall 
          Caption         =   "Windows Firewall"
@@ -293,8 +296,6 @@ Begin VB.Form frmMain
       End
       Begin VB.Menu mnuAddGame 
          Caption         =   "Add Game"
-         Enabled         =   0   'False
-         Visible         =   0   'False
       End
    End
    Begin VB.Menu mnuResources 
@@ -410,6 +411,11 @@ Private Sub mnuAbout_Click()
 MsgBox "This has been in development since early December, and is comprised of over 8000 lines of code, the majority of it written by me." & vbNewLine & _
 "I wrote this initially for the TrollParty 2016 LAN, in an attempt to make it as easy as possible for people to just come over and play games." & vbNewLine & vbNewLine & _
 "I hope this program will make things easier for you personally and enable you to spend more time playing games and having fun." & vbNewLine & "-Dragoon (Bradley)", vbInformation, "About"
+End Sub
+
+Private Sub mnuAddGame_Click()
+    frmGameEdit.Visible = True
+    frmGameEdit.AddNewGame
 End Sub
 
 Private Sub mnuAllowCommands_Click()
