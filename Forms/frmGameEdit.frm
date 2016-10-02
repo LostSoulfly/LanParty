@@ -304,7 +304,8 @@ AddDebug "UpdateGame: " & Index & " blDelete: " & blDelete
 If Not blDelete Then
     With Game(Index)
         .EXEPath = Trim$(txtEXEPath.Text)
-        .GameEXE = Trim$(txtGameEXE.Text)
+        .GameEXE32Bit = Trim$(txtGameEXE32Bit.Text)
+        .GameEXE64Bit = Trim$(txtGameEXE64Bit.Text)
         .CommandArgs = Trim$(txtCMDArgs.Text)
         .IconPath = Trim$(txtIconPath.Text)
         .MonitorRunning = IIf(chkMonitor.Value = vbChecked, True, False)
@@ -319,7 +320,8 @@ If Not blDelete Then
 Else
     With Game(Index)
         .EXEPath = ""
-        .GameEXE = ""
+        .GameEXE32Bit = ""
+        .GameEXE64Bit = ""
         .CommandArgs = ""
         .IconPath = ""
         .MonitorRunning = False
@@ -339,7 +341,8 @@ Public Sub RefreshGame(Index As Integer)
 With Game(Index)
     
     txtEXEPath.Text = .EXEPath
-    txtGameEXE.Text = .GameEXE
+    txtGameEXE32Bit.Text = .GameEXE32Bit
+    txtGameEXE64Bit.Text = .GameEXE64Bit
     txtCMDArgs.Text = .CommandArgs
     txtIconPath.Text = .IconPath
     chkMonitor.Value = IIf(.MonitorRunning, vbChecked, vbUnchecked)
@@ -446,8 +449,8 @@ Call cmdLocalPath_Click
 
 txtGameEXE.Text = Trim(txtGameEXE.Text$)
 
-    If Len(Game(GameIndex).GameEXE$) > 0 Then
-        If Not LCase(Game(GameIndex).GameEXE$) = LCase(txtGameEXE.Text$) Then
+    If Len(GetMyBitGameEXE(GameIndex)) > 0 Then
+        If Not LCase(GetMyBitGameEXE(GameIndex)) = LCase(txtGameEXE.Text$) Then
             If MsgBox("Do you want to update the Game entry " & Game(GameIndex).Name & "?", vbYesNo, "Update") = vbYes Then
                 UpdateGame GameIndex
             End If

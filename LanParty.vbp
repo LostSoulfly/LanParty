@@ -41,6 +41,7 @@ Form=Forms\frmLocateGame.frm
 Module=modCRC; Modules\modCRC.bas
 Form=Forms\frmStartup.frm
 Module=modGameScan; Modules\modGameScan.bas
+Class=clsScript; Classes\clsScript.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

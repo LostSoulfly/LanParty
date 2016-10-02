@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "comdlg32.OCX"
+Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
 Begin VB.Form frmLocateGame 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Locate Game"
@@ -273,7 +273,7 @@ Private Sub cmdAccept_Click()
 
     Game(Me.Tag).EXEPath = Mid(txtLocation.Text, 1, InStrRev(txtLocation.Text, "\"))
     'NoFileExtension = Mid(NoFilePath, InStrRev(NoFilePath, "\") + 1, InStrRev(NoFilePath, ".") - 1)
-    Game(Me.Tag).GameEXE = Mid(txtLocation.Text, InStrRev(txtLocation.Text, "\") + 1, Len(txtLocation.Text) - InStrRev(txtLocation.Text, "\") + 1)
+    Game(Me.Tag).GameEXE32Bit = Mid(txtLocation.Text, InStrRev(txtLocation.Text, "\") + 1, Len(txtLocation.Text) - InStrRev(txtLocation.Text, "\") + 1)
     blCancel = True
     
     Me.Visible = False
@@ -289,10 +289,10 @@ Private Sub cmdDlg_Click()
 tmrLocate.Enabled = False
 
 With comDialog
-    .DefaultExt = Game(Me.Tag).GameEXE
+    .DefaultExt = GetMyBitGameEXE(Me.Tag)
     .InitDir = App.Path
-    .DialogTitle = "Locate " & Game(Me.Tag).GameEXE & ".."
-    .Filter = Game(Me.Tag).GameEXE & "|" & Game(Me.Tag).GameEXE & "|" _
+    .DialogTitle = "Locate " & GetMyBitGameEXE(GameIndex)(Me.Tag) & ".."
+    .Filter = GetMyBitGameEXE(Me.Tag) & "|" & GetMyBitGameEXE(Me.Tag) & "|" _
                             & "All Files" & "|" & "*.*"
     .ShowOpen
     If FileExists(.FileName) Then txtLocation.Text = .FileName
