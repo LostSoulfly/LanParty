@@ -291,7 +291,7 @@ tmrLocate.Enabled = False
 With comDialog
     .DefaultExt = GetMyBitGameEXE(Me.Tag)
     .InitDir = App.Path
-    .DialogTitle = "Locate " & GetMyBitGameEXE(GameIndex)(Me.Tag) & ".."
+    .DialogTitle = "Locate " & GetMyBitGameEXE(Me.Tag) & ".."
     .Filter = GetMyBitGameEXE(Me.Tag) & "|" & GetMyBitGameEXE(Me.Tag) & "|" _
                             & "All Files" & "|" & "*.*"
     .ShowOpen
