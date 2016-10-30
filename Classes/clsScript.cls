@@ -122,6 +122,37 @@ Dim sCurrentLine As String
     Next nCurrentline
 End Sub
 
+Public Function FindAndExecuteSub(strSub As String) As Variant
+Dim sCurrentLine As String
+Dim lngSubLen As Long
+
+
+    'loop through the current script and locate the section that is our given
+    'sub, execute it, and return a variable? Maybe create a return command?
+
+    If LenB(Script) = 0 Then Call NotifyError("No script has been loaded!", 0): Exit Function
+    SplitScript = Split(Script, vbCrLf)
+    nCurrentline = LBound(SplitScript)
+    nNumCurrentLines = UBound(SplitScript)
+    If Not Left(strSub, 1) = "@" Then strSub = "@" & strSub
+    strSub = LCase$(strSub)
+    lngSubLen = Len(strSub)
+    
+    For nCurrentline = nCurrentline To UBound(SplitScript)
+
+        sCurrentLine = TrimChar$(SplitScript(nCurrentline), Chr(9), 0)
+        
+        If Left(LCase$(sCurrentLine), lngSubLen) = strSub Then
+            'we've found our sub
+            'now we need to find the @sub end
+        End If
+        
+        RaiseEvent LineChange(nCurrentline, sCurrentLine)
+        Call LineExecute(sCurrentLine)
+        
+    Next nCurrentline
+End Function
+
 Public Sub LineExecute(ByRef sCurrentLine As String, Optional blStep As Boolean = False)
     Dim sTemp As String
     Dim lngTemp As Long
