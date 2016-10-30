@@ -211,7 +211,7 @@ Public Function UpdateMaxPlayersMenu()
     For i = 0 To UBound(Game)
     DoEvents
         With Game(i)
-            If LenB(GetMyBitGameEXE(i)) > 0 Then
+            If LenB(Game(i).GameEXE) > 0 Then
                 If .MaxPlayers > 0 Then 'the maxPlayers has been set for this game.
                     TotalGamesWithPlayers = TotalGamesWithPlayers + 1
                     NotEmpty = True

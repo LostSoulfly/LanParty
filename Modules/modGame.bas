@@ -15,8 +15,8 @@ Public Type GameData
     IconPath As String
     'Icon As Picture
     EXEPath As String
-    GameEXE32Bit As String
-    GameEXE64Bit As String
+    GameEXE As String
+    'GameEXE64Bit As String
     MonitorRunning As Boolean
     MonitorEXE As String
     CommandArgs As String
@@ -99,7 +99,7 @@ Else
     ElseIf Game(IndexOnly).InstallFirst Then
         strFilePath = LCase$(PathOfFile(strFilePath))
     Else
-        strFilePath = LCase$(PathOfFile(strFilePath & GetMyBitGameEXE(IndexOnly)))
+        strFilePath = LCase$(PathOfFile(strFilePath & Game(IndexOnly).GameEXE))
     End If
 
     strFilePath = strFilePath & "GameData.lan"
@@ -120,8 +120,7 @@ Public Function GetSaveGameString(Index As Integer, ByRef strGames As String)
             AddToString "Name " & .Name, strGames
             AddToString "IconPath " & .IconPath, strGames
             AddToString "EXEPath " & .EXEPath, strGames
-            AddToString "GameEXE " & .GameEXE32Bit, strGames
-            AddToString "GameEXE64 " & .GameEXE64Bit, strGames
+            AddToString "GameEXE " & .GameEXE, strGames
             AddToString "CommandArgs " & .CommandArgs, strGames
             AddToString "MonitorRunning " & .MonitorRunning, strGames
             AddToString "MonitorEXE " & .MonitorEXE, strGames
@@ -216,11 +215,8 @@ ReDim TempGame(0)
                         TempGame(GameIndex).CommandArgs = strData
                         
                         Case "gameexe"
-                        TempGame(GameIndex).GameEXE32Bit = strData
-                        
-                        Case "gameexe64"
-                        TempGame(GameIndex).GameEXE64Bit = strData
-                        
+                        TempGame(GameIndex).GameEXE = strData
+
                         Case "gameuid"
                         TempGame(GameIndex).GameUID = strData
                         
@@ -287,7 +283,7 @@ Public Function LaunchGame(Optional GameIndex As Integer, Optional WithArgs As B
 If GameIndex = 0 Then GameIndex = CurrentGameIndex
 
 If Game(GameIndex).GameType = 1 Then
-    ExecFile GetMyBitGameEXE(GameIndex), GetGameArgs(GameIndex), , Game(GameIndex).EXEPath
+    ExecFile Game(GameIndex).GameEXE, GetGameArgs(GameIndex), , Game(GameIndex).EXEPath
     CheckMonitorGame GameIndex
 Exit Function
 End If
@@ -358,7 +354,7 @@ If IsGameRunning(GameIndex) Then
     AddUserChat "You've started playing: " & Game(GameIndex).Name, "System", False
     CryptToAll NowPlayingPacket(1, Game(GameIndex).GameUID)
 Else
-    AddDebug "Unable to locate GameEXE: " & GetMyBitGameEXE(GameIndex)
+    AddDebug "Unable to locate GameEXE: " & Game(GameIndex).GameEXE
 End If
 
 End Function
@@ -432,9 +428,9 @@ End Function
 Public Function GetGameExePath(GameIndex As Integer) As String
 If GameIndex = -1 Then Exit Function
     If Len(Game(GameIndex).EXEPath$) > 0 Then
-        GetGameExePath = FixFilePath(Game(GameIndex).EXEPath & "\" & GetMyBitGameEXE(GameIndex))
+        GetGameExePath = FixFilePath(Game(GameIndex).EXEPath & "\" & Game(GameIndex).GameEXE)
     Else
-        GetGameExePath = FixFilePath(GetMyBitGameEXE(GameIndex))
+        GetGameExePath = FixFilePath(Game(GameIndex).GameEXE)
     End If
 End Function
 
@@ -469,7 +465,7 @@ Public Function CalcGameUID(GameIndex As Integer, Optional blForce As Boolean = 
         CalcGameUID = CalculateAdler(CRC32File(FixFilePath(Game(GameIndex).InstallerPath)) & Game(GameIndex).Name & _
         Game(GameIndex).CommandArgs & Game(GameIndex).MonitorEXE)
     Else
-        CalcGameUID = CalculateAdler(GetMyBitGameEXE(GameIndex) & Game(GameIndex).GameType & Game(GameIndex).CommandArgs & Game(GameIndex).InstallerPath)
+        CalcGameUID = CalculateAdler(Game(GameIndex).GameEXE & Game(GameIndex).GameType & Game(GameIndex).CommandArgs & Game(GameIndex).InstallerPath)
     End If
     
     'Not sure how or why this would happen, but at least it will allow them to save the game/command..
@@ -586,26 +582,26 @@ Load f
 f.Tag = GameIndex
 f.Caption = "Locate Game - " & Game(GameIndex).Name
 'f.LocateGame GameIndex
-f.SetSearchFile GetMyBitGameEXE(GameIndex)
+f.SetSearchFile Game(GameIndex).GameEXE
 f.Show vbModal
-If FileExists(GetGameExePath(GameIndex)) Then Game(GameIndex).Installed = True
+If FileExists(Game(GameIndex).GameEXE) Then Game(GameIndex).Installed = True
 Unload f
 
 End Sub
 
-Public Function GetMyBitGameEXE(GameIndex As Integer) As String
-
-    If IsHost64Bit Then
-        If LenB(Game(GameIndex).GameEXE64Bit) = 0 Then
-            GetMyBitGameEXE = Game(GameIndex).GameEXE64Bit
-        Else
-            GetMyBitGameEXE = Game(GameIndex).GameEXE32Bit
-        End If
-    Else
-        GetMyBitGameEXE = Game(GameIndex).GameEXE32Bit
-    End If
-
-End Function
+'Public Function GetMyBitGameEXE(GameIndex As Integer) As String
+'
+'    If IsHost64Bit Then
+'        If LenB(Game(GameIndex).GameEXE64Bit) = 0 Then
+'            GetMyBitGameEXE = Game(GameIndex).GameEXE64Bit
+'        Else
+'            GetMyBitGameEXE = Game(GameIndex).GameEXE32Bit
+'        End If
+'    Else
+'        GetMyBitGameEXE = Game(GameIndex).GameEXE32Bit
+'    End If
+'
+'End Function
 
 
 Function fWait(ByVal lProgID As Long) As Long

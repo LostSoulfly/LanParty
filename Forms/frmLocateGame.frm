@@ -273,7 +273,7 @@ Private Sub cmdAccept_Click()
 
     Game(Me.Tag).EXEPath = Mid(txtLocation.Text, 1, InStrRev(txtLocation.Text, "\"))
     'NoFileExtension = Mid(NoFilePath, InStrRev(NoFilePath, "\") + 1, InStrRev(NoFilePath, ".") - 1)
-    Game(Me.Tag).GameEXE32Bit = Mid(txtLocation.Text, InStrRev(txtLocation.Text, "\") + 1, Len(txtLocation.Text) - InStrRev(txtLocation.Text, "\") + 1)
+    Game(Me.Tag).GameEXE = Mid(txtLocation.Text, InStrRev(txtLocation.Text, "\") + 1, Len(txtLocation.Text) - InStrRev(txtLocation.Text, "\") + 1)
     blCancel = True
     
     Me.Visible = False
@@ -289,10 +289,10 @@ Private Sub cmdDlg_Click()
 tmrLocate.Enabled = False
 
 With comDialog
-    .DefaultExt = GetMyBitGameEXE(Me.Tag)
+    .DefaultExt = Game(Me.Tag).GameEXE
     .InitDir = App.Path
-    .DialogTitle = "Locate " & GetMyBitGameEXE(Me.Tag) & ".."
-    .Filter = GetMyBitGameEXE(Me.Tag) & "|" & GetMyBitGameEXE(Me.Tag) & "|" _
+    .DialogTitle = "Locate " & Game(Me.Tag).GameEXE & ".."
+    .Filter = Game(Me.Tag).GameEXE & "|" & Game(Me.Tag).GameEXE & "|" _
                             & "All Files" & "|" & "*.*"
     .ShowOpen
     If FileExists(.FileName) Then txtLocation.Text = .FileName
