@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "Mswinsck.ocx"
 Begin VB.Form frmMain 
    Caption         =   "LanParty"
    ClientHeight    =   6630
@@ -317,6 +317,20 @@ Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft
 Private arrResources() As String
 
 Private Sub Form_Load()
+
+'add a sub check to the scripting class
+'Like, the calling function should pass a variable that
+'holds in it something on @OnGameLaunch
+'and it should set some variables for that specific called sub in the script
+'the class would go through the script looking for that specific line
+'and then process it all the way to @OnGameLaunch End or something, then quit
+'and maybe return the results through a public variable?
+
+'need to add a textbox for the 32bit exe to the settings tab
+
+'maybe remove the path variable and just extract the path?
+'need to be certain that the working dir path can be set though.
+'some games require that.
 
 Me.Visible = False
 'load and apply settings from the udt

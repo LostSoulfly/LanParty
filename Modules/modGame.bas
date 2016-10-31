@@ -27,6 +27,7 @@ Public Type GameData
     GameType As Integer
     MaxPlayers As Integer
     GameExists As Boolean
+    GameScript As String
     'ConfigFile As String
     'UserNameField As String
     'UserNameConfigMethod As Integer
@@ -113,7 +114,7 @@ End If
 End Sub
 
 Public Function GetSaveGameString(Index As Integer, ByRef strGames As String)
-
+Dim i As Long
     With Game(Index)
         'If LenB(.GameUID$) = 0 Then .GameUID = CalcGameUID(Index)
         If LenB(Game(Index).GameUID) > 0 Then
@@ -121,6 +122,11 @@ Public Function GetSaveGameString(Index As Integer, ByRef strGames As String)
             AddToString "IconPath " & .IconPath, strGames
             AddToString "EXEPath " & .EXEPath, strGames
             AddToString "GameEXE " & .GameEXE, strGames
+            If LenB(Game(Index).GameScript) > 0 Then
+                AddToString "Script", strGames
+                AddToString Game(Index).GameScript, strGames
+                AddToString "End Script", strGames
+            End If
             AddToString "CommandArgs " & .CommandArgs, strGames
             AddToString "MonitorRunning " & .MonitorRunning, strGames
             AddToString "MonitorEXE " & .MonitorEXE, strGames
@@ -180,7 +186,7 @@ Public Function AddGamesToFrom(ByRef ToGames() As GameData, ByRef FromGames() As
 End Function
 
 Public Function GetGamesFromText(strGames As String, ByRef TempGame() As GameData)
-Dim i As Long
+Dim i As Long, ii As Long
 Dim Line As String
 Dim lines() As String
 Dim strSwitch As String
@@ -203,6 +209,14 @@ ReDim TempGame(0)
                         
                         Select Case strSwitch
                         
+                        Case "script"
+                            
+                            For ii = (i + 1) To UBound(lines)
+                                If LCase$(Trim(lines(ii))) = "end script" Then Exit For
+                                TempGame(GameIndex).GameScript = TempGame(GameIndex).GameScript & lines(ii) & vbCrLf
+                            Next ii
+                            i = ii      'continue reading the lines after the last GameScript line
+                            
                         Case "name"
                         GameIndex = GameIndex + 1
                         

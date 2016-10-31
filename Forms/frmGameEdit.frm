@@ -14,6 +14,14 @@ Begin VB.Form frmGameEdit
    ScaleWidth      =   6840
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton cmdScript 
+      Caption         =   "Edit Game's Script"
+      Height          =   375
+      Left            =   2520
+      TabIndex        =   27
+      Top             =   3600
+      Width           =   1815
+   End
    Begin VB.TextBox txtPlayers 
       Alignment       =   2  'Center
       Height          =   285
@@ -441,6 +449,20 @@ GameIndex = GameIndex + 1
 If GameIndex >= UBound(Game) Then GameIndex = UBound(Game)
 
 RefreshGame GameIndex
+End Sub
+
+Private Sub cmdScript_Click()
+Dim myScript As New frmScriptMain
+
+Load myScript
+myScript.EditGameScript Game(GameIndex).GameScript
+myScript.Show vbModal
+If Not myScript.blCancel Then
+    Game(GameIndex).GameScript = myScript.txtScript
+End If
+myScript.EditScript = False
+Unload myScript
+
 End Sub
 
 Private Sub cmdUpdate_Click()

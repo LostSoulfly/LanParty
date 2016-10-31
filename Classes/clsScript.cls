@@ -90,6 +90,8 @@ Private ScrExeiTemp As Integer, ScrExeiTemp2 As Integer, ScrExei As Integer
 Private ScrExesTemp As String, ScrExesTemp2 As String
 Private ScrExearTemp2() As String
 Private InsideLoop As Collection
+Private ReturnVar As Variant
+Private blReturn As Boolean
 Public blDebug As Boolean
 Public DebugLevel As Integer
 Public blShowErrors As Boolean
@@ -125,7 +127,7 @@ End Sub
 Public Function FindAndExecuteSub(strSub As String) As Variant
 Dim sCurrentLine As String
 Dim lngSubLen As Long
-
+Dim i As Long
 
     'loop through the current script and locate the section that is our given
     'sub, execute it, and return a variable? Maybe create a return command?
@@ -137,6 +139,7 @@ Dim lngSubLen As Long
     If Not Left(strSub, 1) = "@" Then strSub = "@" & strSub
     strSub = LCase$(strSub)
     lngSubLen = Len(strSub)
+    blReturn = True
     
     For nCurrentline = nCurrentline To UBound(SplitScript)
 
@@ -145,10 +148,17 @@ Dim lngSubLen As Long
         If Left(LCase$(sCurrentLine), lngSubLen) = strSub Then
             'we've found our sub
             'now we need to find the @sub end
+            For i = nCurrentline To UBound(SplitScript)
+                If blReturn = True Then Exit For
+                sCurrentLine = TrimChar$(SplitScript(nCurrentline), Chr(9), 0)
+                If Left(LCase$(sCurrentLine), lngSubLen + 4) = strSub & " end" Then Exit For
+                RaiseEvent LineChange(nCurrentline, sCurrentLine)
+                Call LineExecute(sCurrentLine)
+            Next i
+            
         End If
-        
-        RaiseEvent LineChange(nCurrentline, sCurrentLine)
-        Call LineExecute(sCurrentLine)
+       
+        FindAndExecuteSub = ReturnVar
         
     Next nCurrentline
 End Function
@@ -212,6 +222,12 @@ Public Sub LineExecute(ByRef sCurrentLine As String, Optional blStep As Boolean 
                     End If
                     
                     GoTo SkipCurrentDo:
+                
+                Case "return"
+                    blReturn = True
+                    returnvariable = ProcessFunctions(Mid$(sCurrentLine, ScrExeiTemp + 1))
+                    GoTo SkipCurrentDo:
+                
                 Case "goto" ' Goto a label
                     'StopLabel = True
                     GotoScriptLine Trim(Mid$(sCurrentLine, ScrExeiTemp + 1))
@@ -2015,7 +2031,7 @@ End Sub
 
 Public Sub ShowDebug()
     If Not blDebug Then blDebug = True
-    If myDebug Is Nothing Then Set myDebug = New frmDebug
+    If myDebug Is Nothing Then Set myDebug = New frmScriptDebug
     Set myDebug.theScript = Me
     myDebug.Visible = True
 End Sub
@@ -2098,7 +2114,7 @@ Dim ReadKey As String
 Dim ReadVariable As String
 Dim LOKEY As Integer
 Dim HIKEY As Integer
-Dim KEYLEN As Integer
+Dim KeyLen As Integer
 Dim VAR As Integer
 Dim VARENDOFLINE As Integer
 Dim NF As Integer
@@ -2107,7 +2123,7 @@ Dim X As Integer
 AssignVariables:
     NF = FreeFile
     ReadKey = vbCrLf & "[" & LCase$(PutKey) & "]" & Chr$(13)
-    KEYLEN = Len(ReadKey)
+    KeyLen = Len(ReadKey)
     ReadVariable = Chr$(10) & LCase$(PutVariable) & "="
         
 EnsureFileExists:
@@ -2125,7 +2141,7 @@ LoadFile:
 LogicMenu:
     LOKEY = InStr(LcaseTemp, ReadKey)
     If LOKEY = 0 Then GoTo AddKey:
-    HIKEY = InStr(LOKEY + KEYLEN, LcaseTemp, "[")
+    HIKEY = InStr(LOKEY + KeyLen, LcaseTemp, "[")
     VAR = InStr(LOKEY, LcaseTemp, ReadVariable)
     If VAR > HIKEY Or VAR < LOKEY Then GoTo AddVariable:
     GoTo RenewVariable:
@@ -2137,7 +2153,7 @@ AddKey:
         
 AddVariable:
         Temp = Left$(Temp, Len(Temp) - 2)
-        Temp = Left$(Temp, LOKEY + KEYLEN) & PutVariable & "=" & PutValue & vbCrLf & Mid$(Temp, LOKEY + KEYLEN + 1)
+        Temp = Left$(Temp, LOKEY + KeyLen) & PutVariable & "=" & PutValue & vbCrLf & Mid$(Temp, LOKEY + KeyLen + 1)
         GoTo TrimFinalString:
         
 RenewVariable:
@@ -2167,7 +2183,7 @@ OutputAmendedINIFile:
     
 End Function
 
-Private Function ReadIni(INIpath As String, KEY As String, Variable As String) As String
+Private Function ReadIni(INIpath As String, Key As String, Variable As String) As String
 Dim NF As Integer
 Dim Temp As String
 Dim LcaseTemp As String
@@ -2176,7 +2192,7 @@ Dim ReadyToRead As Boolean
 AssignVariables:
         NF = FreeFile
         ReadIni = ""
-        KEY = "[" & LCase$(KEY) & "]"
+        Key = "[" & LCase$(Key) & "]"
         Variable = LCase$(Variable)
     
 EnsureFileExists:
@@ -2190,7 +2206,7 @@ LoadFile:
     Line Input #NF, Temp
     LcaseTemp = LCase$(Temp)
     If InStr(LcaseTemp, "[") <> 0 Then ReadyToRead = False
-    If LcaseTemp = KEY Then ReadyToRead = True
+    If LcaseTemp = Key Then ReadyToRead = True
     If InStr(LcaseTemp, "[") = 0 And ReadyToRead = True Then
         If InStr(LcaseTemp, Variable & "=") = 1 Then
             ReadIni = Mid$(Temp, 1 + Len(Variable & "="))

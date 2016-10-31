@@ -56,20 +56,26 @@ Begin VB.Form frmScriptMain
    Begin VB.Menu mnuFile 
       Caption         =   "File"
       Begin VB.Menu mnuOpen 
-         Caption         =   "Open..."
+         Caption         =   "Open file.."
       End
       Begin VB.Menu mnuSave 
-         Caption         =   "Save..."
+         Caption         =   "Save to file.."
       End
       Begin VB.Menu mnuFileSep 
          Caption         =   "-"
       End
+      Begin VB.Menu mnuSaveGameScript 
+         Caption         =   "Save GameScript"
+         Visible         =   0   'False
+      End
       Begin VB.Menu mnuFileMake 
          Caption         =   "Make EXE..."
          Shortcut        =   {F6}
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuFileSep2 
          Caption         =   "-"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuFileExit 
          Caption         =   "Exit"
@@ -152,16 +158,20 @@ Option Explicit
 Private blDebug As Boolean
 Private blShowErrors As Boolean
 Private intDebug As Integer
-
-Private Sub Command1_Click()
-'MsgBox myScript.RawFileRead("test.ini", 1, 0)
-'Call myScript.("test.ini", 1, "[")
-End Sub
+Public blCancel As Boolean
+Public EditScript As Boolean
 
 Private Sub Form_Load()
     Set myScript = New clsScript
     blDebug = True
     SetDebug
+End Sub
+
+Public Sub EditGameScript(GameScript As String)
+    mnuFileSep2.Visible = True
+    mnuSaveGameScript.Visible = True
+    txtScript.Text = GameScript
+    EditScript = True
 End Sub
 
 Private Sub SetDebug()
@@ -178,7 +188,11 @@ txtScript.Height = Me.Height - 950
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-    End
+If EditScript Then
+    If MsgBox("Do you want to discard the changes to this GameScript?", vbYesNo, "Discard changes?") = vbYes Then blCancel = True
+    Me.Visible = False
+    Cancel = 0
+End If
 End Sub
 
 Private Sub mnuEnableDebug_Click()
@@ -311,6 +325,11 @@ Private Sub mnuSave_Click()
     End If
 End Sub
 
+Private Sub mnuSaveGameScript_Click()
+    blCancel = False
+    Me.Visible = False
+End Sub
+
 Private Sub mnuShowErrors_Click()
     blShowErrors = Not blShowErrors
     myScript.blShowErrors = blShowErrors
@@ -324,7 +343,7 @@ End Sub
 
 Private Sub mnuStep_Click()
     
-If myScript.nCurrentLine > myScript.nNumCurrentLines Then
+If myScript.nCurrentline > myScript.nNumCurrentLines Then
     If MsgBox("You've reached the end of the script. Reset?", vbYesNo, "Reset Script?") = vbYes Then
         Set myScript = New clsScript
     End If
