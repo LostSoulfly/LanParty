@@ -3,29 +3,69 @@ Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
 Begin VB.Form frmSettings 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Settings"
-   ClientHeight    =   3750
+   ClientHeight    =   3495
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   9975
+   ClientWidth     =   10110
    Icon            =   "frmSettings.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3750
-   ScaleWidth      =   9975
+   ScaleHeight     =   3495
+   ScaleWidth      =   10110
    StartUpPosition =   1  'CenterOwner
+   Begin VB.Frame frmScript 
+      Caption         =   "Script Options"
+      Height          =   1095
+      Left            =   6840
+      TabIndex        =   40
+      Top             =   1680
+      Width           =   3135
+      Begin VB.CheckBox chkAllowScriptDL 
+         Caption         =   "Allow File Downloads In Scripts"
+         Height          =   255
+         Left            =   120
+         TabIndex        =   44
+         Top             =   720
+         Width           =   2655
+      End
+      Begin VB.CheckBox chkAllowScriptExec 
+         Caption         =   "Allow File Execution In Scripts"
+         Height          =   255
+         Left            =   120
+         TabIndex        =   43
+         Top             =   480
+         Width           =   2655
+      End
+      Begin VB.CheckBox chkAllowScripts 
+         Caption         =   "Allow Scripts"
+         Height          =   255
+         Left            =   120
+         TabIndex        =   42
+         Top             =   240
+         Width           =   2655
+      End
+   End
+   Begin VB.CommandButton cmdSave 
+      Caption         =   "Save && Close"
+      Height          =   495
+      Left            =   8400
+      TabIndex        =   17
+      Top             =   2880
+      Width           =   1575
+   End
    Begin VB.Frame Frame4 
       Caption         =   "Text Options"
-      Height          =   1095
-      Left            =   3720
-      TabIndex        =   25
-      Top             =   2520
+      Height          =   1215
+      Left            =   3600
+      TabIndex        =   24
+      Top             =   2160
       Width           =   3135
       Begin VB.CommandButton cmdReset 
          Caption         =   "Reset"
          Height          =   315
          Left            =   2280
-         TabIndex        =   35
+         TabIndex        =   34
          Top             =   720
          Width           =   735
       End
@@ -34,7 +74,7 @@ Begin VB.Form frmSettings
          Left            =   2640
          ScaleHeight     =   240
          ScaleWidth      =   315
-         TabIndex        =   32
+         TabIndex        =   31
          Top             =   320
          Width           =   375
       End
@@ -43,7 +83,7 @@ Begin VB.Form frmSettings
          Left            =   1750
          ScaleHeight     =   240
          ScaleWidth      =   315
-         TabIndex        =   31
+         TabIndex        =   30
          Top             =   700
          Width           =   375
       End
@@ -52,7 +92,7 @@ Begin VB.Form frmSettings
          Left            =   1750
          ScaleHeight     =   240
          ScaleWidth      =   315
-         TabIndex        =   30
+         TabIndex        =   29
          Top             =   320
          Width           =   375
       End
@@ -69,7 +109,7 @@ Begin VB.Form frmSettings
          Left            =   1320
          Max             =   72
          Min             =   6
-         TabIndex        =   28
+         TabIndex        =   27
          Top             =   720
          Value           =   6
          Width           =   255
@@ -87,7 +127,7 @@ Begin VB.Form frmSettings
          Left            =   1320
          Max             =   72
          Min             =   6
-         TabIndex        =   26
+         TabIndex        =   25
          Top             =   330
          Value           =   6
          Width           =   255
@@ -96,7 +136,7 @@ Begin VB.Form frmSettings
          Caption         =   "BG:"
          Height          =   255
          Left            =   2280
-         TabIndex        =   33
+         TabIndex        =   32
          Top             =   360
          Width           =   495
       End
@@ -104,7 +144,7 @@ Begin VB.Form frmSettings
          Caption         =   "Icon Text:"
          Height          =   255
          Left            =   120
-         TabIndex        =   29
+         TabIndex        =   28
          Top             =   750
          Width           =   1335
       End
@@ -112,7 +152,7 @@ Begin VB.Form frmSettings
          Caption         =   "Chat Text:"
          Height          =   255
          Left            =   120
-         TabIndex        =   27
+         TabIndex        =   26
          Top             =   360
          Width           =   735
       End
@@ -124,29 +164,21 @@ Begin VB.Form frmSettings
       _ExtentY        =   847
       _Version        =   393216
    End
-   Begin VB.CheckBox chkDebug 
-      Caption         =   "Show me lots of Debug messages because I'm a huge nerd."
-      Height          =   615
-      Left            =   7080
-      TabIndex        =   16
-      Top             =   2520
-      Width           =   2775
-   End
    Begin VB.Frame Frame3 
       Caption         =   "Network Options"
-      Height          =   2055
-      Left            =   6960
-      TabIndex        =   22
+      Height          =   1455
+      Left            =   6840
+      TabIndex        =   21
       Top             =   120
-      Width           =   2895
+      Width           =   3135
       Begin VB.CheckBox chkVersion 
          Caption         =   "Version-specific Encryption Key"
          Height          =   255
          Left            =   120
-         TabIndex        =   38
+         TabIndex        =   37
          ToolTipText     =   $"frmSettings.frx":151DE
-         Top             =   1680
-         Width           =   2655
+         Top             =   960
+         Width           =   2535
       End
       Begin VB.CheckBox chkChatType 
          Caption         =   "Broadcast, Not Direct"
@@ -155,7 +187,8 @@ Begin VB.Form frmSettings
          Left            =   120
          TabIndex        =   15
          ToolTipText     =   $"frmSettings.frx":15288
-         Top             =   1320
+         Top             =   1200
+         Visible         =   0   'False
          Width           =   2415
       End
       Begin VB.CheckBox chkAllowCommands 
@@ -168,11 +201,11 @@ Begin VB.Form frmSettings
          Width           =   2535
       End
       Begin VB.CheckBox chkShareLanGame 
-         Caption         =   "Share Current Game On Lan"
+         Caption         =   "Share Game Status"
          Height          =   195
          Left            =   120
          TabIndex        =   13
-         Top             =   600
+         Top             =   480
          Width           =   2415
       End
       Begin VB.CheckBox chkDisableLan 
@@ -180,65 +213,73 @@ Begin VB.Form frmSettings
          Height          =   195
          Left            =   120
          TabIndex        =   14
-         Top             =   960
+         Top             =   720
          Width           =   2535
       End
    End
    Begin VB.Frame Frame2 
       Caption         =   "LanParty Options"
-      Height          =   3495
+      Height          =   3255
       Left            =   120
-      TabIndex        =   20
+      TabIndex        =   19
       Top             =   120
-      Width           =   3495
+      Width           =   3375
+      Begin VB.CheckBox chkDebug 
+         Caption         =   "Enable Debug Output"
+         Height          =   195
+         Left            =   120
+         TabIndex        =   41
+         Top             =   2880
+         Width           =   2055
+      End
       Begin VB.CheckBox chkScanStartup 
          Caption         =   "Scan For Games At Startup"
          Height          =   255
-         Left            =   240
-         TabIndex        =   40
-         Top             =   2760
+         Left            =   120
+         TabIndex        =   39
+         Top             =   2400
          Width           =   3135
       End
       Begin VB.CheckBox chkUpdate 
          Caption         =   "Auto Check For Updates"
          Height          =   195
-         Left            =   240
-         TabIndex        =   37
+         Left            =   120
+         TabIndex        =   36
          ToolTipText     =   "Check for updates at program startup."
-         Top             =   2400
+         Top             =   2160
          Width           =   3015
       End
       Begin VB.PictureBox picLanBG 
          Height          =   300
-         Left            =   3000
+         Left            =   2880
          ScaleHeight     =   240
          ScaleWidth      =   315
-         TabIndex        =   34
+         TabIndex        =   33
          Top             =   960
          Width           =   375
       End
       Begin VB.CheckBox chkJason 
          Caption         =   "I'm Jason Copple."
          Height          =   255
-         Left            =   240
+         Left            =   120
          TabIndex        =   5
          ToolTipText     =   "This provides extra information where necessary to make Jason Copple more comfortable."
-         Top             =   3120
+         Top             =   2640
          Width           =   1935
       End
       Begin VB.CheckBox chkShowIcons 
          Caption         =   "Load and Show Icons In Launcher"
          Height          =   195
-         Left            =   240
+         Left            =   120
          TabIndex        =   2
          ToolTipText     =   $"frmSettings.frx":1544C
-         Top             =   1320
+         Top             =   1440
          Width           =   3015
       End
       Begin VB.CheckBox chkMinimize 
          Caption         =   "Minimize LanParty Upon Game Launch"
          Height          =   195
-         Left            =   240
+         Left            =   120
          TabIndex        =   3
          ToolTipText     =   "Minimize the LanParty client upon launching a game."
          Top             =   1680
@@ -247,14 +288,14 @@ Begin VB.Form frmSettings
       Begin VB.CommandButton cmdOpen 
          Caption         =   "..."
          Height          =   300
-         Left            =   2520
-         TabIndex        =   23
+         Left            =   2400
+         TabIndex        =   22
          Top             =   960
          Width           =   375
       End
       Begin VB.TextBox txtBG 
          Height          =   285
-         Left            =   240
+         Left            =   120
          TabIndex        =   1
          Top             =   960
          Width           =   2175
@@ -262,76 +303,76 @@ Begin VB.Form frmSettings
       Begin VB.CheckBox chkMonitorGame 
          Caption         =   "Monitor Currently Launched Game"
          Height          =   195
-         Left            =   240
+         Left            =   120
          TabIndex        =   4
          ToolTipText     =   $"frmSettings.frx":154D9
-         Top             =   2040
+         Top             =   1920
          Width           =   3015
       End
       Begin VB.TextBox txtUser 
          Height          =   285
-         Left            =   1200
+         Left            =   1080
          TabIndex        =   0
          ToolTipText     =   "If you don't know what this is, you should probably leave."
          Top             =   360
-         Width           =   2055
+         Width           =   2175
       End
       Begin VB.Label Label2 
          Caption         =   "LanParty Background Image:"
          Height          =   255
-         Left            =   240
-         TabIndex        =   24
+         Left            =   120
+         TabIndex        =   23
          Top             =   720
          Width           =   2295
       End
       Begin VB.Label Label1 
          Caption         =   "UserName:"
          Height          =   255
-         Left            =   240
-         TabIndex        =   21
+         Left            =   120
+         TabIndex        =   20
          Top             =   360
          Width           =   855
       End
    End
    Begin VB.Frame Frame1 
       Caption         =   "LanChat Options"
-      Height          =   2415
-      Left            =   3720
-      TabIndex        =   19
+      Height          =   1935
+      Left            =   3600
+      TabIndex        =   18
       Top             =   120
       Width           =   3135
       Begin VB.CheckBox chkAcceptPrivateChat 
          Caption         =   "Auto-Accept Private Chats"
          Height          =   195
          Left            =   120
-         TabIndex        =   39
+         TabIndex        =   38
          ToolTipText     =   "If you receive an unsolicited Private Chat message a new window will be opened, displaying it."
-         Top             =   2040
+         Top             =   1200
          Width           =   2895
       End
       Begin VB.CheckBox chkShowStatus 
          Caption         =   "Show User's Status Next To Name"
          Height          =   195
          Left            =   120
-         TabIndex        =   36
-         Top             =   1680
-         Width           =   2895
+         TabIndex        =   35
+         Top             =   960
+         Width           =   2775
       End
       Begin VB.CheckBox chkLogChat 
          Caption         =   "Save Chat Log On Close"
          Height          =   195
          Left            =   120
          TabIndex        =   9
-         Top             =   1320
+         Top             =   1440
          Width           =   2415
       End
       Begin VB.CheckBox chkDisableChat 
-         Caption         =   "Disable ALL Chat Features"
+         Caption         =   "Disable Chat"
          Enabled         =   0   'False
          Height          =   195
          Left            =   120
          TabIndex        =   8
-         Top             =   960
+         Top             =   240
          Width           =   2415
       End
       Begin VB.CheckBox chkDockChat 
@@ -340,7 +381,7 @@ Begin VB.Form frmSettings
          Left            =   120
          TabIndex        =   7
          ToolTipText     =   "This keeps the LanChat window stuck beneath the main window."
-         Top             =   600
+         Top             =   720
          Width           =   2415
       End
       Begin VB.CheckBox chkShowChat 
@@ -349,25 +390,17 @@ Begin VB.Form frmSettings
          Left            =   120
          TabIndex        =   6
          ToolTipText     =   "Show the LanChat. It will remain connected in the background."
-         Top             =   240
+         Top             =   480
          Width           =   2655
       End
    End
    Begin VB.CommandButton cmdCancel 
       Caption         =   "Cancel"
       Height          =   495
-      Left            =   6960
-      TabIndex        =   17
-      Top             =   3120
-      Width           =   1455
-   End
-   Begin VB.CommandButton cmdSave 
-      Caption         =   "Save && Close"
-      Height          =   495
-      Left            =   8400
-      TabIndex        =   18
-      Top             =   3120
-      Width           =   1455
+      Left            =   6840
+      TabIndex        =   16
+      Top             =   2880
+      Width           =   1575
    End
 End
 Attribute VB_Name = "frmSettings"
@@ -516,6 +549,9 @@ chkUpdate.Value = IIf(Settings.AutoUpdate, vbChecked, vbUnchecked)
 chkScanStartup.Value = IIf(Settings.ScanAtStartup, vbChecked, vbUnchecked)
 chkVersion.Value = IIf(Settings.SameVersion, vbChecked, vbUnchecked)
 chkAcceptPrivateChat.Value = IIf(Settings.AcceptPrivateChat, vbChecked, vbUnchecked)
+chkAllowScripts.Value = IIf(Settings.AllowScripts, vbChecked, vbUnchecked)
+chkAllowScriptExec.Value = IIf(Settings.ScriptExecute, vbChecked, vbUnchecked)
+chkAllowScriptDL.Value = IIf(Settings.ScriptDownload, vbChecked, vbUnchecked)
 
 txtChatSize.Text = Settings.ChatTextSize: vsChatSize.Value = Settings.ChatTextSize
 txtIconSize.Text = Settings.IconTextSize: vsIconSize.Value = Settings.IconTextSize
@@ -546,6 +582,11 @@ Private Sub SetSettings()
     Settings.DisableLan = chkDisableLan.Value
     'chkDisableChat.Value = IIf(Settings.DisableChat, vbChecked, vbUnchecked)
     Settings.AllowCommands = chkAllowCommands.Value
+    Settings.AllowScripts = chkAllowScripts.Value
+    Settings.ScriptDownload = chkAllowScriptExec.Value
+    Settings.ScriptExecute = chkAllowScriptDL.Value
+
+    
     'chkShareLanGame.Value = IIf(Settings.MinimizeAfterLaunch, vbChecked, vbUnchecked)
     'chkDisableLan.Value = IIf(Settings.MinimizeAfterLaunch, vbChecked, vbUnchecked)
     Settings.AcceptPrivateChat = chkAcceptPrivateChat.Value

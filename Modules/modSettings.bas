@@ -30,7 +30,7 @@ Public Type GlobalSettings
     AcceptPrivateChat As Boolean
     LanAdmin As Boolean
     AltChatType As Boolean
-    MonitorGame As Boolean 'monitor when a game's EXE has exited to bring up the launcher again.
+    MonitorGame As Boolean
     CurrentGame As Integer
     AllowCommands As Boolean
     MinimizeAfterLaunch As Boolean
@@ -40,6 +40,9 @@ Public Type GlobalSettings
     MainWindowHeight As Long
     ChatWindowWidth As Long
     ChatWindowHeight As Long
+    AllowScripts As Boolean
+    ScriptDownload As Boolean
+    ScriptExecute As Boolean
 End Type
 
 Public Settings As GlobalSettings
@@ -83,6 +86,9 @@ AddToString "MainWindowWidth " & .MainWindowWidth, strSettings
 AddToString "MainWindowHeight " & .MainWindowHeight, strSettings
 AddToString "ChatWindowWidth " & .ChatWindowWidth, strSettings
 AddToString "ChatWindowHeight " & .ChatWindowHeight, strSettings
+AddToString "AllowScripts " & .AllowScripts, strSettings
+AddToString "ScriptDownload " & .ScriptDownload, strSettings
+AddToString "ScriptExecute " & .ScriptExecute, strSettings
 
 AddToString "", strSettings
 AddToString "// Settings file generated on " & IIf(IsHost64Bit, "64-bit", "32-bit") & " " & NativeGetVersion & " //", strSettings
@@ -130,6 +136,9 @@ If LenB(strSettings) < 1 Then
     .MainWindowWidth = 9800
     .ShowIcons = True
     .BackgroundPath = vbNullString
+    .ScriptExecute = False
+    .ScriptDownload = False
+    .AllowScripts = True
     End With
 
 Else
@@ -259,6 +268,15 @@ If UBound(lines) > 1 Then
                 
                 Case "chatwindowheight"
                 Settings.ChatWindowHeight = CLng(strData)
+                
+                Case "allowscripts"
+                Settings.AllowScripts = IIf(LCase$(strData) = "true", True, False)
+
+                Case "scriptdownload"
+                Settings.ScriptDownload = IIf(LCase$(strData) = "true", True, False)
+                
+                Case "scriptexecute"
+                Settings.ScriptExecute = IIf(LCase$(strData) = "true", True, False)
                 
                 Case Else
                     AddDebug "Unknown case: " & Line, True

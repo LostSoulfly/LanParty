@@ -193,6 +193,9 @@ If EditScript Then
     Me.Visible = False
     Cancel = 0
 End If
+myScript.myDebug.Visible = False
+Unload myScript.myDebug
+
 End Sub
 
 Private Sub mnuEnableDebug_Click()

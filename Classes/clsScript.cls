@@ -81,8 +81,8 @@ Public Event LineChange(nLine As Long, sContents As String)
 Public Event ScriptError(Msg As String, Line As Long)
 Public Event DebugOut(Msg As String)
 Public Event CommandOut(Command As String, ArgList() As String)
-Public Event AllowDownloads(Allow As Boolean)
-Public Event AllowExecute(Allow As Boolean)
+Public AllowDownloads As Boolean
+Public AllowExecute As Boolean
 
 Private IfSkip As Boolean
 Private ScrExeSkip As Boolean
@@ -616,15 +616,27 @@ Private Function ExecFunction(sFunction As String, ArgList() As String, Optional
             ExecFunction = Val(ArgList(0))
         
         Case "gettickcount"
-            'execfunction = gettickcount()
+            ExecFunction = GetTickCount()
         
         Case "execute"
-            'execfile ArgList(0)
+            blHandled = True
+            If AllowExecute Then ExecFunction = False: Exit Function
+            If UBound(ArgList) = 1 Then
+                ExecFunction = ExecFile(ArgList(0), ArgList(1))
+            ElseIf UBound(ArgList) = 2 Then
+                ExecFunction = ExecFile(ArgList(0), ArgList(1), , ArgList(2))
+            ElseIf UBound(ArgList) = 3 Then
+                ExecFunction = ExecFile(ArgList(0), ArgList(1), , ArgList(2), CLng(ArgList(3)))
+            End If
+            
             ExecFunction = True
+        
         Case "shell"
             blHandled = True
+            If AllowExecute Then ExecFunction = False: Exit Function
             Shell ArgList(0)
             ExecFunction = True
+        
         Case "clipboard"
             blHandled = True
             Select Case ArgList(0)
@@ -706,13 +718,13 @@ Private Function ExecFunction(sFunction As String, ArgList() As String, Optional
             PrintDebug "Show Errors: " & blDebug, 0
             Exit Function
             
-        Case "getname", "username"
-            blHandled = True
-            ExecFunction = "Bradley"
-            
-        Case "getgamepath"
-            blHandled = True
-            ExecFunction = App.Path & "\test\"
+        'Case "getname", "username"
+        '    blHandled = True
+        '    ExecFunction = "Bradley"
+        '
+        'Case "getgamepath"
+        '    blHandled = True
+        '    ExecFunction = App.Path & "\test\"
         
         Case "getscreenwidth", "getx"
             blHandled = True
@@ -726,17 +738,16 @@ Private Function ExecFunction(sFunction As String, ArgList() As String, Optional
             
         Case "getos"
             blHandled = True
-            'ExecFunction = getosver
+            ExecFunction = GetOSVer
             
-        Case "getip"
-            blHandled = True
-            ExecFunction = "127.0.0.1"
-            Exit Function
+        'Case "getip"
+        '    blHandled = True
+        '    ExecFunction = "127.0.0.1"
+        '    Exit Function
             
         Case "is64bit"
             blHandled = True
-            'If is64bit Then ExecFunction = True
-            ExecFunction = True
+            If Is64Bit Then ExecFunction = True
                 
         Case "filesize", "getsize", "filelen"
             blHandled = True
@@ -750,7 +761,7 @@ Private Function ExecFunction(sFunction As String, ArgList() As String, Optional
             
         Case "folderexists", "direxists"
             blHandled = True
-            'ExecFunction = DirExists(ArgList(0))
+            ExecFunction = DirExists(ArgList(0))
             ExecFunction = True
             
         Case "filecopy", "copy"
@@ -816,8 +827,10 @@ Private Function ExecFunction(sFunction As String, ArgList() As String, Optional
         
         Case "downloadfile"
             blHandled = True
-            'ExecFunction = downloadfile(ArgList(0), ArgList(1))
-            ExecFunction = True
+            If AllowDownloads Then
+                ExecFunction = DownloadFile(ArgList(0), ArgList(1))
+                ExecFunction = True
+            End If
             
         Case "loadfile", "readfile"
             blHandled = True
@@ -1228,7 +1241,7 @@ RaiseEvent ScriptError("RawFileWrite Error: " & err.Number & ": " & err.Descript
 End Function
 
 
-Private Sub AddVar(TheVar As String, NewVal As Variant)
+Public Sub AddVar(TheVar As String, NewVal As Variant)
     Dim i As Long
     For i = VarNames.Count To 1 Step -1
         If VarNames(i) = TheVar Then
