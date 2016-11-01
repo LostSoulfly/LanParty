@@ -294,10 +294,13 @@ Next
 End Function
 
 Public Function LaunchGame(Optional GameIndex As Integer, Optional WithArgs As Boolean = True) As Long
+Dim strReturn As String
 If GameIndex = 0 Then GameIndex = CurrentGameIndex
 
 If Game(GameIndex).GameType = 1 Then
-    ExecFile Game(GameIndex).GameEXE, GetGameArgs(GameIndex), , Game(GameIndex).EXEPath
+    strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnLaunchGame")
+    If LenB(strReturn) = 0 Then strReturn = Game(GameIndex).GameEXE
+    ExecFile strReturn, GetGameArgs(GameIndex), , Game(GameIndex).EXEPath
     CheckMonitorGame GameIndex
 Exit Function
 End If
@@ -308,7 +311,8 @@ If Game(GameIndex).InstallFirst Then
             If MsgBox("This game must be installed before launching." & vbNewLine & _
             "Would you like to begin the installation?" & vbNewLine & _
             "(If you've installed it already, right click its icon and choose ""Locate Game"")", vbYesNoCancel, "Installation Required") = vbYes Then
-                InstallGame GameIndex
+                strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnInstallGame")
+                InstallGame GameIndex, strReturn
             End If
         Exit Function
     Else
@@ -319,17 +323,18 @@ If Game(GameIndex).InstallFirst Then
         End If
     End If
 End If
-
-TrySetGamePath GameIndex
+strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnGamePath")
+TrySetGamePath GameIndex, strReturn
 
     Dim GamePath As String
     GamePath = GetGameExePath(GameIndex)
-    
-    If LenB(GamePath$) = 0 Then AddDebug "LaunchGame: GamePath is null":  Exit Function
+    strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnLaunchGame")
+    If LenB(strReturn) = 0 Then strReturn = GamePath
+    If LenB(GamePath) = 0 Then AddDebug "LaunchGame: GamePath is null":  Exit Function
     If WithArgs Then
-        LaunchGame = ExecFile(GamePath, GetGameArgs(GameIndex), , Game(GameIndex).EXEPath)
+        LaunchGame = ExecFile(strReturn, GetGameArgs(GameIndex), , Game(GameIndex).EXEPath)
     Else
-        LaunchGame = ExecFile(GamePath, "", , Game(GameIndex).EXEPath)
+        LaunchGame = ExecFile(strReturn, "", , Game(GameIndex).EXEPath)
     End If
     
     DoEvents
@@ -341,15 +346,17 @@ TrySetGamePath GameIndex
     'AddDebug "LaunchGame: " & LaunchGame, True
 End Function
 
-Private Function TrySetGamePath(GameIndex As Integer)
+Private Function TrySetGamePath(GameIndex As Integer, Optional strReturn As String = "")
     On Error GoTo oops
     
-    ChDir FullPathFromLocal(Game(GameIndex).EXEPath)
-    AddDebug "Changing WorkingDir to: " & FullPathFromLocal(Game(GameIndex).EXEPath)
+    If LenB(strReturn) = 0 Then strReturn = Game(GameIndex).EXEPath
+    
+    ChDir FullPathFromLocal(strReturn)
+    AddDebug "Changing WorkingDir to: " & FullPathFromLocal(strReturn)
     Exit Function
     
 oops:
-    AddDebug "Unable to change WorkingDir to: " & FullPathFromLocal(Game(GameIndex).EXEPath)
+    AddDebug "Unable to change WorkingDir to: " & FullPathFromLocal(strReturn)
     
 End Function
 
@@ -563,17 +570,15 @@ Public Function CheckInstalled()
 
 End Function
 
-Public Function InstallGame(GameIndex As Integer) As Boolean
+Public Function InstallGame(GameIndex As Integer, Optional strReturn As String = "") As Boolean
 Dim idProg As Long, iExit As Long
 
-If Len(Game(GameIndex).InstallerPath$) = 0 Then AddUserChat "InstallerPath is null.", "System", False: Exit Function
+If Len(strReturn) = 0 Then AddUserChat "InstallerPath is null.", "System", False: Exit Function
 
 Dim strPath As String
-strPath = FixFilePath(Game(GameIndex).InstallerPath)
+strPath = FixFilePath(strReturn)
 
 If Not FileExists(strPath) Then AddUserChat "InstallerPath cannot be located.", "System", False: Exit Function
-
-
 
 idProg = Shell(strPath)
 iExit = fWait(idProg)

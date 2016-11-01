@@ -200,6 +200,9 @@ Begin VB.Form frmMain
          Caption         =   "View Admin Status"
          Visible         =   0   'False
       End
+      Begin VB.Menu mnuScriptEditor 
+         Caption         =   "Open Script Editor"
+      End
       Begin VB.Menu mnuGameEditor 
          Caption         =   "Edit Game Data"
       End
@@ -853,6 +856,11 @@ End If
     
     Next i
 
+End Sub
+
+Private Sub mnuScriptEditor_Click()
+Dim myScript As New frmScriptMain
+    myScript.Visible = True
 End Sub
 
 Private Sub mnuSettings_Click()

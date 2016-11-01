@@ -69,6 +69,7 @@ Attribute VB_Exposed = False
 
 Public theScript As clsScript
 Private txtOutLen As Long
+Public myForm As Form
 
 Private Sub Form_Load()
     'LockWindowUpdate Me.hWnd
@@ -97,9 +98,9 @@ End Sub
 Private Sub tmrSnap_Timer()
 On Error Resume Next
 If Me.Visible = False Then Exit Sub
-    Me.Top = frmMain.Top + frmMain.Height
-    Me.Width = frmMain.Width
-    Me.Left = frmMain.Left
+    Me.Top = myForm.Top + myForm.Height
+    Me.Width = myForm.Width
+    Me.Left = myForm.Left
 End Sub
 
 Private Sub txtInput_KeyUp(KeyCode As Integer, Shift As Integer)

@@ -454,7 +454,6 @@ End Sub
 Private Sub cmdScript_Click()
 Dim myScript As New frmScriptMain
 
-Load myScript
 myScript.EditGameScript Game(GameIndex).GameScript
 myScript.Show vbModal
 If Not myScript.blCancel Then

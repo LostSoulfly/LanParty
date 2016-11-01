@@ -142,10 +142,10 @@ Dim i As Long
     blReturn = True
     
     For nCurrentline = nCurrentline To UBound(SplitScript)
-
+    
         sCurrentLine = TrimChar$(SplitScript(nCurrentline), Chr(9), 0)
-        
-        If Left(LCase$(sCurrentLine), lngSubLen) = strSub Then
+        Debug.Print "(" & Left(LCase$(sCurrentLine), lngSubLen) & ")"
+        If Left(LCase$(sCurrentLine), lngSubLen) = strSub Then 'TODO: fix this
             'we've found our sub
             'now we need to find the @sub end
             For i = nCurrentline To UBound(SplitScript)
@@ -636,6 +636,14 @@ Private Function ExecFunction(sFunction As String, ArgList() As String, Optional
             If AllowExecute Then ExecFunction = False: Exit Function
             Shell ArgList(0)
             ExecFunction = True
+        
+        Case "shellwait"
+            'TODO add to list
+            Dim idProg As Long
+            blHandled = True
+            If AllowExecute = False Then ExecFunction = False: Exit Function
+            idProg = Shell(strPath)
+            ExecFunction = fWait(idProg)
         
         Case "clipboard"
             blHandled = True
@@ -2042,9 +2050,10 @@ Private Sub PrintDebug(Msg As String, Optional Level As Integer = 0)
     
 End Sub
 
-Public Sub ShowDebug()
+Public Sub ShowDebug(myForm As Form)
     If Not blDebug Then blDebug = True
     If myDebug Is Nothing Then Set myDebug = New frmScriptDebug
+    Set myDebug.myForm = myForm
     Set myDebug.theScript = Me
     myDebug.Visible = True
 End Sub

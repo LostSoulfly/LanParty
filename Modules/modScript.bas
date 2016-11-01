@@ -4,7 +4,6 @@ Public Function RunScriptSub(sScript As String, sSub As String) As Variant
 
 If Not Settings.AllowScripts Then Exit Function
 Dim cScript As New clsScript
-Load cScript
 
     cScript.Script = sScript
     
@@ -26,6 +25,6 @@ Load cScript
     cScript.AddVar "AllowExecute", Settings.ScriptExecute
     
     RunScriptSub = cScript.FindAndExecuteSub(sSub)
-    Unload cScript
+    Set cScript = Nothing
     
 End Function

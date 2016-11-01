@@ -178,7 +178,7 @@ Private Sub SetDebug()
     myScript.blDebug = blDebug
     myScript.blShowErrors = blShowErrors
     myScript.DebugLevel = intDebug
-    myScript.ShowDebug
+    myScript.ShowDebug Me
 End Sub
 
 Private Sub Form_Resize()
@@ -205,7 +205,7 @@ Private Sub mnuEnableDebug_Click()
 End Sub
 
 Private Sub mnuFileExit_Click()
-    End
+    Unload Me
 End Sub
 
 Private Sub mnuFileMake_Click()
