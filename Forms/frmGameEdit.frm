@@ -455,7 +455,12 @@ Private Sub cmdScript_Click()
 Dim myScript As New frmScriptMain
 
 myScript.EditGameScript Game(GameIndex).GameScript
-myScript.Show vbModal
+myScript.Show
+Me.Enabled = False
+Do While myScript.Visible
+    Pause 10
+Loop
+Me.Enabled = True
 If Not myScript.blCancel Then
     Game(GameIndex).GameScript = myScript.txtScript
 End If

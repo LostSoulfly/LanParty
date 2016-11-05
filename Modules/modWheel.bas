@@ -95,14 +95,14 @@ End Function
 ' ================================================
 Public Sub WheelHook(ByVal hwnd As Long)
   On Error Resume Next
-  'Exit Sub
-  'todo: fuck this crashes a lot in IDE
+  Exit Sub
+  'todo: this crashes a lot in IDE
   SetProp hwnd, "PrevWndProc", SetWindowLong(hwnd, GWL_WNDPROC, AddressOf WindowProc)
 End Sub
 
 Public Sub WheelUnHook(ByVal hwnd As Long)
   On Error Resume Next
-    'Exit Sub
+  Exit Sub
   'todo: fuck this crashes a lot in IDE
   SetWindowLong hwnd, GWL_WNDPROC, GetProp(hwnd, "PrevWndProc")
   RemoveProp hwnd, "PrevWndProc"

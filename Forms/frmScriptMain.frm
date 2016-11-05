@@ -178,7 +178,8 @@ Private Sub SetDebug()
     myScript.blDebug = blDebug
     myScript.blShowErrors = blShowErrors
     myScript.DebugLevel = intDebug
-    myScript.ShowDebug Me
+    Set myScript.myParent = Me
+    myScript.ShowDebug
 End Sub
 
 Private Sub Form_Resize()
@@ -188,13 +189,16 @@ txtScript.Height = Me.Height - 950
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+myScript.myDebug.Visible = False
+Unload myScript.myDebug
+
 If EditScript Then
     If MsgBox("Do you want to discard the changes to this GameScript?", vbYesNo, "Discard changes?") = vbYes Then blCancel = True
     Me.Visible = False
-    Cancel = 0
+    Cancel = 1
+    Exit Sub
 End If
-myScript.myDebug.Visible = False
-Unload myScript.myDebug
+
 
 End Sub
 

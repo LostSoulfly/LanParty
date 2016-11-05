@@ -90,14 +90,14 @@ Private ScrExeiTemp As Integer, ScrExeiTemp2 As Integer, ScrExei As Integer
 Private ScrExesTemp As String, ScrExesTemp2 As String
 Private ScrExearTemp2() As String
 Private InsideLoop As Collection
-Private ReturnVar As Variant
+Private ReturnVar() As Variant
 Private blReturn As Boolean
 Public blDebug As Boolean
 Public DebugLevel As Integer
 Public blShowErrors As Boolean
 
 Public myDebug As Form
-'Public myForm As Form
+Public myParent As Form
 'Public theForm As Form
 
 Public Sub ScriptExecute(Optional blStep As Boolean = False)
@@ -139,27 +139,22 @@ Dim i As Long
     If Not Left(strSub, 1) = "@" Then strSub = "@" & strSub
     strSub = LCase$(strSub)
     lngSubLen = Len(strSub)
-    blReturn = True
+    blReturn = False
     
     For nCurrentline = nCurrentline To UBound(SplitScript)
     
         sCurrentLine = TrimChar$(SplitScript(nCurrentline), Chr(9), 0)
-        Debug.Print "(" & Left(LCase$(sCurrentLine), lngSubLen) & ")"
         If Left(LCase$(sCurrentLine), lngSubLen) = strSub Then 'TODO: fix this
-            'we've found our sub
-            'now we need to find the @sub end
-            For i = nCurrentline To UBound(SplitScript)
+            For i = nCurrentline + 1 To UBound(SplitScript)
                 If blReturn = True Then Exit For
-                sCurrentLine = TrimChar$(SplitScript(nCurrentline), Chr(9), 0)
-                If Left(LCase$(sCurrentLine), lngSubLen + 4) = strSub & " end" Then Exit For
+                sCurrentLine = TrimChar$(SplitScript(i), Chr(9), 0)
+                If Left(LCase$(sCurrentLine), lngSubLen + 4) = strSub & " end" Then blReturn = True: Exit For
                 RaiseEvent LineChange(nCurrentline, sCurrentLine)
                 Call LineExecute(sCurrentLine)
             Next i
-            
         End If
        
-        FindAndExecuteSub = ReturnVar
-        
+       If blReturn Then FindAndExecuteSub = ReturnVar: Exit For
     Next nCurrentline
 End Function
 
@@ -225,7 +220,7 @@ Public Sub LineExecute(ByRef sCurrentLine As String, Optional blStep As Boolean 
                 
                 Case "return"
                     blReturn = True
-                    returnvariable = ProcessFunctions(Mid$(sCurrentLine, ScrExeiTemp + 1))
+                    ReturnVar = ProcessFunctions(Mid$(sCurrentLine, ScrExeiTemp + 1))
                     GoTo SkipCurrentDo:
                 
                 Case "goto" ' Goto a label
@@ -642,7 +637,11 @@ Private Function ExecFunction(sFunction As String, ArgList() As String, Optional
             Dim idProg As Long
             blHandled = True
             If AllowExecute = False Then ExecFunction = False: Exit Function
-            idProg = Shell(strPath)
+            If UBound(ArgList) = 0 Then
+                idProg = Shell(ArgList(0))
+            Else
+                idProg = Shell(ArgList(0) & " " & ArgList(1))
+            End If
             ExecFunction = fWait(idProg)
         
         Case "clipboard"
@@ -755,7 +754,7 @@ Private Function ExecFunction(sFunction As String, ArgList() As String, Optional
             
         Case "is64bit"
             blHandled = True
-            If Is64Bit Then ExecFunction = True
+            If IsHost64Bit Then ExecFunction = True
                 
         Case "filesize", "getsize", "filelen"
             blHandled = True
@@ -2050,10 +2049,10 @@ Private Sub PrintDebug(Msg As String, Optional Level As Integer = 0)
     
 End Sub
 
-Public Sub ShowDebug(myForm As Form)
+Public Sub ShowDebug()
     If Not blDebug Then blDebug = True
     If myDebug Is Nothing Then Set myDebug = New frmScriptDebug
-    Set myDebug.myForm = myForm
+    If Not myParent Is Nothing Then Set myDebug.myForm = myParent: myDebug.tmrSnap.Enabled = False
     Set myDebug.theScript = Me
     myDebug.Visible = True
 End Sub

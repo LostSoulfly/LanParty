@@ -124,7 +124,7 @@ Dim i As Long
             AddToString "GameEXE " & .GameEXE, strGames
             If LenB(Game(Index).GameScript) > 0 Then
                 AddToString "Script", strGames
-                AddToString Game(Index).GameScript, strGames
+                AddToString Game(Index).GameScript, strGames, False
                 AddToString "End Script", strGames
             End If
             AddToString "CommandArgs " & .CommandArgs, strGames
@@ -298,7 +298,7 @@ Dim strReturn As String
 If GameIndex = 0 Then GameIndex = CurrentGameIndex
 
 If Game(GameIndex).GameType = 1 Then
-    strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnLaunchGame")
+    strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnCommandLaunch")
     If LenB(strReturn) = 0 Then strReturn = Game(GameIndex).GameEXE
     ExecFile strReturn, GetGameArgs(GameIndex), , Game(GameIndex).EXEPath
     CheckMonitorGame GameIndex
@@ -311,7 +311,7 @@ If Game(GameIndex).InstallFirst Then
             If MsgBox("This game must be installed before launching." & vbNewLine & _
             "Would you like to begin the installation?" & vbNewLine & _
             "(If you've installed it already, right click its icon and choose ""Locate Game"")", vbYesNoCancel, "Installation Required") = vbYes Then
-                strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnInstallGame")
+                strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnGameInstall")
                 InstallGame GameIndex, strReturn
             End If
         Exit Function
@@ -328,7 +328,7 @@ TrySetGamePath GameIndex, strReturn
 
     Dim GamePath As String
     GamePath = GetGameExePath(GameIndex)
-    strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnLaunchGame")
+    strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnGameLaunch")
     If LenB(strReturn) = 0 Then strReturn = GamePath
     If LenB(GamePath) = 0 Then AddDebug "LaunchGame: GamePath is null":  Exit Function
     If WithArgs Then
@@ -602,7 +602,11 @@ f.Tag = GameIndex
 f.Caption = "Locate Game - " & Game(GameIndex).Name
 'f.LocateGame GameIndex
 f.SetSearchFile Game(GameIndex).GameEXE
-f.Show vbModal
+f.Visible = True
+f.Show
+Do While f.Visible = True
+    Pause 10
+Loop
 If FileExists(Game(GameIndex).GameEXE) Then Game(GameIndex).Installed = True
 Unload f
 
