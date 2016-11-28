@@ -130,8 +130,8 @@ Dim lngSubLen As Long
 Dim i As Long
 
     'loop through the current script and locate the section that is our given
-    'sub, execute it, and return a variable? Maybe create a return command?
-
+    'sub, execute it, and return a variable
+    
     If LenB(Script) = 0 Then Call NotifyError("No script has been loaded!", 0): Exit Function
     SplitScript = Split(Script, vbCrLf)
     nCurrentline = LBound(SplitScript)
@@ -219,8 +219,22 @@ Public Sub LineExecute(ByRef sCurrentLine As String, Optional blStep As Boolean 
                     GoTo SkipCurrentDo:
                 
                 Case "return"
+                ReDim ReturnVar(0)
                     blReturn = True
-                    ReturnVar = ProcessFunctions(Mid$(sCurrentLine, ScrExeiTemp + 1))
+                                        
+                    Dim strArray() As String
+                    strArray = modCmdArgs.GetArgs(sCurrentLine)   'hacked up an argument parser, trims off the comma and spits everything out..
+                        For lngTemp = LBound(strArray) To UBound(strArray)  'parse all of them, in case there are functions hidden inside
+                            ScrExesTemp = ProcessFunctions(strArray(lngTemp))
+                            If LenB(ScrExesTemp) > 0 Then
+                                If LenB(ReturnVar(0)) = 0 Then
+                                    ReturnVar(0) = ScrExesTemp
+                                Else
+                                    ReDim Preserve ReturnVar(UBound(ReturnVar) + 1)
+                                    ReturnVar(UBound(ReturnVar)) = ScrExesTemp
+                                End If
+                            End If
+                        Next
                     GoTo SkipCurrentDo:
                 
                 Case "goto" ' Goto a label
