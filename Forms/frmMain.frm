@@ -425,7 +425,7 @@ tmrClose.Enabled = True
 End Sub
 
 Private Sub mnuAbout_Click()
-MsgBox "This has been in development since early December, and is comprised of over 8000 lines of code, the majority of it written by me." & vbNewLine & _
+MsgBox "This has been in development since early December 2015, and is comprised of over 8000 lines of code, the majority of it written by me." & vbNewLine & _
 "I wrote this initially for the TrollParty 2016 LAN, in an attempt to make it as easy as possible for people to just come over and play games." & vbNewLine & vbNewLine & _
 "I hope this program will make things easier for you personally and enable you to spend more time playing games and having fun." & vbNewLine & "-Dragoon (Bradley)", vbInformation, "About"
 End Sub
