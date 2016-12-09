@@ -90,7 +90,7 @@ Private ScrExeiTemp As Integer, ScrExeiTemp2 As Integer, ScrExei As Integer
 Private ScrExesTemp As String, ScrExesTemp2 As String
 Private ScrExearTemp2() As String
 Private InsideLoop As Collection
-Private ReturnVar() As Variant
+Private ReturnVar() As String
 Private blReturn As Boolean
 Public blDebug As Boolean
 Public DebugLevel As Integer
@@ -221,9 +221,9 @@ Public Sub LineExecute(ByRef sCurrentLine As String, Optional blStep As Boolean 
                 Case "return"
                 ReDim ReturnVar(0)
                     blReturn = True
-                                        
+                    
                     Dim strArray() As String
-                    strArray = modCmdArgs.GetArgs(sCurrentLine)   'hacked up an argument parser, trims off the comma and spits everything out..
+                    strArray = GetReturnArgs(sCurrentLine)   'hacked up an argument parser, trims off the comma and spits everything out..
                         For lngTemp = LBound(strArray) To UBound(strArray)  'parse all of them, in case there are functions hidden inside
                             ScrExesTemp = ProcessFunctions(strArray(lngTemp))
                             If LenB(ScrExesTemp) > 0 Then
@@ -348,6 +348,14 @@ Public Sub LineExecute(ByRef sCurrentLine As String, Optional blStep As Boolean 
         
         For ScrExei = 1 To Len(sCurrentLine)
             Select Case Mid$(sCurrentLine, ScrExei, 1)
+            
+                Case "@"
+                    'it's a sub/function
+                    Debug.Print "ho?"
+                    'todo: Need to move this up and check if we're about to enter inside of a
+                    'function and whether or not we are supposed to be in the function we've found..
+                    GoTo SkipCurrentDo:
+            
                 Case "+"
                     If Mid$(sCurrentLine, (ScrExei + 1), 1) = "=" Then
                         ScrExesTemp = Trim(Mid$(sCurrentLine, 1, InStr(1, sCurrentLine, "+") - 1))
@@ -1902,6 +1910,46 @@ Private Function GetBracketContents(strString As String) As String
         
 End Function
 
+Private Function GetReturnArgs(strString As String) As Variant
+    Dim lngLastPos As Long
+    Dim blIsQuoteOpen As Boolean
+    Dim strReturn() As String
+    Dim i As Long
+    ReDim strReturn(0) As String
+    'extract the text between two brackets in a string and return its contents
+        
+        strString = Mid(strString, Len("return ") + 1)
+        lngLastPos = 1
+        
+        For i = 1 To Len(strString)
+            
+            Select Case Mid(strString, i, 1)
+            
+                Case Is = Chr(34)
+                    blIsQuoteOpen = Not blIsQuoteOpen
+            
+                Case Is = ","
+                    If Not blIsQuoteOpen Then
+                        If LenB(strReturn(UBound(strReturn))) > 0 Then ReDim Preserve strReturn(UBound(strReturn) + 1) As String
+                        strReturn(UBound(strReturn)) = Mid(strString, lngLastPos, i - 1)
+                        lngLastPos = i
+                    End If
+                    
+            End Select
+        
+        Next i
+        
+        If i > lngLastPos Then
+            If LenB(strReturn(UBound(strReturn))) > 0 Then ReDim Preserve strReturn(UBound(strReturn) + 1) As String
+            strReturn(UBound(strReturn)) = Mid(strString, lngLastPos, i - 1)
+            lngLastPos = i
+        End If
+        
+        GetReturnArgs = strReturn
+        
+End Function
+
+
 Private Function NumberOfFunctions(strString As String) As Long
     Dim lngLeftBracketCount As Long
     Dim lngRightBracketCount As Long
@@ -2066,7 +2114,7 @@ End Sub
 Public Sub ShowDebug()
     If Not blDebug Then blDebug = True
     If myDebug Is Nothing Then Set myDebug = New frmScriptDebug
-    If Not myParent Is Nothing Then Set myDebug.myForm = myParent: myDebug.tmrSnap.Enabled = False
+    If Not myParent Is Nothing Then Set myDebug.myForm = myParent: myDebug.tmrSnap.Enabled = True
     Set myDebug.theScript = Me
     myDebug.Visible = True
 End Sub
