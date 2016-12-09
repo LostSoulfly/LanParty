@@ -294,12 +294,13 @@ Next
 End Function
 
 Public Function LaunchGame(Optional GameIndex As Integer, Optional WithArgs As Boolean = True) As Long
+Dim strRetPath() As String
 Dim strReturn As String
 If GameIndex = 0 Then GameIndex = CurrentGameIndex
 
 If Game(GameIndex).GameType = 1 Then
-    strReturn = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnCommandLaunch")
-    If LenB(strReturn) = 0 Then strReturn = Game(GameIndex).GameEXE
+    strRetPath = modScript.RunScriptSub(Game(GameIndex).GameScript, "OnCommandLaunch")
+    If LenB(strRetPath(0)) = 0 Then strReturn = Game(GameIndex).GameEXE Else strReturn = strRetPath(0)
     ExecFile strReturn, GetGameArgs(GameIndex), , Game(GameIndex).EXEPath
     CheckMonitorGame GameIndex
 Exit Function
@@ -363,9 +364,9 @@ End Function
 Public Function StoppedPlaying(GameIndex As Integer)
 'broadcast stopped playing
 'also anything else
-CryptToAll NowPlayingPacket(0, Game(GameIndex).GameUID)
-AddUserChat "You've stopped playing: " & Game(GameIndex).Name, "System", False
-Settings.CurrentGame = 0
+    CryptToAll NowPlayingPacket(0, Game(GameIndex).GameUID)
+    AddUserChat "You've stopped playing: " & Game(GameIndex).Name, "System", False
+    Settings.CurrentGame = 0
 End Function
 
 Public Function StartedPlaying(GameIndex As Integer)
@@ -458,7 +459,7 @@ End Function
 Public Function GetGameArgs(GameIndex As Integer) As String
 If GameIndex = -1 Then Exit Function
     If Len(Game(GameIndex).CommandArgs) > 0 Then
-        GetGameArgs = FixCmdArgs(Game(GameIndex).CommandArgs)
+        GetGameArgs = DoReplaceArgs(Game(GameIndex).CommandArgs)
     End If
 End Function
 
