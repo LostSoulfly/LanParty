@@ -193,7 +193,7 @@ myScript.myDebug.Visible = False
 Unload myScript.myDebug
 
 If EditScript Then
-    If MsgBox("Do you want to discard the changes to this GameScript?", vbYesNo, "Discard changes?") = vbYes Then blCancel = True
+    If MsgBox("Do you want to save the changes to this GameScript?", vbYesNo, "Save changes?") = vbNo Then blCancel = True
     Me.Visible = False
     Cancel = 1
     Exit Sub
@@ -309,6 +309,10 @@ Private Sub mnuReset_Click()
 End Sub
 
 Private Sub mnuRunRun_Click()
+    RunScript
+End Sub
+
+Public Sub RunScript()
     If myScript.Script <> "" Then
         If MsgBox("Would you like to reset the variables and arrays?", vbYesNo, "Clear State") = vbYes Then
             Call myScript.ExitScript
@@ -349,12 +353,15 @@ Private Sub mnuSnapDebug_Click()
 End Sub
 
 Private Sub mnuStep_Click()
-    
-If myScript.nCurrentline > myScript.nNumCurrentLines Then
-    If MsgBox("You've reached the end of the script. Reset?", vbYesNo, "Reset Script?") = vbYes Then
-        Set myScript = New clsScript
+    StepScript
+End Sub
+
+Public Sub StepScript()
+    If myScript.nCurrentline > myScript.nNumCurrentLines Then
+        If MsgBox("You've reached the end of the script. Reset?", vbYesNo, "Reset Script?") = vbYes Then
+            Set myScript = New clsScript
+        End If
     End If
-End If
     
     myScript.Script = txtScript.Text
     myScript.ScriptExecute True

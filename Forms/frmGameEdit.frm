@@ -463,6 +463,7 @@ Loop
 Me.Enabled = True
 If Not myScript.blCancel Then
     Game(GameIndex).GameScript = myScript.txtScript
+    AddUserChat "GameScript updated for " & GetGameName(GameIndex) & "!", "System"
 End If
 myScript.EditScript = False
 Unload myScript

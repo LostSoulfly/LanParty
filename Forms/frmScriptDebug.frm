@@ -134,7 +134,7 @@ Dim lngTemp As Long
                 PrintDebug "You may also dim/set variables."
                 
             Case Is = "restart", "run"
-                Call theScript.ScriptExecute
+                Call myForm.RunScript
                 
             Case Is = "reset", "stop"
                 Call theScript.ExitScript
@@ -144,7 +144,7 @@ Dim lngTemp As Long
                 theScript.DoFunction ("debug(""0"")")
                 Unload Me
                 
-            Case Is = "variables", "showvars"
+            Case Is = "variables", "showvars", "vars"
                 EnumVars
                 
             Case Is = "filevars", "showfilevars"
