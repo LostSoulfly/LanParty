@@ -513,15 +513,15 @@ If Len(Path$) = 0 Then Exit Function
     FixFilePath = Path
 End Function
 
-Public Function FixCmdArgs(ByVal Args As String) As String
+Public Function DoReplaceArgs(ByVal Args As String) As String
 
 If Len(Args$) = 0 Then Exit Function
 
-FixCmdArgs = Replace(Args, "%SCREENX%", GetScreenX)
-FixCmdArgs = Replace(FixCmdArgs, "%SCREENY%", GetScreenY)
-FixCmdArgs = Replace(FixCmdArgs, "%DATE%", Format(Now, "mm-dd-yyyy"))
-FixCmdArgs = Replace(FixCmdArgs, "%TIME%", Format(Time, "hh-mm-ss"))
-FixCmdArgs = Replace(FixCmdArgs, "%USERNAME%", Settings.UserName)
+DoReplaceArgs = Replace(Args, "%SCREENX%", GetScreenX)
+DoReplaceArgs = Replace(DoReplaceArgs, "%SCREENY%", GetScreenY)
+DoReplaceArgs = Replace(DoReplaceArgs, "%DATE%", Format(Now, "mm-dd-yyyy"))
+DoReplaceArgs = Replace(DoReplaceArgs, "%TIME%", Format(Time, "hh-mm-ss"))
+DoReplaceArgs = Replace(DoReplaceArgs, "%USERNAME%", Settings.UserName)
 
 End Function
 
