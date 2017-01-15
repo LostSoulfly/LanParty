@@ -92,6 +92,7 @@ Private ScrExearTemp2() As String
 Private InsideLoop As Collection
 Private ReturnVar() As String
 Private blReturn As Boolean
+Private StopExecution As Boolean
 Public blDebug As Boolean
 Public DebugLevel As Integer
 Public blShowErrors As Boolean
@@ -104,7 +105,9 @@ Public Sub ScriptExecute(Optional blStep As Boolean = False)
 Dim sCurrentLine As String
 
     If LenB(Script) = 0 Then Call NotifyError("No script has been loaded!", 0): Exit Sub
-    
+        
+    StopExecution = False
+        
     'performance increase to be had here for large scripts simply
     'set the Script variable to private and only allow access through
     'a method or function, in which case the SplitScript would be updated
@@ -115,13 +118,23 @@ Dim sCurrentLine As String
     nNumCurrentLines = UBound(SplitScript)
     
     For nCurrentline = nCurrentline To UBound(SplitScript)
-
+        If StopExecution = True Then StopExecution = False: Exit For
         sCurrentLine = TrimChar$(SplitScript(nCurrentline), Chr(9), 0)
         RaiseEvent LineChange(nCurrentline, sCurrentLine)
         Call LineExecute(sCurrentLine)
         If blStep Then nCurrentline = nCurrentline + 1: Exit Sub
         
     Next nCurrentline
+    
+    If blDebug And Not IsEmpty(ReturnVar) Then
+        PrintDebug ("Returned variables:")
+        Dim i As Long
+        For i = LBound(ReturnVar) To UBound(ReturnVar)
+            PrintDebug (i & ": " & ReturnVar(i))
+        Next
+    End If
+    
+    PrintDebug ("Execution complete.")
 End Sub
 
 Public Function FindAndExecuteSub(strSub As String) As Variant
@@ -177,6 +190,8 @@ Public Sub LineExecute(ByRef sCurrentLine As String, Optional blStep As Boolean 
         If ScrExeSkip And LCase(sCurrentLine) = "end" Then
             ScrExeSkip = False
             GoTo SkipCurrentDo:
+        ElseIf ScrExeSkip = True Then
+            GoTo SkipCurrentDo:
         End If
         
         ' Skipping if stuff...
@@ -227,6 +242,7 @@ Public Sub LineExecute(ByRef sCurrentLine As String, Optional blStep As Boolean 
                         For lngTemp = LBound(strArray) To UBound(strArray)  'parse all of them, in case there are functions hidden inside
                             ScrExesTemp = ProcessFunctions(strArray(lngTemp))
                             If LenB(ScrExesTemp) > 0 Then
+                                If VarExists(ScrExesTemp) Then ScrExesTemp = GetVar(ScrExesTemp)
                                 If LenB(ReturnVar(0)) = 0 Then
                                     ReturnVar(0) = ScrExesTemp
                                 Else
@@ -243,6 +259,7 @@ Public Sub LineExecute(ByRef sCurrentLine As String, Optional blStep As Boolean 
                     GoTo SkipCurrentDo:
                 
                 Case "textblock"
+                    'TODO add to list
                     'set a block of text to a var
                     ScrExesTemp = Trim$(Mid$(sCurrentLine, ScrExeiTemp))
                     sTemp = vbNullString
@@ -252,10 +269,13 @@ Public Sub LineExecute(ByRef sCurrentLine As String, Optional blStep As Boolean 
                     Do While LCase$(TrimChar(sTemp, vbTab)) <> "end textblock"
                         If LenB(ScrExesTemp2) > 0 Then ScrExesTemp2 = ScrExesTemp2 & vbCrLf
                         ScrExesTemp2 = ScrExesTemp2 & sTemp
-                        If lngTemp >= UBound(SplitScript) Then _
-                            Call NotifyError("No 'block end' for " & ScrExesTemp, nCurrentline): ExitScript
-                        lngTemp = lngTemp + 1
-                        sTemp = SplitScript(lngTemp)
+                        If lngTemp >= UBound(SplitScript) Then
+                            Call NotifyError("No 'block end' for " & ScrExesTemp, lngTemp): ExitScript
+                            Exit Do
+                        Else
+                            lngTemp = lngTemp + 1
+                            sTemp = SplitScript(lngTemp)
+                        End If
                     Loop
                 
                     AddVar ScrExesTemp, ScrExesTemp2
@@ -666,6 +686,11 @@ Private Function ExecFunction(sFunction As String, ArgList() As String, Optional
             End If
             ExecFunction = fWait(idProg)
         
+        Case "newline", "crlf"
+            'todo add to list
+            blHandled = True
+            ExecFunction = vbNewLine
+            
         Case "clipboard"
             blHandled = True
             Select Case ArgList(0)
@@ -1304,6 +1329,7 @@ End Sub
 
 Private Function VarExists(VarName As String) As Boolean
     Dim i As Long
+    If InStr(1, VarName, " ") Then VarExists = False: Exit Function
     For i = VarNames.Count To 1 Step -1
         If VarNames(i) = VarName Then
         PrintDebug "VarExists (" & VarName & ") = True", 3
@@ -1932,7 +1958,7 @@ Private Function GetReturnArgs(strString As String) As Variant
                     If Not blIsQuoteOpen Then
                         If LenB(strReturn(UBound(strReturn))) > 0 Then ReDim Preserve strReturn(UBound(strReturn) + 1) As String
                         strReturn(UBound(strReturn)) = Mid(strString, lngLastPos, i - 1)
-                        lngLastPos = i
+                        lngLastPos = i + 1 'account for the comma
                     End If
                     
             End Select
@@ -1941,14 +1967,12 @@ Private Function GetReturnArgs(strString As String) As Variant
         
         If i > lngLastPos Then
             If LenB(strReturn(UBound(strReturn))) > 0 Then ReDim Preserve strReturn(UBound(strReturn) + 1) As String
-            strReturn(UBound(strReturn)) = Mid(strString, lngLastPos, i - 1)
-            lngLastPos = i
+            strReturn(UBound(strReturn)) = Trim$(Mid(strString, lngLastPos, i - 1))
         End If
         
         GetReturnArgs = strReturn
         
 End Function
-
 
 Private Function NumberOfFunctions(strString As String) As Long
     Dim lngLeftBracketCount As Long
@@ -2034,12 +2058,16 @@ Public Sub CleanupVars()
     ScrExesTemp2 = ""
     ReDim ScrExearTemp2(0)
     Set InsideLoop = New Collection
+    ReDim ReturnVar(0)
     'PrintDebug "CleanupVars complete. Everything but Debug ;-)", 1
 End Sub
 
 Public Sub ExitScript()
+On Error Resume Next
     CleanupVars
+    StopExecution = True
     nCurrentline = UBound(SplitScript)
+    
 End Sub
 
 'String to trim, character to trim, number of characters to trim
@@ -2121,6 +2149,7 @@ End Sub
 
 Private Sub Class_Initialize()
      Set InsideLoop = New Collection
+     ReDim ReturnVar(0)
 End Sub
 
 Public Sub GetAllVars(ByRef Names() As String, ByRef VAR() As String)
