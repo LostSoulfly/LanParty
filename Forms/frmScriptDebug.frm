@@ -110,6 +110,7 @@ Dim lngTemp As Long
     If KeyCode = 13 Then
         lngTemp = InStr(1, txtInput.Text, " ")
         strTemp = Trim$(Left(txtInput.Text, IIf(lngTemp > 0, lngTemp, Len(txtInput.Text))))
+        txtInput.Text = "" 'clear the textbox
         
         If InStr(1, strTemp, "(") > 0 Then
             theScript.DoFunction txtInput.Text
@@ -157,7 +158,6 @@ Dim lngTemp As Long
                 theScript.LineExecute txtInput.Text
                 
         End Select
-        txtInput.Text = ""
     End If
     
 End Sub

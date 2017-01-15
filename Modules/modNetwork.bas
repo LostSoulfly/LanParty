@@ -80,7 +80,7 @@ Function ReadHandleDataType(ByRef Data() As Byte, ByRef UID As String) As Long  
             Call CopyMemory(Data(0), Data(4), Length + 1)   'No encryption, so just copy the data portion after the DataType
         End If
         
-        ReDim Preserve Data(0 To Length) 'TODO: maybe make this not -1? Is that a buffer stopper bit? Yep that worked.
+        ReDim Preserve Data(0 To Length)
     End If
 End Function
 

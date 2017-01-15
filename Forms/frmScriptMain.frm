@@ -304,8 +304,9 @@ Private Sub mnuOpen_Click()
 End Sub
 
 Private Sub mnuReset_Click()
-    Set myScript = New clsScript
-    SetDebug
+    'Set myScript = New clsScript
+    myScript.ShowDebug
+    myScript.ExitScript
 End Sub
 
 Private Sub mnuRunRun_Click()
@@ -359,7 +360,8 @@ End Sub
 Public Sub StepScript()
     If myScript.nCurrentline > myScript.nNumCurrentLines Then
         If MsgBox("You've reached the end of the script. Reset?", vbYesNo, "Reset Script?") = vbYes Then
-            Set myScript = New clsScript
+            'Set myScript = New clsScript
+            myScript.ExitScript
         End If
     End If
     

@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "Mswinsck.ocx"
 Begin VB.Form frmMain 
    Caption         =   "LanParty"
    ClientHeight    =   6630
@@ -560,8 +560,6 @@ End If
 End Sub
 
 Private Sub mnuExit_Click()
-    'this crashes if you do it in the same sub as End for some reason..
-    'todo: reenable for builds.
     DoExit
 End Sub
 
