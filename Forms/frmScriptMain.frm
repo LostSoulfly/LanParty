@@ -116,6 +116,21 @@ Begin VB.Form frmScriptMain
          End
       End
    End
+   Begin VB.Menu mnuAddSub 
+      Caption         =   "Add Sub"
+      Begin VB.Menu mnuAddOnGameLaunch 
+         Caption         =   "OnGameLaunch"
+      End
+      Begin VB.Menu mnuAddOnCmdLaunch 
+         Caption         =   "OnCommandLaunch"
+      End
+      Begin VB.Menu mnuAddOnGameInstall 
+         Caption         =   "OnGameInstall"
+      End
+      Begin VB.Menu mnuAddOnGamePath 
+         Caption         =   "OnGamePath"
+      End
+   End
    Begin VB.Menu mnuRun 
       Caption         =   "Run"
       Begin VB.Menu mnuRunRun 
@@ -125,6 +140,9 @@ Begin VB.Form frmScriptMain
       Begin VB.Menu mnuStep 
          Caption         =   "Step"
          Shortcut        =   {F8}
+      End
+      Begin VB.Menu mnuRunSub 
+         Caption         =   "Run Script Sub"
       End
       Begin VB.Menu mnuReset 
          Caption         =   "Reset Script/Variables"
@@ -199,7 +217,22 @@ If EditScript Then
     Exit Sub
 End If
 
+End Sub
 
+Private Sub mnuAddOnCmdLaunch_Click()
+    AddSub "OnCommandLaunch", , True
+End Sub
+
+Private Sub mnuAddOnGameInstall_Click()
+    AddSub "OnGameInstall", , True
+End Sub
+
+Private Sub mnuAddOnGameLaunch_Click()
+    AddSub "OnGameLaunch", , True
+End Sub
+
+Private Sub mnuAddOnGamePath_Click()
+    AddSub "OnGamePath", , True
 End Sub
 
 Private Sub mnuEnableDebug_Click()
@@ -324,6 +357,11 @@ Public Sub RunScript()
     myScript.ScriptExecute
 End Sub
 
+Private Sub mnuRunSub_Click()
+myScript.Script = txtScript.Text
+myScript.FindAndExecuteSub InputBox("Please type the name of the sub to run.", "Run Sub")
+End Sub
+
 Private Sub mnuSave_Click()
     cd.FileName = ""
     cd.Filter = "LSL Source Files (*.LSL)|*.lsl|All Files (*.*)|*.*"
@@ -388,4 +426,22 @@ Private Sub txtScript_KeyPress(KeyAscii As Integer)
     End If
 End Sub
 
+Private Sub AddSub(Name As String, Optional Commands As String = "", Optional ret As Boolean = False)
+Dim strTemp As String
 
+strTemp = "@" & Name & vbNewLine
+If LenB(Commands) = 0 Then
+    strTemp = strTemp & " print(" & Chr(34) & Name & Chr(34) & ")" & vbNewLine
+Else
+    strTemp = strTemp & Commands
+End If
+
+If ret Then
+    strTemp = strTemp & " return " & Chr(34) & Name & Chr(34) & vbNewLine
+End If
+
+strTemp = strTemp & "@" & Name & " End" & vbNewLine & vbNewLine
+
+
+txtScript.Text = strTemp & txtScript.Text
+End Sub
