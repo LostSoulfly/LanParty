@@ -86,6 +86,7 @@ Private Sub Form_Load()
     AddHelpItem "len", "String/Variable", "Returns the length of the supplied string or variable."
     AddHelpItem "left", "String/Variable, Length(int)", "Returns text from the left side of the string extending Length(int)."
     AddHelpItem "right", "String/Variable, Length(int)", "Returns text from the right side of the string extending Length(int)."
+    addehlpitem "textblock", "", "End with 'end textblock'"
     AddHelpItem "chr", "", ""
     AddHelpItem "asc", "", ""
     AddHelpItem "reverse", "", ""

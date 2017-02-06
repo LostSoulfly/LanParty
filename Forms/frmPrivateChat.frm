@@ -270,6 +270,19 @@ End If
     
 End Sub
 
+Public Sub RefreshUserNames()
+    Dim i As Long
+    
+    For i = 0 To lstUsers.ListCount - 1
+        If LenB(lstUsers.ItemData(i)) > 0 And IsNumeric(lstUsers.ItemData(i)) Then
+            'refresh user names individually
+            lstUsers.List(i) = GetUserName(lstUsers.ItemData(i))
+            'todo: test if works
+        End If
+    Next i
+    
+End Sub
+
 Public Sub AddChatUser(UniqueID As String)
 Dim ChatIndex As Integer
 Dim i As Integer
