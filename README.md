@@ -1,3 +1,5 @@
+This program was written over 8 years old when I was just starting to program.. it's a horrible abomination. Everything is in a couple files. Please don't learn anything from this old project.
+
 # LanParty
 Chat client and game launcher designed for simplifying LAN parties. Written in Visual Basic 6.
 
